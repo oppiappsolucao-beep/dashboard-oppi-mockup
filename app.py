@@ -2,468 +2,221 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# =====================================================
-# CONFIG
-# =====================================================
-
 st.set_page_config(
     page_title="Oppi Vision",
     page_icon="📊",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
-
-# =====================================================
-# CSS
-# =====================================================
 
 st.markdown("""
 <style>
-
-.stApp{
-    background:#D6D6D6;
+.stApp {
+    background: #D4D4D4;
 }
-
-.block-container{
-    padding-top:20px;
-    max-width:1300px;
+.block-container {
+    max-width: 1280px;
+    padding-top: 1.2rem;
 }
-
-/* KPI */
-
-.kpi{
-    background:white;
-    padding:20px;
-    border-radius:18px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.08);
-    height:140px;
+[data-testid="stMetricValue"] {
+    font-size: 38px;
+    font-weight: 900;
 }
-
-.kpi-blue{
-    border-left:7px solid #1B1D6D;
-}
-
-.kpi-pink{
-    border-left:7px solid #C10057;
-}
-
-.kpi-title{
-    font-size:16px;
-    font-weight:700;
-    color:#111827;
-}
-
-.kpi-value{
-    font-size:42px;
-    font-weight:900;
-    color:#020617;
-    margin-top:10px;
-}
-
-.kpi-sub{
-    font-size:12px;
-    color:#64748b;
-    margin-top:10px;
-}
-
-/* BOX */
-
-.box{
-    background:white;
-    padding:20px;
-    border-radius:18px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.08);
-}
-
-/* TITLES */
-
-.title-chart{
-    font-size:24px;
-    font-weight:800;
-    color:#111827;
-    margin-bottom:10px;
-}
-
-/* LOGO */
-
-.logo-circle{
-    width:90px;
-    height:90px;
-    background:white;
-    border-radius:50%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    margin:auto;
-    box-shadow:0 4px 15px rgba(0,0,0,0.08);
-}
-
-.logo-main{
-    font-size:30px;
-    font-weight:900;
-    color:#1B1D6D;
-    line-height:1;
-}
-
-.logo-sub{
-    font-size:10px;
-    letter-spacing:5px;
-    font-weight:800;
-    color:#C10057;
-    margin-top:5px;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
-# =====================================================
-# HEADER
-# =====================================================
-
-st.markdown("""
-<h1 style='text-align:center;color:#09122C;font-size:60px;'>
-📊 Operação Comercial
-</h1>
-
-<p style='text-align:center;color:#64748b;font-size:15px;margin-top:-20px;'>
-Dashboard comercial demonstrativo • Oppi Vision
-</p>
-""", unsafe_allow_html=True)
-
-# =====================================================
-# DADOS FAKE
-# =====================================================
+st.markdown(
+    "<h1 style='text-align:center; color:#09122C;'>📊 Operação Comercial</h1>",
+    unsafe_allow_html=True
+)
+st.markdown(
+    "<p style='text-align:center; color:#64748b;'>Dashboard comercial demonstrativo • Oppi Vision</p>",
+    unsafe_allow_html=True
+)
 
 dados = [
+    ["01/2026", "Cliente 001", "Vendedora 1", "Campinas", "1º contato", 5200],
+    ["01/2026", "Cliente 002", "Vendedora 2", "Indaiatuba", "Venda registrada", 7400],
+    ["01/2026", "Cliente 003", "Vendedora 3", "Jundiaí", "2º contato", 6100],
+    ["01/2026", "Cliente 004", "Vendedora 1", "Sorocaba", "Venda registrada", 9800],
 
-    ["Cliente 001","Vendedora 1","Campinas",5200,"Venda registrada","01/2026"],
-    ["Cliente 002","Vendedora 2","Indaiatuba",7400,"1º contato","01/2026"],
-    ["Cliente 003","Vendedora 3","Jundiaí",6100,"2º contato","01/2026"],
-    ["Cliente 004","Vendedora 1","Sorocaba",9800,"Venda registrada","01/2026"],
+    ["02/2026", "Cliente 005", "Vendedora 2", "Campinas", "3º contato", 4700],
+    ["02/2026", "Cliente 006", "Vendedora 3", "Indaiatuba", "Venda registrada", 8600],
+    ["02/2026", "Cliente 007", "Vendedora 1", "Jundiaí", "1º contato", 3900],
+    ["02/2026", "Cliente 008", "Vendedora 2", "Sorocaba", "Venda registrada", 9100],
+    ["02/2026", "Cliente 009", "Vendedora 4", "Campinas", "2º contato", 7300],
 
-    ["Cliente 005","Vendedora 2","Campinas",4700,"3º contato","02/2026"],
-    ["Cliente 006","Vendedora 3","Indaiatuba",8600,"Venda registrada","02/2026"],
-    ["Cliente 007","Vendedora 1","Jundiaí",3900,"1º contato","02/2026"],
-    ["Cliente 008","Vendedora 2","Sorocaba",9100,"Venda registrada","02/2026"],
+    ["03/2026", "Cliente 010", "Vendedora 3", "Campinas", "2º contato", 8200],
+    ["03/2026", "Cliente 011", "Vendedora 1", "Indaiatuba", "Venda registrada", 7700],
+    ["03/2026", "Cliente 012", "Vendedora 2", "Jundiaí", "1º contato", 6200],
+    ["03/2026", "Cliente 013", "Vendedora 3", "Sorocaba", "Venda registrada", 5400],
+    ["03/2026", "Cliente 014", "Vendedora 4", "Campinas", "3º contato", 9900],
+    ["03/2026", "Cliente 015", "Vendedora 1", "Indaiatuba", "Venda registrada", 8800],
 
-    ["Cliente 009","Vendedora 3","Campinas",8200,"2º contato","03/2026"],
-    ["Cliente 010","Vendedora 1","Indaiatuba",7700,"Venda registrada","03/2026"],
-    ["Cliente 011","Vendedora 2","Jundiaí",6200,"1º contato","03/2026"],
-    ["Cliente 012","Vendedora 3","Sorocaba",5400,"Venda registrada","03/2026"],
+    ["04/2026", "Cliente 016", "Vendedora 1", "Campinas", "3º contato", 10200],
+    ["04/2026", "Cliente 017", "Vendedora 2", "Indaiatuba", "Venda registrada", 6900],
+    ["04/2026", "Cliente 018", "Vendedora 3", "Jundiaí", "2º contato", 4300],
+    ["04/2026", "Cliente 019", "Vendedora 1", "Sorocaba", "Venda registrada", 8700],
+    ["04/2026", "Cliente 020", "Vendedora 4", "Campinas", "1º contato", 7600],
 
-    ["Cliente 013","Vendedora 1","Campinas",10200,"3º contato","04/2026"],
-    ["Cliente 014","Vendedora 2","Indaiatuba",6900,"Venda registrada","04/2026"],
-    ["Cliente 015","Vendedora 3","Jundiaí",4300,"2º contato","04/2026"],
-    ["Cliente 016","Vendedora 1","Sorocaba",8700,"Venda registrada","04/2026"],
-
-    ["Cliente 017","Vendedora 2","Campinas",5900,"1º contato","05/2026"],
-    ["Cliente 018","Vendedora 3","Indaiatuba",11300,"Venda registrada","05/2026"],
-    ["Cliente 019","Vendedora 1","Jundiaí",6800,"2º contato","05/2026"],
-    ["Cliente 020","Vendedora 2","Sorocaba",9200,"Venda registrada","05/2026"],
-
+    ["05/2026", "Cliente 021", "Vendedora 2", "Campinas", "1º contato", 5900],
+    ["05/2026", "Cliente 022", "Vendedora 3", "Indaiatuba", "Venda registrada", 11300],
+    ["05/2026", "Cliente 023", "Vendedora 1", "Jundiaí", "2º contato", 6800],
+    ["05/2026", "Cliente 024", "Vendedora 2", "Sorocaba", "Venda registrada", 9200],
+    ["05/2026", "Cliente 025", "Vendedora 4", "Campinas", "3º contato", 7200],
+    ["05/2026", "Cliente 026", "Vendedora 1", "Indaiatuba", "Venda registrada", 12400],
 ]
 
 df = pd.DataFrame(
     dados,
-    columns=[
-        "Cliente",
-        "Vendedora",
-        "Unidade",
-        "Valor",
-        "Status",
-        "Mês"
-    ]
+    columns=["Mês", "Cliente", "Vendedora", "Unidade", "Status", "Valor"]
 )
 
-# =====================================================
-# FILTROS
-# =====================================================
-
-meses = sorted(df["Mês"].unique())
+meses = ["01/2026", "02/2026", "03/2026", "04/2026", "05/2026"]
 unidades = sorted(df["Unidade"].unique())
 
-c1,c2,c3 = st.columns([5,1.2,5])
+col_mes, col_logo, col_unidade = st.columns([5, 1.5, 5])
 
-with c1:
-    mes = st.selectbox("Mês", meses)
+with col_mes:
+    mes = st.selectbox("Mês", meses, index=4)
 
-with c2:
+with col_logo:
+    st.markdown("### OPPI")
+    st.markdown("**V I S I O N**")
 
-    st.markdown("""
-    <div class='logo-circle'>
-
-        <div class='logo-main'>
-            OPPI
-        </div>
-
-        <div class='logo-sub'>
-            VISION
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-with c3:
-    unidade = st.selectbox(
-        "Unidade",
-        ["Todas"] + list(unidades)
-    )
-
-# =====================================================
-# FILTRO DF
-# =====================================================
+with col_unidade:
+    unidade = st.selectbox("Unidade", ["Todas"] + unidades)
 
 df_filtrado = df[df["Mês"] == mes]
 
 if unidade != "Todas":
-    df_filtrado = df_filtrado[
-        df_filtrado["Unidade"] == unidade
-    ]
-
-# =====================================================
-# KPIS
-# =====================================================
+    df_filtrado = df_filtrado[df_filtrado["Unidade"] == unidade]
 
 total = len(df_filtrado)
-
-vendas = len(
-    df_filtrado[
-        df_filtrado["Status"] == "Venda registrada"
-    ]
-)
-
+vendas = len(df_filtrado[df_filtrado["Status"] == "Venda registrada"])
 faturamento = df_filtrado["Valor"].sum()
+ticket = faturamento / total if total else 0
 
-ticket = faturamento / total if total > 0 else 0
-
-contato1 = len(
-    df_filtrado[
-        df_filtrado["Status"] == "1º contato"
-    ]
-)
-
-contato2 = len(
-    df_filtrado[
-        df_filtrado["Status"] == "2º contato"
-    ]
-)
-
-contato3 = len(
-    df_filtrado[
-        df_filtrado["Status"] == "3º contato"
-    ]
-)
+contato1 = len(df_filtrado[df_filtrado["Status"] == "1º contato"])
+contato2 = len(df_filtrado[df_filtrado["Status"] == "2º contato"])
+contato3 = len(df_filtrado[df_filtrado["Status"] == "3º contato"])
 
 st.divider()
 
-# =====================================================
-# CARDS
-# =====================================================
-
-def card(titulo, valor, sub, pink=False):
-
-    classe = "kpi-pink" if pink else "kpi-blue"
-
-    st.markdown(f"""
-    <div class='kpi {classe}'>
-
-        <div class='kpi-title'>
-            {titulo}
-        </div>
-
-        <div class='kpi-value'>
-            {valor}
-        </div>
-
-        <div class='kpi-sub'>
-            {sub}
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-# =====================================================
-# KPI LINHA 1
-# =====================================================
-
-k1,k2,k3,k4 = st.columns(4)
+k1, k2, k3, k4 = st.columns(4)
 
 with k1:
-    card(
-        "📌 Total de registros",
-        total,
-        f"Leads registrados em {mes}"
-    )
+    with st.container(border=True):
+        st.metric("📌 Total de registros", total)
+        st.caption(f"Leads registrados em {mes}")
 
 with k2:
-    card(
-        "✅ Vendas registradas",
-        vendas,
-        "Contratos convertidos",
-        True
-    )
+    with st.container(border=True):
+        st.metric("✅ Vendas registradas", vendas)
+        st.caption("Contratos convertidos")
 
 with k3:
-    card(
-        "💰 Faturamento",
-        f"R$ {faturamento:,.0f}".replace(",", "."),
-        "Receita estimada"
-    )
+    with st.container(border=True):
+        st.metric("💰 Faturamento", f"R$ {faturamento:,.0f}".replace(",", "."))
+        st.caption("Receita estimada")
 
 with k4:
-    card(
-        "🎯 Ticket médio",
-        f"R$ {ticket:,.0f}".replace(",", "."),
-        "Média por contrato",
-        True
-    )
-
-# =====================================================
-# KPI LINHA 2
-# =====================================================
+    with st.container(border=True):
+        st.metric("🎯 Ticket médio", f"R$ {ticket:,.0f}".replace(",", "."))
+        st.caption("Média por contrato")
 
 st.write("")
 
-s1,s2,s3 = st.columns(3)
+s1, s2, s3 = st.columns(3)
 
 with s1:
-    card(
-        "📞 1º contato",
-        contato1,
-        "Primeiro atendimento"
-    )
+    with st.container(border=True):
+        st.metric("📞 1º contato", contato1)
+        st.caption("Primeiro atendimento")
 
 with s2:
-    card(
-        "📲 2º contato",
-        contato2,
-        "Negociação",
-        True
-    )
+    with st.container(border=True):
+        st.metric("📲 2º contato", contato2)
+        st.caption("Negociação")
 
 with s3:
-    card(
-        "🧾 3º contato",
-        contato3,
-        "Fechamento"
-    )
-
-# =====================================================
-# GRAFICOS
-# =====================================================
+    with st.container(border=True):
+        st.metric("🧾 3º contato", contato3)
+        st.caption("Fechamento")
 
 st.divider()
 
-g1,g2 = st.columns(2)
+g1, g2 = st.columns(2)
 
 with g1:
+    with st.container(border=True):
+        st.subheader("📞 Contatos por status")
 
-    st.markdown("<div class='box'>", unsafe_allow_html=True)
+        status_df = (
+            df_filtrado
+            .groupby("Status")
+            .size()
+            .reset_index(name="Quantidade")
+        )
 
-    st.markdown("""
-    <div class='title-chart'>
-        📞 Contatos por status
-    </div>
-    """, unsafe_allow_html=True)
+        fig = px.bar(
+            status_df,
+            x="Status",
+            y="Quantidade",
+            text="Quantidade"
+        )
 
-    status_df = (
-        df_filtrado
-        .groupby("Status")
-        .size()
-        .reset_index(name="Quantidade")
-    )
+        fig.update_traces(
+            marker_color="#1B1D6D",
+            textposition="outside"
+        )
 
-    fig = px.bar(
-        status_df,
-        x="Status",
-        y="Quantidade",
-        text="Quantidade"
-    )
+        fig.update_layout(
+            height=360,
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            margin=dict(t=20, b=20, l=10, r=10),
+            xaxis_title=None,
+            yaxis_title=None,
+            showlegend=False
+        )
 
-    fig.update_traces(
-        marker_color="#1B1D6D",
-        textposition="outside"
-    )
-
-    fig.update_layout(
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        height=350,
-        margin=dict(t=10,b=10,l=10,r=10)
-    )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.plotly_chart(fig, use_container_width=True)
 
 with g2:
+    with st.container(border=True):
+        st.subheader("🏢 Vendas por unidade")
 
-    st.markdown("<div class='box'>", unsafe_allow_html=True)
+        unidade_df = (
+            df_filtrado
+            .groupby("Unidade")["Valor"]
+            .sum()
+            .reset_index()
+        )
 
-    st.markdown("""
-    <div class='title-chart'>
-        🏢 Vendas por unidade
-    </div>
-    """, unsafe_allow_html=True)
+        fig2 = px.pie(
+            unidade_df,
+            names="Unidade",
+            values="Valor",
+            hole=0.55
+        )
 
-    unidade_df = (
-        df_filtrado
-        .groupby("Unidade")["Valor"]
-        .sum()
-        .reset_index()
-    )
+        fig2.update_layout(
+            height=360,
+            paper_bgcolor="white",
+            margin=dict(t=20, b=20, l=10, r=10)
+        )
 
-    fig2 = px.pie(
-        unidade_df,
-        names="Unidade",
-        values="Valor",
-        hole=0.5
-    )
-
-    fig2.update_layout(
-        paper_bgcolor="white",
-        height=350,
-        margin=dict(t=10,b=10,l=10,r=10)
-    )
-
-    st.plotly_chart(
-        fig2,
-        use_container_width=True
-    )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# =====================================================
-# TABELA
-# =====================================================
+        st.plotly_chart(fig2, use_container_width=True)
 
 st.divider()
 
-st.markdown("<div class='box'>", unsafe_allow_html=True)
+with st.container(border=True):
+    st.subheader("📄 Contratos demonstrativos")
+    st.dataframe(
+        df_filtrado,
+        use_container_width=True,
+        hide_index=True
+    )
 
-st.markdown("""
-<div class='title-chart'>
-📄 Contratos demonstrativos
-</div>
-""", unsafe_allow_html=True)
-
-st.dataframe(
-    df_filtrado,
-    use_container_width=True,
-    hide_index=True
-)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# =====================================================
-# INFO
-# =====================================================
-
-st.write("")
-
-st.info(
-    "Este dashboard utiliza dados fictícios para apresentação comercial da solução Oppi Vision."
-)
+st.info("Este dashboard utiliza dados fictícios para apresentação comercial da solução Oppi Vision.")
