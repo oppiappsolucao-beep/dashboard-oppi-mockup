@@ -1,197 +1,237 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-
-st.set_page_config(layout="wide", page_title="Operação")
+import plotly.express as px
 
 # =========================
-# CSS (AJUSTE REAL SKOOB STYLE)
+# CONFIG
+# =========================
+st.set_page_config(page_title="OPPI Vision", layout="wide")
+
+# =========================
+# CSS (CLONE Skoob Style)
 # =========================
 st.markdown("""
 <style>
 
+html, body {
+    background-color: #e6e6e6;
+}
+
 .block-container {
-    padding: 1.2rem 2rem;
-    background: #d9d9d9;
+    padding: 0rem 2rem 2rem 2rem;
+    max-width: 1200px;
+    margin: auto;
 }
 
 /* HEADER */
-.header-title {
-    font-size: 26px;
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0px;
+}
+
+.title {
+    font-size: 28px;
     font-weight: 800;
     color: #111827;
-    margin-bottom: -5px;
 }
 
-.header-sub {
+.subtitle {
     font-size: 12px;
     color: #6b7280;
+    margin-top: -5px;
 }
 
-/* LOGO CENTRAL */
+/* LOGO */
 .logo {
-    width: 70px;
-    height: 70px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    margin: auto;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-weight: bold;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
 }
 
-/* FILTROS */
+/* FILTER BAR */
 .filter-box {
     background: white;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.05);
+    margin-top: 10px;
 }
 
-/* KPI CARDS (IGUAL EXEMPLO) */
-.kpi {
+/* KPI GRID */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.kpi-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 14px;
-    min-height: 95px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    border-left: 4px solid #1f2a6b;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.05);
+    border-left: 4px solid #1d4ed8;
 }
 
 .kpi-title {
     font-size: 12px;
-    font-weight: 600;
-    color: #111827;
+    color: #374151;
 }
 
 .kpi-value {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
-.kpi-sub {
-    font-size: 11px;
-    color: #6b7280;
-}
-
-/* GRÁFICOS */
-.box {
+/* SECTION */
+.section {
+    margin-top: 25px;
     background: white;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    min-height: 320px;
+    border-radius: 14px;
+    padding: 15px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.05);
 }
 
-/* FIX GRID ESPAÇAMENTO */
-.row {
-    margin-top: 10px;
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# HEADER IGUAL Skoob
+# FAKE DATA (CLONE SAFE)
 # =========================
-col1, col2, col3 = st.columns([4,1,4])
-
-with col1:
-    st.markdown("<div class='header-title'>Operação</div>", unsafe_allow_html=True)
-    st.markdown("<div class='header-sub'>Total de registros: 308</div>", unsafe_allow_html=True)
-
-with col2:
-    st.markdown("<div class='logo'>OPPI</div>", unsafe_allow_html=True)
-
-with col3:
-    st.button("Sair")
-
-st.markdown("---")
-
-# =========================
-# FILTROS
-# =========================
-c1, c2 = st.columns(2)
-
-with c1:
-    mes = st.selectbox("Mês", ["01/2026","02/2026","03/2026","04/2026","05/2026"])
-
-with c2:
-    unidade = st.selectbox("Unidade", ["Todas","Campinas","Indaiatuba","Piracicaba"])
-
-st.markdown("---")
-
-# =========================
-# DADOS MOCK CONSISTENTES
-# =========================
-np.random.seed(1)
+months = ["01/2026","02/2026","03/2026","04/2026","05/2026"]
 
 df = pd.DataFrame({
-    "status": np.random.choice(["1º contato","2º contato","3º contato","Venda"], 120),
-    "unidade": np.random.choice(["Campinas","Indaiatuba","Piracicaba"], 120),
-    "valor": np.random.randint(1000, 10000, 120)
+    "mes": np.random.choice(months, 200),
+    "status": np.random.choice(["1º contato","2º contato","3º contato","Venda"], 200),
+    "unidade": np.random.choice(["Unidade 1","Unidade 2","Unidade 3"], 200),
+    "valor": np.random.randint(1000, 5000, 200)
 })
 
-# =========================
-# KPIs (6 IGUAIS EXEMPLO)
-# =========================
-cols = st.columns(6)
+mes_sel = "05/2026"
 
-kpis = [
-    ("1º contato hoje", 2),
-    ("2º contato hoje", 3),
-    ("3º contato hoje", 1),
-    ("1º mês", 36),
-    ("2º mês", 49),
-    ("3º mês", 57),
-]
+filtro = df[df["mes"] == mes_sel]
 
-for col, (title, value) in zip(cols, kpis):
-    with col:
-        st.markdown(f"""
-        <div class="kpi">
-            <div class="kpi-title">{title}</div>
-            <div class="kpi-value">{value}</div>
-            <div class="kpi-sub">dados do mês</div>
+# =========================
+# HEADER (SKOOB STYLE)
+# =========================
+st.markdown("""
+<div class="header">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <div class="logo">OPPI</div>
+        <div>
+            <div class="title">Operação Comercial</div>
+            <div class="subtitle">Dashboard comercial demonstrativo • Oppi Vision</div>
         </div>
-        """, unsafe_allow_html=True)
-
-st.markdown("---")
-
-# =========================
-# GRÁFICOS (2 COLUNAS FIXAS)
-# =========================
-c1, c2 = st.columns(2)
-
-with c1:
-    st.markdown("<div class='box'>", unsafe_allow_html=True)
-    st.markdown("### Contatos por mês")
-    st.bar_chart(df["status"].value_counts())
-    st.markdown("</div>", unsafe_allow_html=True)
-
-with c2:
-    st.markdown("<div class='box'>", unsafe_allow_html=True)
-    st.markdown("### Vendas por unidade")
-    st.bar_chart(df.groupby("unidade")["valor"].sum())
-    st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("---")
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # =========================
-# GRÁFICOS INFERIORES
+# FILTER BAR
 # =========================
-c3, c4 = st.columns(2)
+st.markdown(f"""
+<div class="filter-box">
+    <div>
+        <div style="font-size:12px;">Mês</div>
+        <div style="font-weight:700;">{mes_sel}</div>
+    </div>
 
-with c3:
-    st.markdown("<div class='box'>", unsafe_allow_html=True)
-    st.markdown("### Raças mais vendidas")
-    st.bar_chart(df["unidade"].value_counts())
-    st.markdown("</div>", unsafe_allow_html=True)
+    <div>
+        <div style="font-size:12px;">Unidade</div>
+        <div style="font-weight:700;">Todas</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-with c4:
-    st.markdown("<div class='box'>", unsafe_allow_html=True)
-    st.markdown("### Vendas por vendedora")
-    st.bar_chart(df["status"].value_counts())
-    st.markdown("</div>", unsafe_allow_html=True)
+# =========================
+# KPI CALC
+# =========================
+total = len(filtro)
+vendas = len(filtro[filtro["status"] == "Venda"])
+faturamento = filtro["valor"].sum()
+ticket = faturamento / vendas if vendas > 0 else 0
+
+# =========================
+# KPI GRID (SKOOB STYLE)
+# =========================
+st.markdown(f"""
+<div class="kpi-grid">
+
+    <div class="kpi-card">
+        <div class="kpi-title">Total registros</div>
+        <div class="kpi-value">{total}</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Vendas</div>
+        <div class="kpi-value">{vendas}</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Faturamento</div>
+        <div class="kpi-value">R$ {faturamento:,.0f}</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Ticket médio</div>
+        <div class="kpi-value">R$ {ticket:,.0f}</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">1º contato</div>
+        <div class="kpi-value">{len(filtro[filtro["status"]=="1º contato"])}</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">2º contato</div>
+        <div class="kpi-value">{len(filtro[filtro["status"]=="2º contato"])}</div>
+    </div>
+
+</div>
+""", unsafe_allow_html=True)
+
+# =========================
+# CHARTS (SKOOB STYLE)
+# =========================
+col1, col2 = st.columns(2)
+
+with col1:
+    fig1 = px.bar(filtro.groupby("status").size().reset_index(name="qtd"),
+                  x="status", y="qtd", title="Status")
+    st.plotly_chart(fig1, use_container_width=True)
+
+with col2:
+    fig2 = px.bar(filtro.groupby("unidade").size().reset_index(name="qtd"),
+                  x="unidade", y="qtd", title="Unidades")
+    st.plotly_chart(fig2, use_container_width=True)
+
+col3, col4 = st.columns(2)
+
+with col3:
+    fig3 = px.bar(filtro.groupby("status").sum(numeric_only=True).reset_index(),
+                  x="status", y="valor", title="Receita por status")
+    st.plotly_chart(fig3, use_container_width=True)
+
+with col4:
+    fig4 = px.bar(filtro.groupby("unidade").sum(numeric_only=True).reset_index(),
+                  x="unidade", y="valor", title="Receita por unidade")
+    st.plotly_chart(fig4, use_container_width=True)
