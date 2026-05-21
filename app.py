@@ -1,25 +1,29 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import itertools
 
+# =========================
+# CONFIG
+# =========================
 st.set_page_config(
-    page_title="Operação Comercial",
+    page_title="Oppi Vision",
+    page_icon="📊",
     layout="wide"
 )
 
 # =========================
-# CSS BASE (SKOOB STYLE)
+# CSS PROFISSIONAL
 # =========================
 st.markdown("""
 <style>
-
 .stApp {
-    background-color: #d9d9d9;
+    background: #d9d9d9;
 }
 
 .block-container {
-    padding-top: 1.2rem;
     max-width: 1400px;
+    padding-top: 1rem;
 }
 
 .card {
@@ -28,129 +32,168 @@ st.markdown("""
     border-radius: 14px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
-
-.kpi-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #111827;
-}
-
-.kpi-value {
-    font-size: 28px;
-    font-weight: 800;
-    margin-top: 6px;
-}
-
-.kpi-sub {
-    font-size: 11px;
-    color: #6b7280;
-    margin-top: 4px;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# DADOS MOCK (VISUAL ONLY)
+# 🔥 SAFE DATA LAYER (BLINDADO)
 # =========================
-df = pd.DataFrame({
-    "Status": ["1º contato", "2º contato", "3º contato", "Venda"] * 5,
-    "Unidade": ["Campinas", "Indaiatuba", "Piracicaba", "Campinas", "Indaiatuba"] * 5,
-    "Valor": [1200, 2500, 1800, 3200, 4100] * 5,
-})
+def get_demo_data():
+
+    status = [
+        "1º contato", "2º contato", "3º contato", "Venda",
+        "1º contato", "Venda", "2º contato", "Venda"
+    ]
+
+    unidade = [
+        "Campinas", "Indaiatuba", "Piracicaba", "Campinas",
+        "Indaiatuba", "Piracicaba", "Campinas", "Indaiatuba"
+    ]
+
+    valor = [
+        1200, 2500, 1800, 3200,
+        4100, 5000, 2300, 6100
+    ]
+
+    return pd.DataFrame({
+        "Status": status,
+        "Unidade": unidade,
+        "Valor": valor,
+        "Mês": ["04/2026"] * 8
+    })
 
 # =========================
-# HEADER (IGUAL SKOOB)
+# 🔥 SAFE LOAD (NUNCA QUEBRA)
 # =========================
-col1, col2, col3 = st.columns([1,6,1])
+@st.cache_data(ttl=60)
+def load_data():
 
-with col2:
-    st.markdown("## ⚙️ Operação")
-    st.caption("Dashboard comercial demonstrativo • Oppi Vision")
+    try:
+        # tenta carregar planilha real
+        import gspread
+        from google.oauth2.service_account import Credentials
+
+        scope = [
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/drive"
+        ]
+
+        creds = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=scope
+        )
+
+        client = gspread.authorize(creds)
+
+        sheet = client.open("Planilha Oppi Mockup").sheet1
+        data = sheet.get_all_records()
+
+        df = pd.DataFrame(data)
+
+        if df.empty:
+            return get_demo_data()
+
+        return df
+
+    except:
+        return get_demo_data()
+
+df = load_data()
 
 # =========================
-# FILTROS (MESMO PADRÃO)
+# LIMPEZA SEGURA
 # =========================
+df.columns = df.columns.str.strip()
+
+# =========================
+# 🔥 UNIDADES BLINDADAS
+# =========================
+try:
+    unidades_originais = sorted(df["Unidade"].dropna().unique())
+
+    mapa_unidades = {
+        unidades_originais[i]: f"Unidade {i+1}"
+        for i in range(len(unidades_originais))
+    }
+
+    df["Unidade"] = df["Unidade"].map(mapa_unidades)
+
+    unidades = sorted(df["Unidade"].dropna().unique())
+
+except:
+    df["Unidade"] = "Unidade 1"
+    unidades = ["Unidade 1"]
+
+# =========================
+# HEADER
+# =========================
+st.title("📊 Operação Comercial")
+st.caption("Oppi Vision • Dashboard profissional blindado")
+
+# =========================
+# FILTROS
+# =========================
+meses = sorted(df["Mês"].dropna().unique())
+
 c1, c2 = st.columns(2)
 
 with c1:
-    mes = st.selectbox("Mês", ["01/2026","02/2026","03/2026","04/2026","05/2026"])
+    mes = st.selectbox("Mês", meses)
 
 with c2:
-    unidade = st.selectbox("Unidade", ["Todas","Unidade 1","Unidade 2","Unidade 3"])
+    unidade = st.selectbox("Unidade", ["Todas"] + list(unidades))
+
+df_f = df[df["Mês"] == mes]
+
+if unidade != "Todas":
+    df_f = df_f[df_f["Unidade"] == unidade]
 
 # =========================
-# KPIs (CARDS IGUAIS SKOOB)
+# 🔥 KPIs (100% SAFE)
+# =========================
+total = len(df_f)
+
+vendas = 0
+if "Status" in df_f:
+    vendas = len(df_f[df_f["Status"].astype(str).str.contains("Venda", na=False)])
+
+faturamento = 0
+if "Valor" in df_f:
+    faturamento = pd.to_numeric(df_f["Valor"], errors="coerce").sum()
+
+ticket = faturamento / vendas if vendas > 0 else 0
+
+# =========================
+# CARDS
 # =========================
 k1, k2, k3, k4 = st.columns(4)
 
-with k1:
-    st.markdown("""
-    <div class="card">
-        <div class="kpi-title">Total de registros</div>
-        <div class="kpi-value">8</div>
-        <div class="kpi-sub">Mês selecionado</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with k2:
-    st.markdown("""
-    <div class="card">
-        <div class="kpi-title">Vendas registradas</div>
-        <div class="kpi-value">2</div>
-        <div class="kpi-sub">Conversões</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with k3:
-    st.markdown("""
-    <div class="card">
-        <div class="kpi-title">Faturamento</div>
-        <div class="kpi-value">R$ 46.000</div>
-        <div class="kpi-sub">Valor total</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with k4:
-    st.markdown("""
-    <div class="card">
-        <div class="kpi-title">Ticket médio</div>
-        <div class="kpi-value">R$ 5.750</div>
-        <div class="kpi-sub">Média por venda</div>
-    </div>
-    """, unsafe_allow_html=True)
+k1.metric("Total registros", total)
+k2.metric("Vendas", vendas)
+k3.metric("Faturamento", f"R$ {faturamento:,.2f}")
+k4.metric("Ticket médio", f"R$ {ticket:,.2f}")
 
 # =========================
-# GRÁFICOS (SKOOB STYLE)
+# GRÁFICOS (SAFE MODE)
 # =========================
-st.markdown("<br>", unsafe_allow_html=True)
+st.divider()
 
 g1, g2 = st.columns(2)
 
 with g1:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("Contatos por status")
-    st.bar_chart(df["Status"].value_counts())
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.subheader("Status")
+    if "Status" in df_f:
+        st.bar_chart(df_f["Status"].value_counts())
 
 with g2:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("Vendas por unidade")
-    st.bar_chart(df.groupby("Unidade")["Valor"].sum())
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.subheader("Unidades")
+    if "Unidade" in df_f and "Valor" in df_f:
+        st.bar_chart(df_f.groupby("Unidade")["Valor"].sum())
 
-st.markdown("<br>", unsafe_allow_html=True)
+# =========================
+# TABELA FINAL
+# =========================
+st.divider()
+st.subheader("Base de dados (modo blindado)")
 
-g3, g4 = st.columns(2)
-
-with g3:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("Raças mais vendidas")
-    st.bar_chart(df["Status"].value_counts())
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with g4:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("Vendas por vendedora")
-    st.bar_chart(df["Unidade"].value_counts())
-    st.markdown('</div>', unsafe_allow_html=True)
+st.dataframe(df_f, use_container_width=True)
