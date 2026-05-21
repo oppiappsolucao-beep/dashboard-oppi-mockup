@@ -1,182 +1,133 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import plotly.express as px
-
-st.set_page_config(layout="wide")
-
-# =========================
-# CSS (OBRIGATÓRIO)
-# =========================
 st.markdown("""
 <style>
 
+/* =========================
+   BASE
+========================= */
+.stApp {
+    background: #D4D4D4;
+}
+
 .block-container {
-    padding: 1rem 2rem;
-    max-width: 1200px;
-    margin: auto;
-    background-color: #e6e6e6;
+    padding-top: 0.5rem !important;
+    padding-left: 1.2rem !important;
+    padding-right: 1.2rem !important;
+    max-width: 1240px !important;
 }
 
-/* HEADER */
-.header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
+/* =========================
+   HEADER
+========================= */
+h1, h2, h3 {
+    color: #0f172a !important;
+    font-weight: 900 !important;
 }
 
-.title {
-    font-size:28px;
-    font-weight:800;
+[data-testid="stHeader"] {
+    background: transparent;
 }
 
-.subtitle {
-    font-size:12px;
-    color:#6b7280;
+/* =========================
+   FILTERS (MES / UNIDADE)
+========================= */
+div[data-testid="stSelectbox"] {
+    background: white;
+    padding: 10px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
-/* KPI GRID */
-.kpi-grid {
-    display:grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap:12px;
-    margin-top:15px;
+/* label */
+div[data-testid="stSelectbox"] label {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #334155 !important;
 }
 
+/* =========================
+   KPI CARDS (SKOOB STYLE)
+========================= */
 .kpi-card {
-    background:white;
-    padding:14px;
-    border-radius:14px;
-    box-shadow:0px 4px 15px rgba(0,0,0,0.06);
-    border-left:4px solid #1d4ed8;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.06);
+    border-left: 6px solid #1d4ed8;
+    transition: all .2s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(15,23,42,0.10);
 }
 
 .kpi-title {
-    font-size:12px;
-    color:#374151;
+    font-size: 12px;
+    font-weight: 800;
+    color: #475569;
 }
 
 .kpi-value {
-    font-size:22px;
-    font-weight:800;
+    font-size: 28px;
+    font-weight: 900;
+    color: #0f172a;
+    margin-top: 6px;
 }
 
-/* FILTER BOX */
-.filter {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-    background:white;
-    padding:15px;
-    border-radius:12px;
-    box-shadow:0px 4px 15px rgba(0,0,0,0.05);
+/* =========================
+   SUMMARY CARDS
+========================= */
+.summary-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+    border-left: 6px solid #be123c;
 }
+
+/* =========================
+   CHART CONTAINERS
+========================= */
+.chart-head {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 14px 18px;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.05);
+    margin-bottom: 10px;
+}
+
+.chart-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.chart-subtitle {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* =========================
+   PLOTLY CLEAN
+========================= */
+.js-plotly-plot {
+    background: white !important;
+    border-radius: 14px;
+}
+
+/* =========================
+   GRID SPACING
+========================= */
+.row-widget.stHorizontal {
+    gap: 12px !important;
+}
+
+/* =========================
+   REMOVE STREAMLIT STYLE NOISE
+========================= */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: visible;}
 
 </style>
 """, unsafe_allow_html=True)
-
-# =========================
-# FAKE DATA CONSISTENTE
-# =========================
-months = ["01/2026","02/2026","03/2026","04/2026","05/2026"]
-
-np.random.seed(42)
-
-df = pd.DataFrame({
-    "mes": np.random.choice(months, 200),
-    "status": np.random.choice(["1º contato","2º contato","3º contato","Venda"], 200),
-    "unidade": np.random.choice(["Unidade 1","Unidade 2","Unidade 3"], 200),
-    "valor": np.random.randint(1000, 5000, 200)
-})
-
-mes = "05/2026"
-filtro = df[df["mes"] == mes]
-
-# =========================
-# HEADER (CORRETO)
-# =========================
-st.markdown("""
-<div class="header">
-    <div>
-        <div class="title">Operação Comercial</div>
-        <div class="subtitle">Oppi Vision - Dashboard profissional blindado</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# =========================
-# FILTERS (SKOOB STYLE)
-# =========================
-st.markdown(f"""
-<div class="filter">
-    <div>
-        <div style="font-size:12px;">Mês</div>
-        <div style="font-weight:700;">{mes}</div>
-    </div>
-
-    <div>
-        <div style="font-size:12px;">Unidade</div>
-        <div style="font-weight:700;">Todas</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# =========================
-# KPIs
-# =========================
-total = len(filtro)
-vendas = len(filtro[filtro["status"]=="Venda"])
-faturamento = filtro["valor"].sum()
-ticket = faturamento / vendas if vendas else 0
-
-st.markdown(f"""
-<div class="kpi-grid">
-
-<div class="kpi-card">
-<div class="kpi-title">Total registros</div>
-<div class="kpi-value">{total}</div>
-</div>
-
-<div class="kpi-card">
-<div class="kpi-title">Vendas</div>
-<div class="kpi-value">{vendas}</div>
-</div>
-
-<div class="kpi-card">
-<div class="kpi-title">Faturamento</div>
-<div class="kpi-value">R$ {faturamento:,.0f}</div>
-</div>
-
-<div class="kpi-card">
-<div class="kpi-title">Ticket médio</div>
-<div class="kpi-value">R$ {ticket:,.0f}</div>
-</div>
-
-<div class="kpi-card">
-<div class="kpi-title">1º contato</div>
-<div class="kpi-value">{len(filtro[filtro["status"]=="1º contato"])}</div>
-</div>
-
-<div class="kpi-card">
-<div class="kpi-title">2º contato</div>
-<div class="kpi-value">{len(filtro[filtro["status"]=="2º contato"])}</div>
-</div>
-
-</div>
-""", unsafe_allow_html=True)
-
-# =========================
-# GRÁFICOS
-# =========================
-col1, col2 = st.columns(2)
-
-with col1:
-    fig = px.bar(filtro.groupby("status").size().reset_index(name="qtd"),
-                 x="status", y="qtd")
-    st.plotly_chart(fig, use_container_width=True)
-
-with col2:
-    fig = px.bar(filtro.groupby("unidade").size().reset_index(name="qtd"),
-                 x="unidade", y="qtd")
-    st.plotly_chart(fig, use_container_width=True)
