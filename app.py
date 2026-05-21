@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import plotly.express as px
 
 st.set_page_config(
@@ -10,161 +11,105 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-
 .stApp {
     background: #D4D4D4;
 }
 
 .block-container {
     max-width: 1250px;
-    padding-top: 1rem;
+    padding-top: 1.2rem;
 }
 
 header[data-testid="stHeader"] {
     background: transparent;
 }
 
-/* TITULO */
-
-.main-title {
-    font-size: 56px;
-    font-weight: 900;
-    color: #09122C;
-    line-height: 1;
-}
-
-.main-subtitle {
-    color: #64748b;
-    font-size: 15px;
-    margin-top: 10px;
-}
-
-/* LOGO */
-
-.logo-box {
-    background: white;
-    width: 135px;
-    height: 135px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 28px rgba(15,23,42,.10);
-    margin: auto;
-}
-
-.logo-main {
-    font-size: 44px;
-    font-weight: 900;
-    color: #1B1D6D;
-    line-height: 1;
-}
-
-.logo-sub {
-    font-size: 14px;
-    font-weight: 900;
-    color: #9B0033;
-    letter-spacing: 8px;
-    margin-top: 8px;
-}
-
-/* CARDS */
-
-.card {
-    background: white;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 8px 22px rgba(15,23,42,.08);
-    border-left: 8px solid #1B1D6D;
-}
-
-.card-red {
-    border-left: 8px solid #B0004F;
-}
-
-.kpi-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: #1e293b;
-}
-
-.kpi-value {
-    font-size: 54px;
-    font-weight: 900;
-    color: #09122C;
-    margin-top: 12px;
-    line-height: 1;
-}
-
-.kpi-sub {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 14px;
-}
-
-/* GRAFICOS */
-
-.chart-box {
-    background: white;
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: 0 8px 22px rgba(15,23,42,.08);
-}
-
-/* TABELA */
-
-.table-box {
-    background: white;
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: 0 8px 22px rgba(15,23,42,.08);
-}
-
-/* INFO */
-
-.info-box {
-    background: #E8F0FE;
-    border-radius: 14px;
-    padding: 18px;
-    color: #1e293b;
-    font-weight: 600;
-}
-
-/* SELECT */
-
 div[data-testid="stSelectbox"] label {
     font-weight: 700 !important;
-    color: #334155 !important;
+    color: #0f172a !important;
 }
 
 div[data-testid="stSelectbox"] div[data-baseweb="select"] {
-    background: white !important;
+    background: #ffffff !important;
     border-radius: 14px !important;
 }
 
+hr {
+    border-color: rgba(15,23,42,0.15) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# HEADER
-# =========================
+def html_card(title, value, subtitle, accent="#1B1D6D"):
+    components.html(f"""
+    <div style="
+        background:#ffffff;
+        border-radius:18px;
+        padding:24px;
+        box-shadow:0 8px 22px rgba(15,23,42,.08);
+        border-left:8px solid {accent};
+        height:135px;
+        box-sizing:border-box;
+        font-family:Arial, sans-serif;
+    ">
+        <div style="
+            font-size:16px;
+            font-weight:800;
+            color:#1e293b;
+            margin-bottom:12px;
+        ">
+            {title}
+        </div>
 
-st.markdown("""
-<div class="main-title">
-📊 Operação Comercial
+        <div style="
+            font-size:44px;
+            font-weight:900;
+            color:#09122C;
+            line-height:1;
+            margin-bottom:14px;
+        ">
+            {value}
+        </div>
+
+        <div style="
+            font-size:13px;
+            color:#64748b;
+        ">
+            {subtitle}
+        </div>
+    </div>
+    """, height=150)
+
+components.html("""
+<div style="
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial, sans-serif;
+    margin-top:5px;
+    margin-bottom:20px;
+">
+    <div style="text-align:center;">
+        <div style="
+            font-size:52px;
+            font-weight:900;
+            color:#09122C;
+            line-height:1;
+        ">
+            📊 Operação Comercial
+        </div>
+
+        <div style="
+            color:#64748b;
+            font-size:15px;
+            margin-top:12px;
+        ">
+            Dashboard mockup para demonstração de automações, contratos e vendas
+        </div>
+    </div>
 </div>
-
-<div class="main-subtitle">
-Dashboard mockup para demonstração de automações, contratos e vendas
-</div>
-""", unsafe_allow_html=True)
-
-st.write("")
-
-# =========================
-# DADOS
-# =========================
+""", height=120)
 
 dados = [
     {"Cliente": "João Mendes", "Unidade": "Campinas", "Raça": "Spitz Alemão", "Valor": 5200, "Status": "1º contato", "Mês": "05/2026"},
@@ -180,168 +125,95 @@ dados = [
 meses = sorted(list(set(item["Mês"] for item in dados)))
 unidades = sorted(list(set(item["Unidade"] for item in dados)))
 
-# =========================
-# FILTROS + LOGO NO MEIO
-# =========================
-
-col1, col2, col3 = st.columns([5, 2, 5])
+col1, col_logo, col2 = st.columns([5, 2, 5])
 
 with col1:
     mes = st.selectbox("Mês", meses)
 
-with col2:
+with col_logo:
+    components.html("""
+    <div style="
+        width:100%;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding-top:6px;
+        font-family:Arial, sans-serif;
+    ">
+        <div style="
+            background:white;
+            width:130px;
+            height:130px;
+            border-radius:50%;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            box-shadow:0 10px 28px rgba(15,23,42,.12);
+        ">
+            <div style="
+                font-size:42px;
+                font-weight:900;
+                color:#1B1D6D;
+                line-height:1;
+            ">
+                OPPI
+            </div>
 
-    st.markdown("""
-    <div class="logo-box">
-
-        <div class="logo-main">
-            OPPI
+            <div style="
+                font-size:14px;
+                font-weight:900;
+                color:#9B0033;
+                letter-spacing:8px;
+                margin-top:8px;
+            ">
+                VISION
+            </div>
         </div>
-
-        <div class="logo-sub">
-            VISION
-        </div>
-
     </div>
-    """, unsafe_allow_html=True)
+    """, height=145)
 
-with col3:
+with col2:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades)
-
-# =========================
-# FILTRO
-# =========================
 
 dados_filtrados = [item for item in dados if item["Mês"] == mes]
 
 if unidade != "Todas":
-    dados_filtrados = [
-        item for item in dados_filtrados
-        if item["Unidade"] == unidade
-    ]
-
-# =========================
-# KPIS
-# =========================
+    dados_filtrados = [item for item in dados_filtrados if item["Unidade"] == unidade]
 
 st.divider()
 
 total_registros = len(dados_filtrados)
-
-vendas = len([
-    item for item in dados_filtrados
-    if item["Status"] == "Venda registrada"
-])
-
+vendas = len([item for item in dados_filtrados if item["Status"] == "Venda registrada"])
 faturamento = sum(item["Valor"] for item in dados_filtrados)
-
 ticket_medio = faturamento / total_registros if total_registros else 0
 
 c1, c2, c3, c4 = st.columns(4)
 
 with c1:
-    st.markdown(f"""
-    <div class="card">
-
-        <div class="kpi-title">
-            📌 Total de registros
-        </div>
-
-        <div class="kpi-value">
-            {total_registros}
-        </div>
-
-        <div class="kpi-sub">
-            Mês selecionado: {mes}
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
+    html_card("📌 Total de registros", total_registros, f"Mês selecionado: {mes}", "#1B1D6D")
 
 with c2:
-    st.markdown(f"""
-    <div class="card card-red">
-
-        <div class="kpi-title">
-            ✅ Vendas registradas
-        </div>
-
-        <div class="kpi-value">
-            {vendas}
-        </div>
-
-        <div class="kpi-sub">
-            Contratos convertidos
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
+    html_card("✅ Vendas registradas", vendas, "Contratos convertidos", "#B0004F")
 
 with c3:
-    st.markdown(f"""
-    <div class="card">
-
-        <div class="kpi-title">
-            💰 Faturamento
-        </div>
-
-        <div class="kpi-value">
-            R$ {faturamento:,.0f}
-        </div>
-
-        <div class="kpi-sub">
-            Valor fictício demonstrativo
-        </div>
-
-    </div>
-    """.replace(",", "."), unsafe_allow_html=True)
+    html_card("💰 Faturamento", f"R$ {faturamento:,.0f}".replace(",", "."), "Valor fictício demonstrativo", "#1B1D6D")
 
 with c4:
-    st.markdown(f"""
-    <div class="card card-red">
-
-        <div class="kpi-title">
-            🎯 Ticket médio
-        </div>
-
-        <div class="kpi-value">
-            R$ {ticket_medio:,.0f}
-        </div>
-
-        <div class="kpi-sub">
-            Média por registro
-        </div>
-
-    </div>
-    """.replace(",", "."), unsafe_allow_html=True)
-
-# =========================
-# GRAFICOS
-# =========================
+    html_card("🎯 Ticket médio", f"R$ {ticket_medio:,.0f}".replace(",", "."), "Média por registro", "#B0004F")
 
 st.divider()
 
 g1, g2 = st.columns(2)
 
 with g1:
-
-    st.markdown("""
-    <div class="chart-box">
-    """, unsafe_allow_html=True)
-
     st.subheader("📞 Contatos por status")
 
     status_contagem = {}
-
     for item in dados_filtrados:
-        status_contagem[item["Status"]] = (
-            status_contagem.get(item["Status"], 0) + 1
-        )
+        status_contagem[item["Status"]] = status_contagem.get(item["Status"], 0) + 1
 
-    status_lista = [
-        {"Status": k, "Quantidade": v}
-        for k, v in status_contagem.items()
-    ]
+    status_lista = [{"Status": k, "Quantidade": v} for k, v in status_contagem.items()]
 
     fig = px.bar(
         status_lista,
@@ -350,36 +222,30 @@ with g1:
         text="Quantidade"
     )
 
+    fig.update_traces(
+        marker_color="#1B1D6D",
+        textposition="outside"
+    )
+
     fig.update_layout(
-        height=350,
+        height=380,
         paper_bgcolor="white",
-        plot_bgcolor="white"
+        plot_bgcolor="white",
+        margin=dict(t=20, b=30, l=10, r=10),
+        xaxis_title=None,
+        yaxis_title=None
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
 with g2:
-
-    st.markdown("""
-    <div class="chart-box">
-    """, unsafe_allow_html=True)
-
     st.subheader("🏢 Vendas por unidade")
 
     unidade_valores = {}
-
     for item in dados_filtrados:
-        unidade_valores[item["Unidade"]] = (
-            unidade_valores.get(item["Unidade"], 0)
-            + item["Valor"]
-        )
+        unidade_valores[item["Unidade"]] = unidade_valores.get(item["Unidade"], 0) + item["Valor"]
 
-    unidade_lista = [
-        {"Unidade": k, "Valor": v}
-        for k, v in unidade_valores.items()
-    ]
+    unidade_lista = [{"Unidade": k, "Valor": v} for k, v in unidade_valores.items()]
 
     fig2 = px.pie(
         unidade_lista,
@@ -389,23 +255,14 @@ with g2:
     )
 
     fig2.update_layout(
-        height=350,
-        paper_bgcolor="white"
+        height=380,
+        paper_bgcolor="white",
+        margin=dict(t=20, b=30, l=10, r=10)
     )
 
     st.plotly_chart(fig2, use_container_width=True)
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# =========================
-# TABELA
-# =========================
-
 st.divider()
-
-st.markdown("""
-<div class="table-box">
-""", unsafe_allow_html=True)
 
 st.subheader("📄 Contratos demonstrativos")
 
@@ -415,16 +272,4 @@ st.dataframe(
     hide_index=True
 )
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-# =========================
-# INFO
-# =========================
-
-st.write("")
-
-st.markdown("""
-<div class="info-box">
-ℹ️ Este dashboard usa apenas dados fictícios para demonstração comercial.
-</div>
-""", unsafe_allow_html=True)
+st.info("Este dashboard usa apenas dados fictícios para demonstração comercial.")
