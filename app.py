@@ -67,7 +67,7 @@ header[data-testid="stHeader"] {
     align-items: center;
     justify-content: center;
     box-shadow: 0 8px 20px rgba(15,23,42,.10);
-    margin: auto;
+    margin-top: 18px;
 }
 
 .logo-main {
