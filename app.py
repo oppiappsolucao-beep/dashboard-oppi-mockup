@@ -8,9 +8,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-NAVY = "#1B1D6D"
-WINE = "#9B0033"
-
 st.markdown("""
 <style>
 
