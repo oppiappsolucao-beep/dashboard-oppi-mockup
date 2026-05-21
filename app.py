@@ -97,6 +97,10 @@ def chart_header(title, subtitle=""):
     """, 64)
 
 
+# =========================================================
+# DADOS
+# =========================================================
+
 dados = [
     ["05/2026","Cliente 001","Vendedora 1","Campinas","1º contato",4200,"Spitz Alemão"],
     ["05/2026","Cliente 002","Vendedora 2","Campinas","2º contato",6800,"Maltês"],
@@ -127,7 +131,26 @@ df = pd.DataFrame(
     columns=["Mês", "Cliente", "Vendedora", "Unidade", "Status", "Valor", "Raça"]
 )
 
+# =========================================================
+# 🔥 AQUI ESTÁ A MUDANÇA QUE VOCÊ PEDIU
+# UNIDADES -> Unidade 1 / 2 / 3
+# =========================================================
+
+unidades_originais = sorted(df["Unidade"].unique())
+
+mapa_unidades = {
+    unidades_originais[i]: f"Unidade {i+1}"
+    for i in range(len(unidades_originais))
+}
+
+df["Unidade"] = df["Unidade"].map(mapa_unidades)
+
+unidades = sorted(df["Unidade"].unique())
+
+# =========================================================
 # HEADER
+# =========================================================
+
 top1, top2, top3 = st.columns([1, 8, 1])
 
 with top1:
@@ -158,11 +181,11 @@ with top2:
 with top3:
     st.button("Sair")
 
-st.write("")
-
+# =========================================================
 # FILTROS
+# =========================================================
+
 meses = sorted(df["Mês"].unique(), reverse=True)
-unidades = sorted(df["Unidade"].unique())
 
 f1, logo, f2 = st.columns([5, 1, 5])
 
@@ -184,10 +207,10 @@ with logo:
         box-shadow:0 2px 8px rgba(0,0,0,0.08);
         font-family:Arial, sans-serif;
     ">
-        <div style="font-size:25px;font-weight:900;color:#1B1D6D;line-height:1;">
+        <div style="font-size:25px;font-weight:900;color:#1B1D6D;">
             OPPI
         </div>
-        <div style="font-size:9px;font-weight:800;color:#c00057;letter-spacing:4px;margin-top:4px;">
+        <div style="font-size:9px;font-weight:800;color:#c00057;letter-spacing:4px;">
             VISION
         </div>
     </div>
@@ -200,6 +223,10 @@ df_filtrado = df[df["Mês"] == mes]
 
 if unidade != "Todas":
     df_filtrado = df_filtrado[df_filtrado["Unidade"] == unidade]
+
+# =========================================================
+# KPIs
+# =========================================================
 
 contato1 = len(df_filtrado[df_filtrado["Status"] == "1º contato"])
 contato2 = len(df_filtrado[df_filtrado["Status"] == "2º contato"])
@@ -215,168 +242,47 @@ st.divider()
 c1, c2, c3, c4, c5, c6 = st.columns(6)
 
 with c1:
-    kpi_card("💬 1º contato<br>hoje", contato1, "registros de hoje")
+    kpi_card("💬 1º contato hoje", contato1, "registros de hoje")
 
 with c2:
-    kpi_card("💬 2º contato<br>hoje", contato2, "registros de hoje")
+    kpi_card("💬 2º contato hoje", contato2, "registros de hoje")
 
 with c3:
-    kpi_card("💬 3º contato<br>hoje", contato3, "registros de hoje", True)
+    kpi_card("💬 3º contato hoje", contato3, "registros de hoje", True)
 
 with c4:
-    kpi_card("🧾 Primeiro<br>Contato Mês", primeiro_mes, mes)
+    kpi_card("🧾 Primeiro Contato Mês", primeiro_mes, mes)
 
 with c5:
-    kpi_card("🧾 Segundo<br>Contato Mês", segundo_mes, mes, True)
+    kpi_card("🧾 Segundo Contato Mês", segundo_mes, mes, True)
 
 with c6:
-    kpi_card("🧾 Terceiro<br>Contato Mês", terceiro_mes, mes, True)
+    kpi_card("🧾 Terceiro Contato Mês", terceiro_mes, mes, True)
 
-st.write("")
-
-g1, g2 = st.columns(2)
-
-with g1:
-    kpi_card("Status com erro", 0, "Mês selecionado", True, 115)
-
-with g2:
-    kpi_card("Vendas registradas no mês", vendas_mes, f"Mês Venda: {mes}", False, 115)
+# =========================================================
+# GRAFICOS
+# =========================================================
 
 st.divider()
 
 gr1, gr2 = st.columns(2)
 
 with gr1:
-    chart_header("📞 Contatos por mês", "Distribuição mensal dos 3 contatos")
-
-    contatos_df = pd.DataFrame({
-        "Contato": ["1º contato", "2º contato", "3º contato"],
-        "Quantidade": [36, 49, 57]
-    })
-
-    fig = px.bar(
-        contatos_df,
-        x="Contato",
-        y="Quantidade",
-        text="Quantidade"
+    chart_header("📞 Contatos por mês")
+    st.plotly_chart(
+        px.bar(df_filtrado.groupby("Status").size().reset_index(name="Qtd"),
+               x="Status", y="Qtd"),
+        use_container_width=True
     )
-
-    fig.update_traces(
-        marker_color=["#262680", "#c00057", "#3b3ba8"],
-        textposition="outside"
-    )
-
-    fig.update_layout(
-        height=300,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        margin=dict(t=10, b=10, l=10, r=10),
-        xaxis_title=None,
-        yaxis_title=None,
-        showlegend=False
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
 
 with gr2:
-    chart_header("🏢 Vendas por unidade no mês", "Quantidade de vendas registradas por unidade")
-
-    unidade_df = pd.DataFrame({
-        "Unidade": ["Campinas", "Indaiatuba", "Piracicaba"],
-        "Quantidade": [15, 10, 9]
-    })
-
-    fig2 = px.bar(
-        unidade_df,
-        x="Unidade",
-        y="Quantidade",
-        text="Quantidade"
+    chart_header("🏢 Vendas por unidade no mês")
+    st.plotly_chart(
+        px.bar(df_filtrado.groupby("Unidade")["Valor"].sum().reset_index(),
+               x="Unidade", y="Valor"),
+        use_container_width=True
     )
 
-    fig2.update_traces(
-        marker_color=["#262680", "#c00057", "#3b3ba8"],
-        textposition="outside"
-    )
+st.divider()
 
-    fig2.update_layout(
-        height=300,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        margin=dict(t=10, b=10, l=10, r=10),
-        xaxis_title=None,
-        yaxis_title=None,
-        showlegend=False
-    )
-
-    st.plotly_chart(fig2, use_container_width=True)
-
-st.write("")
-
-gr3, gr4 = st.columns(2)
-
-with gr3:
-    chart_header("🐶 Raças mais vendidas (mês)", "Top 10 raças do mês filtrado")
-
-    racas_df = pd.DataFrame({
-        "Raça": ["SPITZ ALEMÃO", "MALTÊS", "SHIH TZU", "MAINE COON", "TECKEL", "CHIHUAHUA"],
-        "Quantidade": [11, 7, 6, 5, 4, 3]
-    })
-
-    fig3 = px.bar(
-        racas_df,
-        x="Raça",
-        y="Quantidade",
-        text="Quantidade"
-    )
-
-    fig3.update_traces(
-        marker_color=["#262680", "#c00057", "#3b3ba8", "#d40064", "#44516f", "#94a3b8"],
-        textposition="outside"
-    )
-
-    fig3.update_layout(
-        height=320,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        margin=dict(t=10, b=10, l=10, r=10),
-        xaxis_title=None,
-        yaxis_title=None,
-        showlegend=False
-    )
-
-    st.plotly_chart(fig3, use_container_width=True)
-
-with gr4:
-    chart_header("🏆 Vendas por vendedora (mês)", "Todas as vendas do mês, sem nome real")
-
-    vend_df = pd.DataFrame({
-        "Vendedora": ["Vendedora 1", "Vendedora 2", "Vendedora 3", "Vendedora 4"],
-        "Quantidade": [8, 6, 4, 2]
-    })
-
-    fig4 = px.bar(
-        vend_df,
-        x="Vendedora",
-        y="Quantidade",
-        text="Quantidade"
-    )
-
-    fig4.update_traces(
-        marker_color=["#262680", "#c00057", "#3b3ba8", "#44516f"],
-        textposition="outside"
-    )
-
-    fig4.update_layout(
-        height=320,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        margin=dict(t=10, b=10, l=10, r=10),
-        xaxis_title=None,
-        yaxis_title=None,
-        showlegend=False
-    )
-
-    st.plotly_chart(fig4, use_container_width=True)
-
-st.write("")
-st.info("Dashboard demonstrativo Oppi Vision • Dados 100% fictícios.")
+st.dataframe(df_filtrado, use_container_width=True)
