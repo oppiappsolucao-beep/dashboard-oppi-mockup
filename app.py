@@ -11,15 +11,6 @@ st.set_page_config(
 )
 
 # =========================================================
-# CONFIG GOOGLE SHEETS CSV
-# =========================================================
-
-CSV_URL = "COLE_AQUI_O_LINK_CSV_DA_PLANILHA"
-
-# EXEMPLO:
-# CSV_URL = "https://docs.google.com/spreadsheets/d/ID/gviz/tq?tqx=out:csv&gid=0"
-
-# =========================================================
 # CSS
 # =========================================================
 
@@ -35,11 +26,13 @@ st.markdown("""
     padding-top: 1rem;
 }
 
+/* REMOVE HEADER */
+
 header[data-testid="stHeader"] {
     background: transparent;
 }
 
-/* SELECT */
+/* SELECTS */
 
 div[data-testid="stSelectbox"] label {
     font-size: 14px !important;
@@ -161,7 +154,7 @@ components.html("""
 ">
 
     <div style="
-        font-size:46px;
+        font-size:52px;
         font-weight:900;
         color:#09122C;
         line-height:1;
@@ -170,7 +163,7 @@ components.html("""
     </div>
 
     <div style="
-        font-size:14px;
+        font-size:15px;
         color:#64748b;
         margin-top:12px;
     ">
@@ -178,68 +171,216 @@ components.html("""
     </div>
 
 </div>
-""", height=110)
+""", height=120)
 
 # =========================================================
-# LEITURA PLANILHA
+# DADOS FICTÍCIOS
 # =========================================================
 
-@st.cache_data(ttl=60)
-def carregar_dados():
+dados = [
 
-    df = pd.read_csv(CSV_URL)
+    # JANEIRO
+    {
+        "Cliente": "Cliente 001",
+        "Vendedora": "Vendedora 1",
+        "Unidade": "Campinas",
+        "Valor": 4200,
+        "Status": "1º contato",
+        "Mês": "01/2026"
+    },
 
-    df.columns = [
-        str(c).strip()
-        for c in df.columns
-    ]
+    {
+        "Cliente": "Cliente 002",
+        "Vendedora": "Vendedora 2",
+        "Unidade": "Indaiatuba",
+        "Valor": 6500,
+        "Status": "Venda registrada",
+        "Mês": "01/2026"
+    },
 
-    # AJUSTE COLUNAS
+    {
+        "Cliente": "Cliente 003",
+        "Vendedora": "Vendedora 3",
+        "Unidade": "Jundiaí",
+        "Valor": 7200,
+        "Status": "2º contato",
+        "Mês": "01/2026"
+    },
 
-    if "Valor" in df.columns:
+    {
+        "Cliente": "Cliente 004",
+        "Vendedora": "Vendedora 1",
+        "Unidade": "Sorocaba",
+        "Valor": 5800,
+        "Status": "Venda registrada",
+        "Mês": "01/2026"
+    },
 
-        df["Valor"] = (
-            df["Valor"]
-            .astype(str)
-            .str.replace("R$", "")
-            .str.replace(".", "")
-            .str.replace(",", ".")
-        )
+    # FEVEREIRO
+    {
+        "Cliente": "Cliente 005",
+        "Vendedora": "Vendedora 2",
+        "Unidade": "Campinas",
+        "Valor": 8900,
+        "Status": "3º contato",
+        "Mês": "02/2026"
+    },
 
-        df["Valor"] = pd.to_numeric(
-            df["Valor"],
-            errors="coerce"
-        ).fillna(0)
+    {
+        "Cliente": "Cliente 006",
+        "Vendedora": "Vendedora 3",
+        "Unidade": "Indaiatuba",
+        "Valor": 4100,
+        "Status": "Venda registrada",
+        "Mês": "02/2026"
+    },
 
-    else:
-        df["Valor"] = 0
+    {
+        "Cliente": "Cliente 007",
+        "Vendedora": "Vendedora 1",
+        "Unidade": "Jundiaí",
+        "Valor": 5300,
+        "Status": "1º contato",
+        "Mês": "02/2026"
+    },
 
-    if "Mês" not in df.columns:
-        df["Mês"] = "05/2026"
+    {
+        "Cliente": "Cliente 008",
+        "Vendedora": "Vendedora 2",
+        "Unidade": "Sorocaba",
+        "Valor": 9400,
+        "Status": "Venda registrada",
+        "Mês": "02/2026"
+    },
 
-    if "Status" not in df.columns:
-        df["Status"] = "1º contato"
+    # MARÇO
+    {
+        "Cliente": "Cliente 009",
+        "Vendedora": "Vendedora 3",
+        "Unidade": "Campinas",
+        "Valor": 7600,
+        "Status": "2º contato",
+        "Mês": "03/2026"
+    },
 
-    return df
+    {
+        "Cliente": "Cliente 010",
+        "Vendedora": "Vendedora 1",
+        "Unidade": "Indaiatuba",
+        "Valor": 6800,
+        "Status": "Venda registrada",
+        "Mês": "03/2026"
+    },
 
-try:
+    {
+        "Cliente": "Cliente 011",
+        "Vendedora": "Vendedora 2",
+        "Unidade": "Jundiaí",
+        "Valor": 8100,
+        "Status": "1º contato",
+        "Mês": "03/2026"
+    },
 
-    df = carregar_dados()
+    {
+        "Cliente": "Cliente 012",
+        "Vendedora": "Vendedora 3",
+        "Unidade": "Sorocaba",
+        "Valor": 3700,
+        "Status": "Venda registrada",
+        "Mês": "03/2026"
+    },
 
-except:
+    # ABRIL
+    {
+        "Cliente": "Cliente 013",
+        "Vendedora": "Vendedora 1",
+        "Unidade": "Campinas",
+        "Valor": 9100,
+        "Status": "3º contato",
+        "Mês": "04/2026"
+    },
 
-    st.error("Erro ao carregar a planilha.")
-    st.stop()
+    {
+        "Cliente": "Cliente 014",
+        "Vendedora": "Vendedora 2",
+        "Unidade": "Indaiatuba",
+        "Valor": 6600,
+        "Status": "Venda registrada",
+        "Mês": "04/2026"
+    },
+
+    {
+        "Cliente": "Cliente 015",
+        "Vendedora": "Vendedora 3",
+        "Unidade": "Jundiaí",
+        "Valor": 4800,
+        "Status": "2º contato",
+        "Mês": "04/2026"
+    },
+
+    {
+        "Cliente": "Cliente 016",
+        "Vendedora": "Vendedora 1",
+        "Unidade": "Sorocaba",
+        "Valor": 9900,
+        "Status": "Venda registrada",
+        "Mês": "04/2026"
+    },
+
+    # MAIO
+    {
+        "Cliente": "Cliente 017",
+        "Vendedora": "Vendedora 2",
+        "Unidade": "Campinas",
+        "Valor": 7300,
+        "Status": "1º contato",
+        "Mês": "05/2026"
+    },
+
+    {
+        "Cliente": "Cliente 018",
+        "Vendedora": "Vendedora 3",
+        "Unidade": "Indaiatuba",
+        "Valor": 11200,
+        "Status": "Venda registrada",
+        "Mês": "05/2026"
+    },
+
+    {
+        "Cliente": "Cliente 019",
+        "Vendedora": "Vendedora 1",
+        "Unidade": "Jundiaí",
+        "Valor": 5900,
+        "Status": "2º contato",
+        "Mês": "05/2026"
+    },
+
+    {
+        "Cliente": "Cliente 020",
+        "Vendedora": "Vendedora 2",
+        "Unidade": "Sorocaba",
+        "Valor": 8600,
+        "Status": "Venda registrada",
+        "Mês": "05/2026"
+    }
+
+]
+
+df = pd.DataFrame(dados)
 
 # =========================================================
 # FILTROS
 # =========================================================
 
-meses = sorted(df["Mês"].dropna().unique())
+meses = [
+    "01/2026",
+    "02/2026",
+    "03/2026",
+    "04/2026",
+    "05/2026"
+]
 
-unidades = sorted(
-    df["Unidade"].dropna().unique()
-) if "Unidade" in df.columns else []
+unidades = sorted(df["Unidade"].unique())
 
 col_mes, col_logo, col_unidade = st.columns([5,1.2,5])
 
@@ -329,7 +470,7 @@ contato3 = len(
 )
 
 # =========================================================
-# KPIS HTML
+# CARD
 # =========================================================
 
 def kpi_card(
@@ -359,6 +500,10 @@ def kpi_card(
 
     </div>
     """, unsafe_allow_html=True)
+
+# =========================================================
+# KPI PRINCIPAL
+# =========================================================
 
 c1, c2, c3, c4 = st.columns(4)
 
@@ -393,7 +538,7 @@ with c4:
     )
 
 # =========================================================
-# STATUS
+# KPI CONTATOS
 # =========================================================
 
 st.write("")
@@ -429,6 +574,10 @@ with s3:
 st.divider()
 
 g1, g2 = st.columns(2)
+
+# =========================================================
+# GRAFICO STATUS
+# =========================================================
 
 with g1:
 
@@ -477,6 +626,10 @@ with g1:
     )
 
     st.markdown("</div>", unsafe_allow_html=True)
+
+# =========================================================
+# GRAFICO UNIDADE
+# =========================================================
 
 with g2:
 
