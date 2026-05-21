@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 import plotly.express as px
 
 st.set_page_config(
@@ -11,7 +10,6 @@ st.set_page_config(
 
 NAVY = "#1B1D6D"
 WINE = "#9B0033"
-BG = "#D4D4D4"
 
 st.markdown("""
 <style>
@@ -21,6 +19,56 @@ st.markdown("""
 .block-container {
     padding-top: 2rem;
     max-width: 1180px;
+}
+.header-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+.oppi-logo {
+    background: white;
+    border-radius: 22px;
+    padding: 18px 26px;
+    box-shadow: 0 10px 28px rgba(15,23,42,.10);
+    min-width: 220px;
+}
+.logo-main {
+    font-size: 38px;
+    font-weight: 900;
+    color: #1B1D6D;
+    letter-spacing: -2px;
+    line-height: 1;
+}
+.logo-sub {
+    font-size: 15px;
+    font-weight: 900;
+    color: #9B0033;
+    letter-spacing: 8px;
+    margin-top: 6px;
+}
+.title {
+    font-size: 34px;
+    font-weight: 900;
+    color: #0f172a;
+}
+.subtitle {
+    color: #64748b;
+    font-size: 14px;
+    margin-top: 4px;
+}
+.badge {
+    background: white;
+    padding: 16px 24px;
+    border-radius: 16px;
+    font-weight: 900;
+    color: #1B1D6D;
+    box-shadow: 0 8px 20px rgba(15,23,42,.08);
 }
 .card {
     background: white;
@@ -49,77 +97,66 @@ st.markdown("""
     color: #64748b;
     margin-top: 10px;
 }
-.header-box {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-.title {
-    font-size: 34px;
-    font-weight: 900;
-    color: #0f172a;
-}
-.subtitle {
-    color: #64748b;
-    font-size: 14px;
-    margin-top: 4px;
-}
-.badge {
-    background: white;
-    padding: 12px 18px;
-    border-radius: 14px;
-    font-weight: 800;
-    color: #1B1D6D;
-    box-shadow: 0 8px 20px rgba(15,23,42,.08);
+@media (max-width: 768px) {
+    .header-box, .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .oppi-logo {
+        width: 100%;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
 
 dados = [
-    ["João Mendes", "Campinas", "Spitz Alemão", 5200, "1º contato", "05/2026"],
-    ["Marina Costa", "Indaiatuba", "Golden Retriever", 6800, "2º contato", "05/2026"],
-    ["Carlos Lima", "Campinas", "Maine Coon", 6100, "3º contato", "05/2026"],
-    ["Fernanda Alves", "Jundiaí", "Shih Tzu", 3900, "Venda registrada", "05/2026"],
-    ["Rafael Souza", "Sorocaba", "Bulldog Francês", 7500, "Venda registrada", "05/2026"],
-    ["Patrícia Rocha", "Campinas", "Poodle Toy", 4300, "Primeiro contato mês", "05/2026"],
-    ["Lucas Martins", "Indaiatuba", "Spitz Alemão", 5800, "Segundo contato mês", "05/2026"],
-    ["Aline Ferreira", "Jundiaí", "Border Collie", 6400, "Terceiro contato mês", "05/2026"],
+    {"Cliente": "João Mendes", "Unidade": "Campinas", "Raça": "Spitz Alemão", "Valor": 5200, "Status": "1º contato", "Mês": "05/2026"},
+    {"Cliente": "Marina Costa", "Unidade": "Indaiatuba", "Raça": "Golden Retriever", "Valor": 6800, "Status": "2º contato", "Mês": "05/2026"},
+    {"Cliente": "Carlos Lima", "Unidade": "Campinas", "Raça": "Maine Coon", "Valor": 6100, "Status": "3º contato", "Mês": "05/2026"},
+    {"Cliente": "Fernanda Alves", "Unidade": "Jundiaí", "Raça": "Shih Tzu", "Valor": 3900, "Status": "Venda registrada", "Mês": "05/2026"},
+    {"Cliente": "Rafael Souza", "Unidade": "Sorocaba", "Raça": "Bulldog Francês", "Valor": 7500, "Status": "Venda registrada", "Mês": "05/2026"},
+    {"Cliente": "Patrícia Rocha", "Unidade": "Campinas", "Raça": "Poodle Toy", "Valor": 4300, "Status": "Primeiro contato mês", "Mês": "05/2026"},
+    {"Cliente": "Lucas Martins", "Unidade": "Indaiatuba", "Raça": "Spitz Alemão", "Valor": 5800, "Status": "Segundo contato mês", "Mês": "05/2026"},
+    {"Cliente": "Aline Ferreira", "Unidade": "Jundiaí", "Raça": "Border Collie", "Valor": 6400, "Status": "Terceiro contato mês", "Mês": "05/2026"},
 ]
-
-df = pd.DataFrame(
-    dados,
-    columns=["Cliente", "Unidade", "Raça", "Valor", "Status", "Mês"]
-)
 
 st.markdown("""
 <div class="header-box">
-    <div>
-        <div class="title">📊 Operação Comercial</div>
-        <div class="subtitle">Dashboard mockup para demonstração de automações, contratos e vendas</div>
+    <div class="header-left">
+        <div class="oppi-logo">
+            <div class="logo-main">OPPI</div>
+            <div class="logo-sub">VISION</div>
+        </div>
+        <div>
+            <div class="title">📊 Operação Comercial</div>
+            <div class="subtitle">Dashboard mockup para demonstração de automações, contratos e vendas</div>
+        </div>
     </div>
     <div class="badge">Oppi Tech</div>
 </div>
 """, unsafe_allow_html=True)
 
+meses = sorted(list(set(item["Mês"] for item in dados)))
+unidades = sorted(list(set(item["Unidade"] for item in dados)))
+
 col_f1, col_f2 = st.columns(2)
 
 with col_f1:
-    mes = st.selectbox("Mês", sorted(df["Mês"].unique()))
+    mes = st.selectbox("Mês", meses)
 
 with col_f2:
-    unidade = st.selectbox("Unidade", ["Todas"] + sorted(df["Unidade"].unique()))
+    unidade = st.selectbox("Unidade", ["Todas"] + unidades)
 
-df_filtrado = df[df["Mês"] == mes]
+dados_filtrados = [item for item in dados if item["Mês"] == mes]
 
 if unidade != "Todas":
-    df_filtrado = df_filtrado[df_filtrado["Unidade"] == unidade]
+    dados_filtrados = [item for item in dados_filtrados if item["Unidade"] == unidade]
 
 st.divider()
 
-total_registros = len(df_filtrado)
-vendas = len(df_filtrado[df_filtrado["Status"] == "Venda registrada"])
-faturamento = df_filtrado["Valor"].sum()
+total_registros = len(dados_filtrados)
+vendas = len([item for item in dados_filtrados if item["Status"] == "Venda registrada"])
+faturamento = sum(item["Valor"] for item in dados_filtrados)
 ticket_medio = faturamento / total_registros if total_registros else 0
 
 c1, c2, c3, c4 = st.columns(4)
@@ -166,41 +203,56 @@ g1, g2 = st.columns(2)
 
 with g1:
     st.subheader("📞 Contatos por status")
-    status_df = df_filtrado.groupby("Status", as_index=False).size()
-    status_df.columns = ["Status", "Quantidade"]
+
+    status_contagem = {}
+    for item in dados_filtrados:
+        status_contagem[item["Status"]] = status_contagem.get(item["Status"], 0) + 1
+
+    status_lista = [{"Status": k, "Quantidade": v} for k, v in status_contagem.items()]
+
     fig = px.bar(
-        status_df,
+        status_lista,
         x="Status",
         y="Quantidade",
         text="Quantidade"
     )
+
     fig.update_layout(
         height=380,
         paper_bgcolor="white",
         plot_bgcolor="white",
         margin=dict(t=20, b=30, l=10, r=10)
     )
+
     st.plotly_chart(fig, use_container_width=True)
 
 with g2:
     st.subheader("🏢 Vendas por unidade")
-    unidade_df = df_filtrado.groupby("Unidade", as_index=False)["Valor"].sum()
+
+    unidade_valores = {}
+    for item in dados_filtrados:
+        unidade_valores[item["Unidade"]] = unidade_valores.get(item["Unidade"], 0) + item["Valor"]
+
+    unidade_lista = [{"Unidade": k, "Valor": v} for k, v in unidade_valores.items()]
+
     fig2 = px.pie(
-        unidade_df,
+        unidade_lista,
         names="Unidade",
         values="Valor",
         hole=0.45
     )
+
     fig2.update_layout(
         height=380,
         paper_bgcolor="white",
         margin=dict(t=20, b=30, l=10, r=10)
     )
+
     st.plotly_chart(fig2, use_container_width=True)
 
 st.divider()
 
 st.subheader("📄 Contratos demonstrativos")
-st.dataframe(df_filtrado, use_container_width=True, hide_index=True)
+st.dataframe(dados_filtrados, use_container_width=True, hide_index=True)
 
 st.info("Este dashboard usa apenas dados fictícios para demonstração comercial.")
