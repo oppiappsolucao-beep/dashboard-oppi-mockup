@@ -4,15 +4,24 @@ import plotly.express as px
 import pandas as pd
 
 st.set_page_config(
-    page_title="Dashboard Oppi Mockup",
+    page_title="Oppi Vision",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ==================================================
+# =========================================================
+# CONFIG GOOGLE SHEETS CSV
+# =========================================================
+
+CSV_URL = "COLE_AQUI_O_LINK_CSV_DA_PLANILHA"
+
+# EXEMPLO:
+# CSV_URL = "https://docs.google.com/spreadsheets/d/ID/gviz/tq?tqx=out:csv&gid=0"
+
+# =========================================================
 # CSS
-# ==================================================
+# =========================================================
 
 st.markdown("""
 <style>
@@ -138,9 +147,9 @@ div[data-testid="stSelectbox"] div[data-baseweb="select"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ==================================================
+# =========================================================
 # HEADER
-# ==================================================
+# =========================================================
 
 components.html("""
 <div style="
@@ -150,6 +159,7 @@ components.html("""
     margin-top:8px;
     margin-bottom:18px;
 ">
+
     <div style="
         font-size:46px;
         font-weight:900;
@@ -164,76 +174,81 @@ components.html("""
         color:#64748b;
         margin-top:12px;
     ">
-        Dashboard mockup para demonstração de automações, contratos e vendas
+        Dashboard comercial demonstrativo • Oppi Vision
     </div>
+
 </div>
 """, height=110)
 
-# ==================================================
-# DADOS COMPLETOS
-# ==================================================
+# =========================================================
+# LEITURA PLANILHA
+# =========================================================
 
-dados = [
+@st.cache_data(ttl=60)
+def carregar_dados():
 
-    # JANEIRO
-    {"Cliente":"João Mendes","Unidade":"Campinas","Valor":4200,"Status":"1º contato","Mês":"01/2026"},
-    {"Cliente":"Marina Costa","Unidade":"Indaiatuba","Valor":6500,"Status":"Venda registrada","Mês":"01/2026"},
-    {"Cliente":"Carlos Lima","Unidade":"Campinas","Valor":7200,"Status":"2º contato","Mês":"01/2026"},
-    {"Cliente":"Fernanda Alves","Unidade":"Jundiaí","Valor":5800,"Status":"Venda registrada","Mês":"01/2026"},
-    {"Cliente":"Rafael Souza","Unidade":"Sorocaba","Valor":3100,"Status":"3º contato","Mês":"01/2026"},
-    {"Cliente":"Lucas Martins","Unidade":"Campinas","Valor":8700,"Status":"1º contato","Mês":"01/2026"},
+    df = pd.read_csv(CSV_URL)
 
-    # FEVEREIRO
-    {"Cliente":"Patrícia Rocha","Unidade":"Campinas","Valor":5500,"Status":"Venda registrada","Mês":"02/2026"},
-    {"Cliente":"Ricardo Gomes","Unidade":"Indaiatuba","Valor":6100,"Status":"2º contato","Mês":"02/2026"},
-    {"Cliente":"Juliana Prado","Unidade":"Jundiaí","Valor":4500,"Status":"Venda registrada","Mês":"02/2026"},
-    {"Cliente":"Thiago Lopes","Unidade":"Sorocaba","Valor":7800,"Status":"1º contato","Mês":"02/2026"},
-    {"Cliente":"Amanda Nunes","Unidade":"Campinas","Valor":9000,"Status":"3º contato","Mês":"02/2026"},
+    df.columns = [
+        str(c).strip()
+        for c in df.columns
+    ]
 
-    # MARÇO
-    {"Cliente":"Bruno Almeida","Unidade":"Campinas","Valor":4900,"Status":"Venda registrada","Mês":"03/2026"},
-    {"Cliente":"Camila Freitas","Unidade":"Indaiatuba","Valor":8700,"Status":"Venda registrada","Mês":"03/2026"},
-    {"Cliente":"Felipe Moraes","Unidade":"Jundiaí","Valor":3900,"Status":"2º contato","Mês":"03/2026"},
-    {"Cliente":"Larissa Dias","Unidade":"Sorocaba","Valor":6100,"Status":"1º contato","Mês":"03/2026"},
-    {"Cliente":"Gabriel Silva","Unidade":"Campinas","Valor":7200,"Status":"3º contato","Mês":"03/2026"},
-    {"Cliente":"Mayara Costa","Unidade":"Campinas","Valor":8300,"Status":"Venda registrada","Mês":"03/2026"},
+    # AJUSTE COLUNAS
 
-    # ABRIL
-    {"Cliente":"Pedro Henrique","Unidade":"Campinas","Valor":6700,"Status":"Venda registrada","Mês":"04/2026"},
-    {"Cliente":"Bianca Souza","Unidade":"Indaiatuba","Valor":5400,"Status":"1º contato","Mês":"04/2026"},
-    {"Cliente":"Rafaela Lima","Unidade":"Jundiaí","Valor":9500,"Status":"Venda registrada","Mês":"04/2026"},
-    {"Cliente":"Mateus Oliveira","Unidade":"Sorocaba","Valor":4800,"Status":"2º contato","Mês":"04/2026"},
-    {"Cliente":"Daniel Martins","Unidade":"Campinas","Valor":6100,"Status":"3º contato","Mês":"04/2026"},
+    if "Valor" in df.columns:
 
-    # MAIO
-    {"Cliente":"João Pedro","Unidade":"Campinas","Valor":8800,"Status":"Venda registrada","Mês":"05/2026"},
-    {"Cliente":"Nicole Freitas","Unidade":"Indaiatuba","Valor":7400,"Status":"Venda registrada","Mês":"05/2026"},
-    {"Cliente":"Vinicius Rocha","Unidade":"Jundiaí","Valor":6900,"Status":"2º contato","Mês":"05/2026"},
-    {"Cliente":"Amanda Silva","Unidade":"Sorocaba","Valor":5700,"Status":"1º contato","Mês":"05/2026"},
-    {"Cliente":"Leonardo Alves","Unidade":"Campinas","Valor":9900,"Status":"Venda registrada","Mês":"05/2026"},
-    {"Cliente":"Larissa Mendes","Unidade":"Campinas","Valor":4500,"Status":"3º contato","Mês":"05/2026"},
-]
+        df["Valor"] = (
+            df["Valor"]
+            .astype(str)
+            .str.replace("R$", "")
+            .str.replace(".", "")
+            .str.replace(",", ".")
+        )
 
-df = pd.DataFrame(dados)
+        df["Valor"] = pd.to_numeric(
+            df["Valor"],
+            errors="coerce"
+        ).fillna(0)
 
-# ==================================================
+    else:
+        df["Valor"] = 0
+
+    if "Mês" not in df.columns:
+        df["Mês"] = "05/2026"
+
+    if "Status" not in df.columns:
+        df["Status"] = "1º contato"
+
+    return df
+
+try:
+
+    df = carregar_dados()
+
+except:
+
+    st.error("Erro ao carregar a planilha.")
+    st.stop()
+
+# =========================================================
 # FILTROS
-# ==================================================
+# =========================================================
 
-meses = [
-    "01/2026",
-    "02/2026",
-    "03/2026",
-    "04/2026",
-    "05/2026"
-]
+meses = sorted(df["Mês"].dropna().unique())
 
-unidades = sorted(df["Unidade"].unique())
+unidades = sorted(
+    df["Unidade"].dropna().unique()
+) if "Unidade" in df.columns else []
 
 col_mes, col_logo, col_unidade = st.columns([5,1.2,5])
 
 with col_mes:
-    mes = st.selectbox("Mês", meses)
+
+    mes = st.selectbox(
+        "Mês",
+        meses
+    )
 
 with col_logo:
 
@@ -252,190 +267,164 @@ with col_logo:
     """, unsafe_allow_html=True)
 
 with col_unidade:
-    unidade = st.selectbox("Unidade", ["Todas"] + list(unidades))
 
-# ==================================================
+    unidade = st.selectbox(
+        "Unidade",
+        ["Todas"] + list(unidades)
+    )
+
+# =========================================================
 # FILTROS DF
-# ==================================================
+# =========================================================
 
 df_filtrado = df[df["Mês"] == mes]
 
 if unidade != "Todas":
-    df_filtrado = df_filtrado[df_filtrado["Unidade"] == unidade]
 
-# ==================================================
+    df_filtrado = df_filtrado[
+        df_filtrado["Unidade"] == unidade
+    ]
+
+# =========================================================
 # KPIS
-# ==================================================
+# =========================================================
 
 st.divider()
 
 total_registros = len(df_filtrado)
 
 vendas = len(
-    df_filtrado[df_filtrado["Status"] == "Venda registrada"]
+    df_filtrado[
+        df_filtrado["Status"]
+        .astype(str)
+        .str.lower()
+        .str.contains("venda")
+    ]
 )
 
 faturamento = df_filtrado["Valor"].sum()
 
-ticket = faturamento / total_registros if total_registros > 0 else 0
+ticket = (
+    faturamento / total_registros
+    if total_registros > 0
+    else 0
+)
 
-contato1 = len(df_filtrado[df_filtrado["Status"] == "1º contato"])
-contato2 = len(df_filtrado[df_filtrado["Status"] == "2º contato"])
-contato3 = len(df_filtrado[df_filtrado["Status"] == "3º contato"])
+contato1 = len(
+    df_filtrado[
+        df_filtrado["Status"] == "1º contato"
+    ]
+)
+
+contato2 = len(
+    df_filtrado[
+        df_filtrado["Status"] == "2º contato"
+    ]
+)
+
+contato3 = len(
+    df_filtrado[
+        df_filtrado["Status"] == "3º contato"
+    ]
+)
+
+# =========================================================
+# KPIS HTML
+# =========================================================
+
+def kpi_card(
+    title,
+    value,
+    subtitle,
+    red=False
+):
+
+    border = "#C10057" if red else "#1B1D6D"
+
+    st.markdown(f"""
+    <div class="kpi-card"
+         style="border-left:7px solid {border};">
+
+        <div class="kpi-title">
+            {title}
+        </div>
+
+        <div class="kpi-value">
+            {value}
+        </div>
+
+        <div class="kpi-sub">
+            {subtitle}
+        </div>
+
+    </div>
+    """, unsafe_allow_html=True)
 
 c1, c2, c3, c4 = st.columns(4)
 
 with c1:
-
-    st.markdown(f"""
-    <div class="kpi-card">
-
-        <div class="kpi-title">
-            📌 Total de registros
-        </div>
-
-        <div class="kpi-value">
-            {total_registros}
-        </div>
-
-        <div class="kpi-sub">
-            Leads registrados em {mes}
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
+    kpi_card(
+        "📌 Total de registros",
+        total_registros,
+        f"Leads registrados em {mes}"
+    )
 
 with c2:
-
-    st.markdown(f"""
-    <div class="kpi-card kpi-red">
-
-        <div class="kpi-title">
-            ✅ Vendas registradas
-        </div>
-
-        <div class="kpi-value">
-            {vendas}
-        </div>
-
-        <div class="kpi-sub">
-            Contratos convertidos
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
+    kpi_card(
+        "✅ Vendas registradas",
+        vendas,
+        "Contratos convertidos",
+        red=True
+    )
 
 with c3:
-
-    st.markdown(f"""
-    <div class="kpi-card">
-
-        <div class="kpi-title">
-            💰 Faturamento
-        </div>
-
-        <div class="kpi-value">
-            R$ {faturamento:,.0f}
-        </div>
-
-        <div class="kpi-sub">
-            Receita estimada do mês
-        </div>
-
-    </div>
-    """.replace(",", "."), unsafe_allow_html=True)
+    kpi_card(
+        "💰 Faturamento",
+        f"R$ {faturamento:,.0f}".replace(",", "."),
+        "Receita estimada do mês"
+    )
 
 with c4:
+    kpi_card(
+        "🎯 Ticket médio",
+        f"R$ {ticket:,.0f}".replace(",", "."),
+        "Média por contrato",
+        red=True
+    )
 
-    st.markdown(f"""
-    <div class="kpi-card kpi-red">
-
-        <div class="kpi-title">
-            🎯 Ticket médio
-        </div>
-
-        <div class="kpi-value">
-            R$ {ticket:,.0f}
-        </div>
-
-        <div class="kpi-sub">
-            Média por contrato
-        </div>
-
-    </div>
-    """.replace(",", "."), unsafe_allow_html=True)
-
-# ==================================================
-# KPIS STATUS
-# ==================================================
+# =========================================================
+# STATUS
+# =========================================================
 
 st.write("")
 
 s1, s2, s3 = st.columns(3)
 
 with s1:
-
-    st.markdown(f"""
-    <div class="kpi-card">
-
-        <div class="kpi-title">
-            📞 1º contato
-        </div>
-
-        <div class="kpi-value">
-            {contato1}
-        </div>
-
-        <div class="kpi-sub">
-            Leads em primeiro atendimento
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
+    kpi_card(
+        "📞 1º contato",
+        contato1,
+        "Leads em primeiro atendimento"
+    )
 
 with s2:
-
-    st.markdown(f"""
-    <div class="kpi-card kpi-red">
-
-        <div class="kpi-title">
-            📲 2º contato
-        </div>
-
-        <div class="kpi-value">
-            {contato2}
-        </div>
-
-        <div class="kpi-sub">
-            Leads em negociação
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
+    kpi_card(
+        "📲 2º contato",
+        contato2,
+        "Leads em negociação",
+        red=True
+    )
 
 with s3:
+    kpi_card(
+        "🧾 3º contato",
+        contato3,
+        "Leads em fechamento"
+    )
 
-    st.markdown(f"""
-    <div class="kpi-card">
-
-        <div class="kpi-title">
-            🧾 3º contato
-        </div>
-
-        <div class="kpi-value">
-            {contato3}
-        </div>
-
-        <div class="kpi-sub">
-            Leads em fechamento
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-# ==================================================
+# =========================================================
 # GRAFICOS
-# ==================================================
+# =========================================================
 
 st.divider()
 
@@ -482,7 +471,10 @@ with g1:
         showlegend=False
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -518,13 +510,16 @@ with g2:
         margin=dict(t=20,b=20,l=10,r=10)
     )
 
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(
+        fig2,
+        use_container_width=True
+    )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ==================================================
+# =========================================================
 # TABELA
-# ==================================================
+# =========================================================
 
 st.divider()
 
@@ -546,9 +541,9 @@ st.dataframe(
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ==================================================
+# =========================================================
 # INFO
-# ==================================================
+# =========================================================
 
 st.write("")
 
