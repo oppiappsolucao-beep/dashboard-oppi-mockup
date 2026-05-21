@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import streamlit.components.v1 as components
 
 # =========================================================
 # CONFIG
@@ -9,123 +8,99 @@ import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="Oppi Vision",
-    page_icon="📊",
     layout="wide",
+    page_icon="📊",
     initial_sidebar_state="collapsed"
 )
 
 # =========================================================
-# CSS
+# CSS - IGUAL SKOOB (BASE DO SEU PRINT)
 # =========================================================
 
 st.markdown("""
 <style>
+
 .stApp {
     background: #d9d9d9;
 }
 
 .block-container {
-    max-width: 1450px;
-    padding-top: 1rem;
+    padding-top: 20px;
+    max-width: 1500px;
 }
 
-header[data-testid="stHeader"] {
-    background: transparent;
+/* HEADER CLEAN */
+header {visibility: hidden;}
+
+/* KPI CARD (IGUAL SKOOB) */
+.kpi-card {
+    background: white;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.08);
+    position: relative;
 }
 
-div[data-testid="stSelectbox"] label {
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    color: #3d3d3d !important;
+.kpi-bar-blue {
+    border-left: 6px solid #1f237e;
 }
 
-div[data-testid="stSelectbox"] div[data-baseweb="select"] {
-    background: white !important;
-    border-radius: 10px !important;
-    min-height: 42px !important;
-    border: none !important;
+.kpi-bar-red {
+    border-left: 6px solid #c00057;
 }
 
-hr {
-    border-color: rgba(0,0,0,0.10) !important;
+.kpi-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #111827;
 }
+
+.kpi-value {
+    font-size: 28px;
+    font-weight: 900;
+    margin-top: 5px;
+}
+
+.kpi-sub {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+/* BOX GRAFICOS */
+.box {
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.08);
+}
+
+.title {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# COMPONENT HTML
+# DADOS FAKE (OPPI)
 # =========================================================
 
-def html_box(html, height):
-    components.html(html, height=height)
+df = pd.DataFrame([
+    ["01/2026","Vendedora 1","Campinas","1º contato",12],
+    ["02/2026","Vendedora 2","Indaiatuba","2º contato",18],
+    ["03/2026","Vendedora 3","Piracicaba","3º contato",22],
+    ["04/2026","Vendedora 1","Campinas","Venda registrada",31],
+    ["05/2026","Vendedora 2","Indaiatuba","Venda registrada",36],
+    ["05/2026","Vendedora 3","Campinas","1º contato",15],
+    ["04/2026","Vendedora 1","Piracicaba","2º contato",27],
+    ["03/2026","Vendedora 2","Campinas","Venda registrada",19],
+], columns=["Mês","Vendedora","Unidade","Status","Valor"])
 
 # =========================================================
-# KPI CARD
-# =========================================================
-
-def kpi_card(title, value, subtitle, red=False, height=112):
-    border = "#c00057" if red else "#1f237e"
-
-    html_box(f"""
-    <div style="
-        background:white;
-        border-radius:14px;
-        padding:14px 16px;
-        min-height:95px;
-        border-left:6px solid {border};
-        box-shadow:0 2px 8px rgba(0,0,0,0.06);
-        font-family:Arial, sans-serif;
-    ">
-        <div style="font-size:12px;font-weight:800;color:#1d1d1d;">
-            {title}
-        </div>
-
-        <div style="font-size:34px;font-weight:900;color:#020617;margin-top:5px;">
-            {value}
-        </div>
-
-        <div style="font-size:10px;color:#6b7280;margin-top:8px;">
-            {subtitle}
-        </div>
-    </div>
-    """, height)
-
-# =========================================================
-# HEADER SIMPLES
-# =========================================================
-
-top1, top2, top3 = st.columns([1, 8, 1])
-
-with top2:
-    st.markdown("""
-    <h1 style='text-align:center;margin-bottom:0;'>📊 Operação Comercial</h1>
-    <p style='text-align:center;color:#6b7280;margin-top:5px;'>
-    Dashboard comercial demonstrativo • Oppi Vision
-    </p>
-    """, unsafe_allow_html=True)
-
-# =========================================================
-# DADOS MOCK
-# =========================================================
-
-dados = [
-    ["05/2026","Cliente 001","Vendedora 1","Campinas","1º contato",4200],
-    ["05/2026","Cliente 002","Vendedora 2","Campinas","2º contato",6800],
-    ["05/2026","Cliente 003","Vendedora 3","Campinas","3º contato",9100],
-    ["04/2026","Cliente 004","Vendedora 1","Indaiatuba","Venda registrada",12000],
-    ["04/2026","Cliente 005","Vendedora 2","Indaiatuba","Venda registrada",8500],
-    ["03/2026","Cliente 006","Vendedora 3","Piracicaba","1º contato",4900],
-    ["02/2026","Cliente 007","Vendedora 1","Piracicaba","2º contato",7200],
-    ["01/2026","Cliente 008","Vendedora 2","Campinas","Venda registrada",9400],
-]
-
-df = pd.DataFrame(
-    dados,
-    columns=["Mês","Cliente","Vendedora","Unidade","Status","Valor"]
-)
-
-# =========================================================
-# ORDEM CORRETA DOS MESES (CRESCENTE)
+# ORDEM DOS MESES (CORRETA)
 # =========================================================
 
 meses = sorted(
@@ -136,78 +111,105 @@ meses = sorted(
 unidades = sorted(df["Unidade"].unique())
 
 # =========================================================
-# FILTROS
+# HEADER (EXATO SKOOB STYLE)
 # =========================================================
 
-c1, c2, c3 = st.columns([5,1,5])
+col1, col2, col3 = st.columns([1,8,1])
+
+with col2:
+    st.markdown("""
+    <div style='text-align:center'>
+        <div style='font-size:30px;font-weight:900;'>Operação Comercial</div>
+        <div style='font-size:12px;color:#6b7280;'>
+            Dashboard mockup para demonstração de automações, contratos e vendas
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# =========================================================
+# FILTROS (MESMO LAYOUT SKOOB)
+# =========================================================
+
+c1, c2, c3 = st.columns([4,2,4])
 
 with c1:
     mes = st.selectbox("Mês", meses)
 
-with c2:
-    st.markdown("""
-    <div style='text-align:center;'>
-        <div style='font-weight:900;color:#1f237e;'>OPPI</div>
-        <div style='font-size:10px;color:#c00057;letter-spacing:4px;'>VISION</div>
-    </div>
-    """, unsafe_allow_html=True)
-
 with c3:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades)
 
-# =========================================================
-# FILTRO
-# =========================================================
-
-df_filtrado = df[df["Mês"] == mes]
-
+df = df[df["Mês"] == mes]
 if unidade != "Todas":
-    df_filtrado = df_filtrado[df_filtrado["Unidade"] == unidade]
+    df = df[df["Unidade"] == unidade]
 
 # =========================================================
-# KPIS
+# KPI ROW (6 CARDS IGUAIS SKOOB)
 # =========================================================
 
-total = len(df_filtrado)
-vendas = len(df_filtrado[df_filtrado["Status"] == "Venda registrada"])
-faturamento = df_filtrado["Valor"].sum()
-ticket = faturamento / total if total else 0
+k1, k2, k3, k4, k5, k6 = st.columns(6)
 
-c1, c2, c3, c4 = st.columns(4)
+def kpi(col, title, value, sub, color):
+    col.markdown(f"""
+    <div class="kpi-card kpi-bar-{color}">
+        <div class="kpi-title">{title}</div>
+        <div class="kpi-value">{value}</div>
+        <div class="kpi-sub">{sub}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-with c1:
-    kpi_card("Total registros", total, f"Mês {mes}")
-
-with c2:
-    kpi_card("Vendas", vendas, "Conversões")
-
-with c3:
-    kpi_card("Faturamento", f"R$ {faturamento:,.0f}".replace(",", "."), "Receita")
-
-with c4:
-    kpi_card("Ticket médio", f"R$ {ticket:,.0f}".replace(",", "."), "Média")
+kpi(k1,"1º contato hoje",1,"registros de hoje","blue")
+kpi(k2,"2º contato hoje",3,"registros de hoje","blue")
+kpi(k3,"3º contato hoje",0,"registros de hoje","red")
+kpi(k4,"Primeiro Contato Mês",36,mes,"blue")
+kpi(k5,"Segundo Contato Mês",49,mes,"red")
+kpi(k6,"Terceiro Contato Mês",57,mes,"red")
 
 # =========================================================
-# GRAFICO
+# SECOND ROW KPI
 # =========================================================
 
-st.divider()
+k7, k8 = st.columns(2)
 
-col1, col2 = st.columns(2)
+k7.markdown("""
+<div class="kpi-card kpi-bar-red">
+    <div class="kpi-title">Status com erro</div>
+    <div class="kpi-value">0</div>
+    <div class="kpi-sub">Mês selecionado</div>
+</div>
+""", unsafe_allow_html=True)
 
-with col1:
-    st.subheader("Contatos")
-    fig = px.bar(df_filtrado, x="Status", y="Valor", color="Status")
+k8.markdown("""
+<div class="kpi-card kpi-bar-blue">
+    <div class="kpi-title">Vendas registradas no mês</div>
+    <div class="kpi-value">36</div>
+    <div class="kpi-sub">Mês Venda</div>
+</div>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# GRAFICOS (IGUAL SKOOB)
+# =========================================================
+
+g1, g2 = st.columns(2)
+
+with g1:
+    st.markdown('<div class="box"><div class="title">Contatos por mês</div>', unsafe_allow_html=True)
+    fig = px.bar(df.groupby("Status").size().reset_index(name="Qtd"),
+                 x="Status", y="Qtd")
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-with col2:
-    st.subheader("Vendas por unidade")
-    fig2 = px.pie(df_filtrado, names="Unidade", values="Valor")
+with g2:
+    st.markdown('<div class="box"><div class="title">Vendas por unidade no mês</div>', unsafe_allow_html=True)
+    fig2 = px.bar(df.groupby("Unidade")["Valor"].sum().reset_index(),
+                  x="Unidade", y="Valor")
     st.plotly_chart(fig2, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
-# TABELA
+# FINAL TABLE
 # =========================================================
 
-st.subheader("Dados")
-st.dataframe(df_filtrado, use_container_width=True)
+st.markdown('<div class="box"><div class="title">Registros</div>', unsafe_allow_html=True)
+st.dataframe(df, use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
