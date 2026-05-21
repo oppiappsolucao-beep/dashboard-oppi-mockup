@@ -9,8 +9,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# ==================================================
+# CSS
+# ==================================================
+
 st.markdown("""
 <style>
+
 .stApp {
     background: #D4D4D4;
 }
@@ -23,6 +28,8 @@ st.markdown("""
 header[data-testid="stHeader"] {
     background: transparent;
 }
+
+/* SELECTS */
 
 div[data-testid="stSelectbox"] label {
     font-size: 14px !important;
@@ -37,12 +44,18 @@ div[data-testid="stSelectbox"] div[data-baseweb="select"] {
     border: none !important;
 }
 
+/* LINHA */
+
 hr {
     border-color: rgba(15,23,42,0.15) !important;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
+# ==================================================
+# HEADER
+# ==================================================
 
 def render_header():
     components.html("""
@@ -61,6 +74,7 @@ def render_header():
         ">
             📊 Operação Comercial
         </div>
+
         <div style="
             font-size:14px;
             color:#64748b;
@@ -71,6 +85,9 @@ def render_header():
     </div>
     """, height=105)
 
+# ==================================================
+# LOGO
+# ==================================================
 
 def render_logo():
     components.html("""
@@ -93,6 +110,7 @@ def render_logo():
             align-items:center;
             box-shadow:0 8px 20px rgba(15,23,42,0.10);
         ">
+
             <div style="
                 font-size:30px;
                 font-weight:900;
@@ -101,6 +119,7 @@ def render_logo():
             ">
                 OPPI
             </div>
+
             <div style="
                 font-size:10px;
                 font-weight:900;
@@ -110,12 +129,17 @@ def render_logo():
             ">
                 VISION
             </div>
+
         </div>
     </div>
     """, height=105)
 
+# ==================================================
+# CARD KPI
+# ==================================================
 
 def render_kpi(title, value, subtitle, accent):
+
     components.html(f"""
     <div style="
         background:#ffffff;
@@ -128,6 +152,7 @@ def render_kpi(title, value, subtitle, accent):
         font-family:Arial, sans-serif;
         overflow:hidden;
     ">
+
         <div style="
             font-size:15px;
             font-weight:900;
@@ -136,6 +161,7 @@ def render_kpi(title, value, subtitle, accent):
         ">
             {title}
         </div>
+
         <div style="
             font-size:38px;
             font-weight:900;
@@ -145,6 +171,7 @@ def render_kpi(title, value, subtitle, accent):
         ">
             {value}
         </div>
+
         <div style="
             font-size:12px;
             color:#64748b;
@@ -152,25 +179,45 @@ def render_kpi(title, value, subtitle, accent):
         ">
             {subtitle}
         </div>
+
     </div>
     """, height=135)
 
+# ==================================================
+# HEADER
+# ==================================================
 
 render_header()
 
+# ==================================================
+# DADOS MOCKADOS
+# ==================================================
+
 dados = [
-    {"Cliente": "João Mendes", "Unidade": "Campinas", "Raça": "Spitz Alemão", "Valor": 5200, "Status": "1º contato", "Mês": "05/2026"},
-    {"Cliente": "Marina Costa", "Unidade": "Indaiatuba", "Raça": "Golden Retriever", "Valor": 6800, "Status": "2º contato", "Mês": "05/2026"},
-    {"Cliente": "Carlos Lima", "Unidade": "Campinas", "Raça": "Maine Coon", "Valor": 6100, "Status": "3º contato", "Mês": "05/2026"},
-    {"Cliente": "Fernanda Alves", "Unidade": "Jundiaí", "Raça": "Shih Tzu", "Valor": 3900, "Status": "Venda registrada", "Mês": "05/2026"},
+    {"Cliente": "João Mendes", "Unidade": "Campinas", "Raça": "Spitz Alemão", "Valor": 5200, "Status": "1º contato", "Mês": "01/2026"},
+    {"Cliente": "Marina Costa", "Unidade": "Indaiatuba", "Raça": "Golden Retriever", "Valor": 6800, "Status": "2º contato", "Mês": "02/2026"},
+    {"Cliente": "Carlos Lima", "Unidade": "Campinas", "Raça": "Maine Coon", "Valor": 6100, "Status": "3º contato", "Mês": "03/2026"},
+    {"Cliente": "Fernanda Alves", "Unidade": "Jundiaí", "Raça": "Shih Tzu", "Valor": 3900, "Status": "Venda registrada", "Mês": "04/2026"},
     {"Cliente": "Rafael Souza", "Unidade": "Sorocaba", "Raça": "Bulldog Francês", "Valor": 7500, "Status": "Venda registrada", "Mês": "05/2026"},
-    {"Cliente": "Patrícia Rocha", "Unidade": "Campinas", "Raça": "Poodle Toy", "Valor": 4300, "Status": "Primeiro contato mês", "Mês": "05/2026"},
-    {"Cliente": "Lucas Martins", "Unidade": "Indaiatuba", "Raça": "Spitz Alemão", "Valor": 5800, "Status": "Segundo contato mês", "Mês": "05/2026"},
-    {"Cliente": "Aline Ferreira", "Unidade": "Jundiaí", "Raça": "Border Collie", "Valor": 6400, "Status": "Terceiro contato mês", "Mês": "05/2026"},
 ]
 
-meses = sorted(list(set(item["Mês"] for item in dados)))
+# ==================================================
+# MESES
+# ==================================================
+
+meses = [
+    "01/2026",
+    "02/2026",
+    "03/2026",
+    "04/2026",
+    "05/2026"
+]
+
 unidades = sorted(list(set(item["Unidade"] for item in dados)))
+
+# ==================================================
+# FILTROS
+# ==================================================
 
 col_mes, col_logo, col_unidade = st.columns([5, 1.3, 5])
 
@@ -183,44 +230,92 @@ with col_logo:
 with col_unidade:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades)
 
+# ==================================================
+# FILTRO
+# ==================================================
+
 dados_filtrados = [item for item in dados if item["Mês"] == mes]
 
 if unidade != "Todas":
-    dados_filtrados = [item for item in dados_filtrados if item["Unidade"] == unidade]
+    dados_filtrados = [
+        item for item in dados_filtrados
+        if item["Unidade"] == unidade
+    ]
+
+# ==================================================
+# KPIS
+# ==================================================
 
 st.divider()
 
 total_registros = len(dados_filtrados)
-vendas = len([item for item in dados_filtrados if item["Status"] == "Venda registrada"])
+
+vendas = len([
+    item for item in dados_filtrados
+    if item["Status"] == "Venda registrada"
+])
+
 faturamento = sum(item["Valor"] for item in dados_filtrados)
+
 ticket_medio = faturamento / total_registros if total_registros else 0
 
 c1, c2, c3, c4 = st.columns(4)
 
 with c1:
-    render_kpi("📌 Total de registros", str(total_registros), f"Mês selecionado: {mes}", "#1B1D6D")
+    render_kpi(
+        "📌 Total de registros",
+        str(total_registros),
+        f"Mês selecionado: {mes}",
+        "#1B1D6D"
+    )
 
 with c2:
-    render_kpi("✅ Vendas registradas", str(vendas), "Contratos convertidos", "#C10057")
+    render_kpi(
+        "✅ Vendas registradas",
+        str(vendas),
+        "Contratos convertidos",
+        "#C10057"
+    )
 
 with c3:
-    render_kpi("💰 Faturamento", f"R$ {faturamento:,.0f}".replace(",", "."), "Valor fictício demonstrativo", "#1B1D6D")
+    render_kpi(
+        "💰 Faturamento",
+        f"R$ {faturamento:,.0f}".replace(",", "."),
+        "Valor fictício demonstrativo",
+        "#1B1D6D"
+    )
 
 with c4:
-    render_kpi("🎯 Ticket médio", f"R$ {ticket_medio:,.0f}".replace(",", "."), "Média por registro", "#C10057")
+    render_kpi(
+        "🎯 Ticket médio",
+        f"R$ {ticket_medio:,.0f}".replace(",", "."),
+        "Média por registro",
+        "#C10057"
+    )
+
+# ==================================================
+# GRAFICOS
+# ==================================================
 
 st.divider()
 
 g1, g2 = st.columns(2)
 
 with g1:
+
     st.subheader("📞 Contatos por status")
 
     status_contagem = {}
-    for item in dados_filtrados:
-        status_contagem[item["Status"]] = status_contagem.get(item["Status"], 0) + 1
 
-    status_lista = [{"Status": k, "Quantidade": v} for k, v in status_contagem.items()]
+    for item in dados_filtrados:
+        status_contagem[item["Status"]] = (
+            status_contagem.get(item["Status"], 0) + 1
+        )
+
+    status_lista = [
+        {"Status": k, "Quantidade": v}
+        for k, v in status_contagem.items()
+    ]
 
     fig = px.bar(
         status_lista,
@@ -247,13 +342,21 @@ with g1:
     st.plotly_chart(fig, use_container_width=True)
 
 with g2:
+
     st.subheader("🏢 Vendas por unidade")
 
     unidade_valores = {}
-    for item in dados_filtrados:
-        unidade_valores[item["Unidade"]] = unidade_valores.get(item["Unidade"], 0) + item["Valor"]
 
-    unidade_lista = [{"Unidade": k, "Valor": v} for k, v in unidade_valores.items()]
+    for item in dados_filtrados:
+        unidade_valores[item["Unidade"]] = (
+            unidade_valores.get(item["Unidade"], 0)
+            + item["Valor"]
+        )
+
+    unidade_lista = [
+        {"Unidade": k, "Valor": v}
+        for k, v in unidade_valores.items()
+    ]
 
     fig2 = px.pie(
         unidade_lista,
@@ -270,6 +373,10 @@ with g2:
 
     st.plotly_chart(fig2, use_container_width=True)
 
+# ==================================================
+# TABELA
+# ==================================================
+
 st.divider()
 
 st.subheader("📄 Contratos demonstrativos")
@@ -280,4 +387,10 @@ st.dataframe(
     hide_index=True
 )
 
-st.info("Este dashboard usa apenas dados fictícios para demonstração comercial.")
+# ==================================================
+# INFO
+# ==================================================
+
+st.info(
+    "Este dashboard usa apenas dados fictícios para demonstração comercial."
+)
