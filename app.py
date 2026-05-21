@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import gspread
-from google.oauth2.service_account import Credentials
 
 # =========================
 # CONFIG
@@ -26,40 +24,66 @@ st.markdown("""
     max-width: 1400px;
     padding-top: 1rem;
 }
-
-div[data-testid="stSelectbox"] div[data-baseweb="select"] {
-    border-radius: 10px;
-}
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# GOOGLE SHEETS LOAD
+# 🔥 SAFE IMPORT (EVITA QUEBRAR APP)
+# =========================
+try:
+    import gspread
+    from google.oauth2.service_account import Credentials
+    GSHEET_OK = True
+except:
+    GSHEET_OK = False
+
+# =========================
+# FALLBACK DATA (SE PLANILHA QUEBRAR)
+# =========================
+def fallback_data():
+    return pd.DataFrame([
+        ["05/2026","Cliente 001","Unidade A","Venda registrada",12000],
+        ["05/2026","Cliente 002","Unidade B","1º contato",4500],
+        ["04/2026","Cliente 003","Unidade C","Venda registrada",9800],
+        ["04/2026","Cliente 004","Unidade A","2º contato",3200],
+    ], columns=["Mês","Cliente","Unidade","Status","Valor"])
+
+# =========================
+# LOAD GOOGLE SHEETS
 # =========================
 @st.cache_data(ttl=60)
 def load_data():
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive"
-    ]
 
-    creds = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=scope
-    )
+    if not GSHEET_OK:
+        return fallback_data()
 
-    client = gspread.authorize(creds)
+    try:
+        scope = [
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/drive"
+        ]
 
-    sheet = client.open("Planilha Oppi Mockup").sheet1
-    data = sheet.get_all_records()
+        creds = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=scope
+        )
 
-    return pd.DataFrame(data)
+        client = gspread.authorize(creds)
 
-try:
-    df = load_data()
-except Exception:
-    st.error("Erro ao carregar planilha.")
-    st.stop()
+        sheet = client.open("Planilha Oppi Mockup").sheet1
+        data = sheet.get_all_records()
+
+        df = pd.DataFrame(data)
+
+        if df.empty:
+            return fallback_data()
+
+        return df
+
+    except:
+        return fallback_data()
+
+df = load_data()
 
 # =========================
 # LIMPEZA
@@ -67,7 +91,7 @@ except Exception:
 df.columns = df.columns.str.strip()
 
 # =========================
-# 🔥 UNIDADES (1/2/3)
+# 🔥 UNIDADES 1/2/3 (SEM NOME REAL)
 # =========================
 unidades_originais = sorted(df["Unidade"].dropna().unique())
 
@@ -83,11 +107,8 @@ unidades = sorted(df["Unidade"].dropna().unique())
 # =========================
 # HEADER
 # =========================
-col1, col2, col3 = st.columns([1,6,1])
-
-with col2:
-    st.title("📊 Operação Comercial")
-    st.caption("Dashboard Oppi Vision conectado à planilha")
+st.title("📊 Operação Comercial")
+st.caption("Oppi Vision - Dashboard Demo")
 
 # =========================
 # FILTROS
@@ -130,11 +151,11 @@ st.divider()
 g1, g2 = st.columns(2)
 
 with g1:
-    st.subheader("Contatos por status")
+    st.subheader("Status")
     st.bar_chart(df_f["Status"].value_counts())
 
 with g2:
-    st.subheader("Vendas por unidade")
+    st.subheader("Unidades")
     st.bar_chart(df_f.groupby("Unidade")["Valor"].sum())
 
 # =========================
@@ -142,5 +163,4 @@ with g2:
 # =========================
 st.divider()
 
-st.subheader("Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
