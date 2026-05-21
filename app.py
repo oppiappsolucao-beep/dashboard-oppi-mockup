@@ -57,6 +57,47 @@ header[data-testid="stHeader"] {
     margin-top: 10px;
 }
 
+.logo-box {
+    background: white;
+    border-radius: 50%;
+    width: 92px;
+    height: 92px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(15,23,42,.10);
+    margin: auto;
+}
+
+.logo-main {
+    font-size: 24px;
+    font-weight: 900;
+    color: #1B1D6D;
+    line-height: 1;
+}
+
+.logo-sub {
+    font-size: 9px;
+    font-weight: 900;
+    color: #9B0033;
+    letter-spacing: 4px;
+    margin-top: 4px;
+}
+
+.title {
+    font-size: 42px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-top: 12px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -66,51 +107,21 @@ components.html("""
     width:100%;
     display:flex;
     justify-content:center;
-    align-items:center;
     margin-top:10px;
-    margin-bottom:35px;
+    margin-bottom:20px;
     font-family:Arial, sans-serif;
 ">
 
-    <div style="
-        display:flex;
-        align-items:center;
-        gap:18px;
-    ">
+    <div>
 
         <div style="
             display:flex;
-            flex-direction:column;
             align-items:center;
-            justify-content:center;
+            gap:18px;
         ">
 
             <div style="
                 font-size:48px;
-                font-weight:900;
-                color:#1B1D6D;
-                line-height:1;
-                letter-spacing:-2px;
-            ">
-                OPPI
-            </div>
-
-            <div style="
-                font-size:14px;
-                font-weight:900;
-                color:#9B0033;
-                letter-spacing:8px;
-                margin-top:8px;
-            ">
-                VISION
-            </div>
-
-        </div>
-
-        <div>
-
-            <div style="
-                font-size:38px;
                 font-weight:900;
                 color:#0f172a;
                 line-height:1;
@@ -118,21 +129,21 @@ components.html("""
                 📊 Operação Comercial
             </div>
 
-            <div style="
-                font-size:14px;
-                color:#64748b;
-                margin-top:12px;
-            ">
-                Dashboard mockup para demonstração de automações, contratos e vendas
-            </div>
+        </div>
 
+        <div style="
+            font-size:14px;
+            color:#64748b;
+            margin-top:12px;
+        ">
+            Dashboard mockup para demonstração de automações, contratos e vendas
         </div>
 
     </div>
 
 </div>
 
-""", height=120)
+""", height=110)
 
 dados = [
     {"Cliente": "João Mendes", "Unidade": "Campinas", "Raça": "Spitz Alemão", "Valor": 5200, "Status": "1º contato", "Mês": "05/2026"},
@@ -148,10 +159,26 @@ dados = [
 meses = sorted(list(set(item["Mês"] for item in dados)))
 unidades = sorted(list(set(item["Unidade"] for item in dados)))
 
-col_f1, col_f2 = st.columns(2)
+col_f1, col_logo, col_f2 = st.columns([5,1,5])
 
 with col_f1:
     mes = st.selectbox("Mês", meses)
+
+with col_logo:
+
+    st.markdown("""
+    <div class="logo-box">
+
+        <div class="logo-main">
+            OPPI
+        </div>
+
+        <div class="logo-sub">
+            VISION
+        </div>
+
+    </div>
+    """, unsafe_allow_html=True)
 
 with col_f2:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades)
