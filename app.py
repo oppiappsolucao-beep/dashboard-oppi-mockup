@@ -190,8 +190,20 @@ div[data-testid="stPopover"] button svg {
     border-radius: 18px;
     padding: 14px 16px 10px 16px;
     min-height: 118px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    box-shadow:
+        0 6px 18px rgba(0,0,0,0.08),
+        0 0 18px rgba(242,59,155,0.08);
     margin-bottom: 8px;
+    border: 1px solid rgba(242,59,155,0.10);
+    transition: all 0.25s ease;
+}
+
+.mini-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.10),
+        0 0 18px rgba(242,59,155,0.18),
+        0 0 28px rgba(160,0,212,0.12);
 }
 
 .mini-title {
@@ -221,9 +233,21 @@ div[data-testid="stPopover"] button svg {
     border-radius: 18px;
     padding: 16px 18px;
     min-height: 116px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    box-shadow:
+        0 6px 18px rgba(0,0,0,0.08),
+        0 0 18px rgba(242,59,155,0.08);
     margin-top: 8px;
     margin-bottom: 8px;
+    border: 1px solid rgba(242,59,155,0.10);
+    transition: all 0.25s ease;
+}
+
+.wide-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.10),
+        0 0 18px rgba(242,59,155,0.18),
+        0 0 28px rgba(160,0,212,0.12);
 }
 
 .wide-title {
@@ -251,7 +275,7 @@ div[data-testid="stPopover"] button svg {
     background: #ffffff;
     border-radius: 14px;
     padding: 16px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid rgba(242,59,155,0.10);
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     margin-top: 10px;
 }
@@ -333,7 +357,6 @@ def find_col(dataframe, aliases, exclude_terms=None):
     cols = list(dataframe.columns)
     norm_map = {c: normalize_text(c) for c in cols}
 
-    # primeiro tenta igualdade
     for alias in aliases:
         alias_n = normalize_text(alias)
         for c, c_n in norm_map.items():
@@ -342,7 +365,6 @@ def find_col(dataframe, aliases, exclude_terms=None):
             if c_n == alias_n:
                 return c
 
-    # depois tenta "contém"
     for alias in aliases:
         alias_n = normalize_text(alias)
         for c, c_n in norm_map.items():
@@ -354,8 +376,7 @@ def find_col(dataframe, aliases, exclude_terms=None):
     return None
 
 def parse_date_series(series):
-    s = pd.to_datetime(series, errors="coerce", dayfirst=True)
-    return s
+    return pd.to_datetime(series, errors="coerce", dayfirst=True)
 
 def count_non_empty(series):
     s = series.fillna("").astype(str).str.strip()
@@ -378,6 +399,13 @@ def render_wide_card(title, value, subtitle, accent):
         <div class="wide-sub">{subtitle}</div>
     </div>
     """, unsafe_allow_html=True)
+
+# =========================
+# CORES OPPI
+# =========================
+ROXO_OPPI = "#b012d9"
+ROSA_OPPI = "#f23b9b"
+ROSA_FORTE = "#ff4d7a"
 
 # =========================
 # COLUNAS IMPORTANTES
@@ -468,13 +496,13 @@ if mes is not None and "Mês" in df_f.columns:
 if unidade != "Todas" and "Unidade" in df_f.columns:
     df_f = df_f[df_f["Unidade"] == unidade]
 
-# base para "hoje" (respeita unidade, mas não depende do mês)
 df_today_base = df.copy()
+
 if unidade != "Todas" and "Unidade" in df_today_base.columns:
     df_today_base = df_today_base[df_today_base["Unidade"] == unidade]
 
 # =========================
-# MÉTRICAS NOVAS (ESTILO PRINT)
+# MÉTRICAS
 # =========================
 today = pd.Timestamp.now(tz="America/Sao_Paulo").date()
 
@@ -493,6 +521,7 @@ segundo_mes = count_non_empty(df_f[status_2_col]) if status_2_col and status_2_c
 terceiro_mes = count_non_empty(df_f[status_3_col]) if status_3_col and status_3_col in df_f.columns else 0
 
 error_mask = pd.Series(False, index=df_f.index)
+
 for c in [status_1_col, status_2_col, status_3_col]:
     if c and c in df_f.columns:
         error_mask = error_mask | df_f[c].fillna("").astype(str).str.contains("erro", case=False, na=False)
@@ -501,35 +530,45 @@ status_com_erro = int(error_mask.sum())
 vendas_mes = len(df_f)
 
 # =========================
-# CARDS DO TOPO (IGUAL AO PRINT)
+# CARDS DO TOPO
 # =========================
 row1 = st.columns(6)
 
 with row1[0]:
-    render_mini_card("💬 1º contato<br>hoje", contato1_hoje, "registros de hoje", "#2d2f92")
+    render_mini_card("💬 1º contato<br>hoje", contato1_hoje, "registros de hoje", ROXO_OPPI)
 
 with row1[1]:
-    render_mini_card("💬 2º contato<br>hoje", contato2_hoje, "registros de hoje", "#2d2f92")
+    render_mini_card("💬 2º contato<br>hoje", contato2_hoje, "registros de hoje", ROXO_OPPI)
 
 with row1[2]:
-    render_mini_card("💬 3º contato<br>hoje", contato3_hoje, "registros de hoje", "#d10b5a")
+    render_mini_card("💬 3º contato<br>hoje", contato3_hoje, "registros de hoje", ROSA_OPPI)
 
 with row1[3]:
-    render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes) if mes else "-", "#2d2f92")
+    render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes) if mes else "-", ROXO_OPPI)
 
 with row1[4]:
-    render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes) if mes else "-", "#d10b5a")
+    render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes) if mes else "-", ROSA_OPPI)
 
 with row1[5]:
-    render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes) if mes else "-", "#d10b5a")
+    render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes) if mes else "-", ROSA_OPPI)
 
 row2 = st.columns(2)
 
 with row2[0]:
-    render_wide_card("Status com erro", status_com_erro, f"Mês selecionado: {mes}" if mes else "Mês selecionado: -", "#ff4d4f")
+    render_wide_card(
+        "Status com erro",
+        status_com_erro,
+        f"Mês selecionado: {mes}" if mes else "Mês selecionado: -",
+        ROSA_FORTE
+    )
 
 with row2[1]:
-    render_wide_card("Vendas registradas no mês", vendas_mes, f"Mês Venda: {mes}" if mes else "Mês Venda: -", "#b0005a")
+    render_wide_card(
+        "Vendas registradas no mês",
+        vendas_mes,
+        f"Mês Venda: {mes}" if mes else "Mês Venda: -",
+        ROSA_OPPI
+    )
 
 st.divider()
 
@@ -543,6 +582,7 @@ with g1:
     st.markdown("### Contatos por status")
 
     status_total = {}
+
     for col in [status_1_col, status_2_col, status_3_col]:
         if col and col in df_f.columns:
             for k, v in df_f[col].fillna("").astype(str).str.strip().value_counts().items():
@@ -567,6 +607,7 @@ with g1:
         font_color="#111827",
         margin=dict(l=10, r=10, t=10, b=10)
     )
+
     fig.update_traces(textposition="outside")
 
     st.markdown('<div class="chart-card">', unsafe_allow_html=True)
@@ -599,6 +640,7 @@ with g2:
         font_color="#111827",
         margin=dict(l=10, r=10, t=10, b=10)
     )
+
     fig2.update_traces(textposition="outside")
 
     st.markdown('<div class="chart-card">', unsafe_allow_html=True)
@@ -632,6 +674,7 @@ fig3.update_layout(
     font_color="#111827",
     margin=dict(l=10, r=10, t=10, b=10)
 )
+
 fig3.update_traces(textposition="outside")
 
 st.markdown('<div class="chart-card">', unsafe_allow_html=True)
