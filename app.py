@@ -2,14 +2,18 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# =========================
+# CONFIG
+# =========================
 st.set_page_config(
     page_title="Operação Comercial",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # =========================
-# CSS PROFISSIONAL
+# CSS (SEU DESIGN ATUAL MELHORADO)
 # =========================
 st.markdown("""
 <style>
@@ -41,6 +45,13 @@ st.markdown("""
     font-size: 40px;
     font-weight: 900;
     color: #0f172a;
+    line-height: 1;
+    margin-top: 8px;
+}
+
+.kpi-sub {
+    font-size: 12px;
+    color: #64748b;
 }
 
 </style>
@@ -48,7 +59,7 @@ st.markdown("""
 
 
 # =========================
-# 🔥 FUNÇÃO DE LEITURA GOOGLE SHEETS
+# GOOGLE SHEET (CSV PUBLICO)
 # =========================
 @st.cache_data(ttl=60)
 def load_data():
@@ -57,6 +68,7 @@ def load_data():
 
     df = pd.read_csv(url)
 
+    # limpeza básica de colunas
     df.columns = df.columns.str.strip()
 
     return df
@@ -64,13 +76,8 @@ def load_data():
 
 df = load_data()
 
-# =========================
-# LIMPEZA SEGURA
-# =========================
-df_f = df.copy()
-
-# garantir que não quebra se vier vazio
-if df_f.empty:
+# proteção
+if df.empty:
     st.warning("Planilha vazia")
     st.stop()
 
@@ -78,8 +85,8 @@ if df_f.empty:
 # =========================
 # FILTROS
 # =========================
-meses = sorted(df_f["Mês"].dropna().unique())
-unidades = sorted(df_f["Unidade"].dropna().unique())
+meses = sorted(df["Mês"].dropna().unique().tolist())
+unidades = sorted(df["Unidade"].dropna().unique().tolist())
 
 col1, col2 = st.columns(2)
 
@@ -89,7 +96,8 @@ with col1:
 with col2:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades)
 
-df_f = df_f[df_f["Mês"] == mes]
+
+df_f = df[df["Mês"] == mes]
 
 if unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
@@ -98,37 +106,43 @@ if unidade != "Todas":
 # =========================
 # KPIs
 # =========================
-total = len(df_f)
-vendas = len(df_f[df_f["Status 1º contato"] == "Enviado"]) if "Status 1º contato" in df_f.columns else 0
-faturamento = 0
+total_registros = len(df_f)
+
+# vendas (seguro)
+if "Status 1º contato" in df_f.columns:
+    vendas = len(df_f[df_f["Status 1º contato"].astype(str).str.contains("Enviado", na=False)])
+else:
+    vendas = 0
 
 c1, c2, c3, c4 = st.columns(4)
 
 with c1:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">Total registros</div>
-        <div class="kpi-value">{total}</div>
+        <div class="kpi-title">📌 Total de registros</div>
+        <div class="kpi-value">{total_registros}</div>
+        <div class="kpi-sub">Mês: {mes}</div>
     </div>
     """, unsafe_allow_html=True)
 
 with c2:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">Vendas</div>
+        <div class="kpi-title">✅ Vendas</div>
         <div class="kpi-value">{vendas}</div>
+        <div class="kpi-sub">Convertidos</div>
     </div>
     """, unsafe_allow_html=True)
 
 
 # =========================
-# 📊 GRÁFICO STATUS (CORRIGIDO DEFINITIVO)
+# 🔥 GRÁFICO STATUS (BLINDADO)
 # =========================
-st.subheader("Contatos por status")
+st.subheader("📊 Contatos por status")
 
 status_cols = [c for c in df_f.columns if "Status" in c]
 
-if status_cols:
+if len(status_cols) > 0:
 
     df_status = df_f[status_cols].melt(
         var_name="Etapa",
@@ -147,32 +161,51 @@ if status_cols:
         text="Qtd"
     )
 
+    fig.update_layout(
+        height=350,
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        margin=dict(t=20, b=20, l=10, r=10)
+    )
+
     st.plotly_chart(fig, use_container_width=True)
 
 else:
-    st.warning("Nenhuma coluna de Status encontrada")
+    st.warning("Nenhuma coluna de Status encontrada na planilha")
 
 
 # =========================
-# 🏢 GRÁFICO UNIDADE
+# 🏢 GRÁFICO UNIDADES
 # =========================
-st.subheader("Vendas por unidade")
+st.subheader("🏢 Vendas por unidade")
 
-uni = df_f.groupby("Unidade").size().reset_index(name="Qtd")
+df_uni = df_f.groupby("Unidade").size().reset_index(name="Qtd")
 
 fig2 = px.bar(
-    uni,
+    df_uni,
     x="Unidade",
     y="Qtd",
     text="Qtd"
+)
+
+fig2.update_layout(
+    height=350,
+    paper_bgcolor="white",
+    plot_bgcolor="white"
 )
 
 st.plotly_chart(fig2, use_container_width=True)
 
 
 # =========================
-# TABELA FINAL
+# 📄 TABELA FINAL
 # =========================
-st.subheader("Dados")
+st.subheader("📄 Dados da planilha")
 
 st.dataframe(df_f, use_container_width=True)
+
+
+# =========================
+# INFO FINAL
+# =========================
+st.info("Dashboard conectado diretamente na Google Sheets (modo produção)")
