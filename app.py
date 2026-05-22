@@ -2,8 +2,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 import plotly.express as px
 import pandas as pd
-import requests
-import hashlib
 
 st.set_page_config(
     page_title="Dashboard Oppi Mockup",
@@ -13,7 +11,7 @@ st.set_page_config(
 )
 
 # =========================
-# STYLE (SEU DESIGN MANTIDO)
+# STYLE (SEU DESIGN)
 # =========================
 st.markdown("""
 <style>
@@ -49,8 +47,6 @@ st.markdown("""
     font-size: 44px;
     font-weight: 900;
     color: #0f172a;
-    line-height: 1;
-    margin-top: 10px;
 }
 
 .kpi-sub {
@@ -69,7 +65,6 @@ st.markdown("""
     align-items: center;
     justify-content: center;
     box-shadow: 0 10px 25px rgba(15,23,42,.12);
-    margin: auto;
 }
 
 .logo-main {
@@ -89,30 +84,38 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================
-# GOOGLE SHEET (SUA PLANILHA)
+# GOOGLE SHEET
 # =========================
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
+
 
 @st.cache_data(ttl=60)
 def load_data():
     df = pd.read_csv(URL)
 
-    # normaliza nomes de colunas
-    df.columns = [c.strip() for c in df.columns]
+    # =========================
+    # LIMPEZA BLINDADA DE COLUNAS
+    # =========================
+    df.columns = (
+        df.columns
+        .astype(str)
+        .str.strip()
+        .str.replace("\n", "")
+        .str.replace("\r", "")
+    )
 
-    # garante padrão esperado
-    df = df.rename(columns={
-        "Nome": "Cliente",
-        "Nome Cachorro": "Cliente"
-    })
+    # segurança
+    required = ["Nome", "Unidade", "Mês"]
+    for col in required:
+        if col not in df.columns:
+            st.error(f"Coluna faltando: {col} | Colunas: {df.columns.tolist()}")
+            st.stop()
 
-    # cria valor fictício consistente (porque não existe na planilha)
-    def gerar_valor(nome):
-        h = int(hashlib.md5(str(nome).encode()).hexdigest(), 16)
-        return (h % 5000) + 3000
-
-    df["Valor"] = df["Nome"].apply(gerar_valor)
+    # =========================
+    # VALOR FICTÍCIO ESTÁVEL
+    # =========================
+    df["Valor"] = df["Nome"].astype(str).apply(lambda x: (hash(x) % 5000) + 3000)
 
     return df
 
@@ -123,21 +126,16 @@ df = load_data()
 # HEADER
 # =========================
 components.html("""
-<div style="text-align:center; font-family:Arial;">
-    <div style="font-size:46px;font-weight:900;">
-        📊 Operação Comercial
-    </div>
-    <div style="font-size:14px;color:#666;margin-top:8px;">
-        Oppi Vision - Dashboard conectado na Google Sheets
-    </div>
+<div style="text-align:center;font-family:Arial;">
+    <div style="font-size:46px;font-weight:900;">📊 Operação Comercial</div>
+    <div style="font-size:14px;color:#666;">Oppi Vision - Dashboard conectado</div>
 </div>
-""", height=120)
+""", height=110)
 
 # =========================
 # FILTROS
 # =========================
 meses = sorted(df["Mês"].dropna().unique())
-
 unidades = sorted(df["Unidade"].dropna().unique())
 
 col1, col2, col3 = st.columns([5,1,5])
@@ -179,7 +177,7 @@ c1, c2, c3, c4 = st.columns(4)
 with c1:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">📌 Total de registros</div>
+        <div class="kpi-title">📌 Total registros</div>
         <div class="kpi-value">{total}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -216,17 +214,28 @@ st.divider()
 g1, g2 = st.columns(2)
 
 with g1:
-    st.subheader("📊 Registros por mês")
-    fig = px.histogram(df, x="Mês", color="Unidade")
+    st.subheader("📊 Contatos por status")
+
+    status = df_f["Mês"].value_counts().reset_index()
+    status.columns = ["Status", "Qtd"]
+
+    fig = px.bar(status, x="Status", y="Qtd", text="Qtd")
     st.plotly_chart(fig, use_container_width=True)
 
 with g2:
     st.subheader("🏢 Vendas por unidade")
-    fig2 = px.bar(df_f.groupby("Unidade")["Valor"].sum().reset_index(),
-                  x="Unidade", y="Valor", text="Valor")
+
+    uni = df_f.groupby("Unidade")["Valor"].sum().reset_index()
+
+    fig2 = px.pie(uni, names="Unidade", values="Valor", hole=0.45)
     st.plotly_chart(fig2, use_container_width=True)
 
 st.divider()
 
-st.subheader("📄 Dados da planilha (ao vivo)")
+# =========================
+# TABELA FINAL
+# =========================
+st.subheader("📄 Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
+
+st.info("Dashboard Oppi conectado direto ao Google Sheets (modo produção)")
