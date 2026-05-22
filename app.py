@@ -32,28 +32,94 @@ header {visibility:hidden;}
 
 /* CONTAINER */
 .block-container {
-    padding-top: 20px;
+    padding-top: 28px;
     max-width: 1200px;
 }
 
-/* TITULO */
-.title {
-    text-align:center;
-    font-size:40px;
-    font-weight:900;
-    color:#111827;
+/* TOPO */
+.top-area {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
 }
 
-.subtitle {
-    text-align:center;
-    font-size:13px;
-    color:#6b7280;
+.header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.header-title {
+    font-size: 30px;
+    font-weight: 900;
+    color: #111827;
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+
+.header-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.header-total {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 14px;
+}
+
+/* BOTÃO SAIR */
+.logout-btn {
+    background: #1B1D6D;
+    color: white;
+    border-radius: 10px;
+    padding: 13px 42px;
+    font-weight: 800;
+    font-size: 13px;
+    box-shadow: 0 10px 25px rgba(27,29,109,0.25);
+    text-align: center;
+}
+
+/* HAMBURGUER */
+div[data-testid="stPopover"] button {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08) !important;
+    font-weight: 800 !important;
+}
+
+.menu-link {
+    display: block;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    color: #111827 !important;
+    text-decoration: none !important;
+    font-weight: 800;
+    border-left: 4px solid #1B1D6D;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.menu-link:hover {
+    background: #f3f4f6;
 }
 
 /* LOGO */
+.logo-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -8px;
+}
+
 .logo {
-    width:90px;
-    height:90px;
+    width:82px;
+    height:82px;
     border-radius:50%;
     background: white;
     display:flex;
@@ -67,10 +133,11 @@ header {visibility:hidden;}
 .logo .a {
     font-weight:900;
     color:#1B1D6D;
+    font-size:16px;
 }
 
 .logo .b {
-    font-size:10px;
+    font-size:9px;
     font-weight:900;
     color:#ec4899;
     letter-spacing:2px;
@@ -94,14 +161,15 @@ header {visibility:hidden;}
 /* KPI TEXT */
 .kpi-title {
     font-size:12px;
-    color:#374151;
-    font-weight:800;
+    color:#111827;
+    font-weight:900;
 }
 
 .kpi-value {
     font-size:34px;
     font-weight:900;
-    color:#111827;
+    color:#020617;
+    margin-top: 10px;
 }
 
 /* CHART CARD */
@@ -142,6 +210,24 @@ h3 {
 /* DIVISOR */
 hr {
     border: 1px solid rgba(17,24,39,0.12);
+    margin-top: 28px;
+    margin-bottom: 28px;
+}
+
+/* ESPAÇAMENTO MOBILE */
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 24px;
+    }
+
+    .logout-btn {
+        padding: 10px 24px;
+    }
+
+    .logo {
+        width: 70px;
+        height: 70px;
+    }
 }
 
 </style>
@@ -162,14 +248,33 @@ def load_data():
 df = load_data().dropna(how="all")
 
 # =========================
-# HEADER
+# TOPO COM MENU
 # =========================
-components.html("""
-<div>
-    <div class="title">📊 Operação Comercial</div>
-    <div class="subtitle">Oppi Vision • Dashboard Premium</div>
-</div>
-""", height=90)
+top_col1, top_col2, top_col3 = st.columns([1, 8, 2])
+
+with top_col1:
+    with st.popover("☰"):
+        st.markdown("""
+        <a class="menu-link" href="#" target="_self">📊 Dashboard</a>
+        <a class="menu-link" href="#" target="_self">📋 Dados da planilha</a>
+        <a class="menu-link" href="#" target="_self">⚙️ Configurações</a>
+        """, unsafe_allow_html=True)
+
+with top_col2:
+    st.markdown(f"""
+    <div class="header-left">
+        <div>
+            <div class="header-title">⚙️ Operação Comercial</div>
+            <div class="header-subtitle">Oppi Vision • Dashboard Premium</div>
+            <div class="header-total">Total de registros: {len(df)}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with top_col3:
+    st.markdown("""
+    <div class="logout-btn">Sair</div>
+    """, unsafe_allow_html=True)
 
 # =========================
 # FILTROS
@@ -184,14 +289,18 @@ with col1:
 
 with col2:
     st.markdown("""
-    <div class="logo">
-        <div class="a">OPPI</div>
-        <div class="b">VISION</div>
+    <div class="logo-wrap">
+        <div class="logo">
+            <div class="a">OPPI</div>
+            <div class="b">VISION</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
 with col3:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades)
+
+st.divider()
 
 # =========================
 # FILTRO
