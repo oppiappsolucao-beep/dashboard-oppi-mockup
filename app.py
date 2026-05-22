@@ -1,191 +1,260 @@
 import streamlit as st
-import pandas as pd
+import streamlit.components.v1 as components
 import plotly.express as px
+import pandas as pd
 
-st.set_page_config(page_title="Dashboard", layout="wide")
+st.set_page_config(
+    page_title="Dashboard Oppi Mockup",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
 # =========================
-# CSS BASE (ESTILO SKOOB)
+# STYLE (mantido igual)
 # =========================
 st.markdown("""
 <style>
 
 .stApp {
-    background: #E6E6E6;
+    background: #D4D4D4;
 }
 
 .block-container {
+    padding-top: 1rem;
     max-width: 1200px;
-    padding-top: 20px;
 }
 
-/* HEADER */
-.header {
+.card {
     background: white;
-    border-radius: 16px;
-    padding: 16px 20px;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.06);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 10px 28px rgba(15,23,42,.08);
+    border-left: 7px solid #1B1D6D;
 }
 
-.header h1 {
-    font-size: 20px;
+.card-red {
+    border-left: 7px solid #9B0033;
+}
+
+.kpi-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #334155;
+}
+
+.kpi-value {
+    font-size: 44px;
     font-weight: 900;
     color: #0f172a;
 }
 
-.header span {
-    font-size: 13px;
-    color: #64748b;
-}
-
-/* KPI GRID */
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-bottom: 16px;
-}
-
-.kpi {
-    background: white;
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.06);
-    border-left: 6px solid #1B1D6D;
-}
-
-.kpi h4 {
-    margin: 0;
+.kpi-sub {
     font-size: 12px;
     color: #64748b;
+    margin-top: 10px;
 }
 
-.kpi h2 {
-    margin: 6px 0 0 0;
-    font-size: 34px;
-    font-weight: 900;
-    color: #0f172a;
-}
-
-/* CHART BOX */
-.box {
+.logo-box {
     background: white;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+    border-radius: 50%;
+    width: 92px;
+    height: 92px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(15,23,42,.12);
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+.logo-main {
+    font-size: 24px;
+    font-weight: 900;
+    color: #1B1D6D;
+}
+
+.logo-sub {
+    font-size: 9px;
+    font-weight: 900;
+    color: #9B0033;
+    letter-spacing: 4px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# DATA REAL
+# PLANILHA
 # =========================
+SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
+URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
+
 @st.cache_data(ttl=60)
 def load_data():
-    url = "https://docs.google.com/spreadsheets/d/1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk/gviz/tq?tqx=out:csv"
-    df = pd.read_csv(url)
+    df = pd.read_csv(URL)
+
     df.columns = df.columns.str.strip()
+
+    # valor fictício estável
+    df["Valor"] = df["Nome"].apply(lambda x: (hash(str(x)) % 5000) + 3000)
+
     return df
 
 df = load_data()
 
 # =========================
-# FILTERS
+# HEADER
 # =========================
-col1, col2 = st.columns(2)
+components.html("""
+<div style="text-align:center;font-family:Arial;">
+    <div style="font-size:46px;font-weight:900;">📊 Operação Comercial</div>
+    <div style="font-size:14px;color:#666;">Oppi Vision - Dashboard</div>
+</div>
+""", height=110)
+
+# =========================
+# FILTROS
+# =========================
+meses = sorted(df["Mês"].dropna().unique())
+unidades = sorted(df["Unidade"].dropna().unique())
+
+col1, col2, col3 = st.columns([5,1,5])
 
 with col1:
-    mes = st.selectbox("Mês", sorted(df["Mês"].dropna().unique()))
+    mes = st.selectbox("Mês", meses)
 
 with col2:
-    unidade = st.selectbox("Unidade", ["Todas"] + sorted(df["Unidade"].dropna().unique()))
+    st.markdown("""
+    <div class="logo-box">
+        <div class="logo-main">OPPI</div>
+        <div class="logo-sub">VISION</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-df = df[df["Mês"] == mes]
+with col3:
+    unidade = st.selectbox("Unidade", ["Todas"] + unidades)
+
+# =========================
+# FILTRO
+# =========================
+df_f = df[df["Mês"] == mes]
+
 if unidade != "Todas":
-    df = df[df["Unidade"] == unidade]
+    df_f = df_f[df_f["Unidade"] == unidade]
+
+st.divider()
 
 # =========================
-# HEADER SKOOB STYLE
+# KPIs
 # =========================
-st.markdown(f"""
-<div class="header">
-    <h1>📊 Operação Comercial</h1>
-    <span>{mes} • {unidade}</span>
-</div>
-""", unsafe_allow_html=True)
+total = len(df_f)
+vendas = len(df_f)
+faturamento = df_f["Valor"].sum()
+ticket = faturamento / total if total else 0
 
-# =========================
-# KPI
-# =========================
-total = len(df)
-vendas = len(df[df["Status"].str.contains("Venda", na=False)])
-status_total = df["Status"].nunique()
+c1, c2, c3, c4 = st.columns(4)
 
-st.markdown(f"""
-<div class="kpi-grid">
-
-    <div class="kpi">
-        <h4>Total registros</h4>
-        <h2>{total}</h2>
+with c1:
+    st.markdown(f"""
+    <div class="card">
+        <div class="kpi-title">📌 Total registros</div>
+        <div class="kpi-value">{total}</div>
     </div>
+    """, unsafe_allow_html=True)
 
-    <div class="kpi">
-        <h4>Vendas</h4>
-        <h2>{vendas}</h2>
+with c2:
+    st.markdown(f"""
+    <div class="card card-red">
+        <div class="kpi-title">✅ Registros</div>
+        <div class="kpi-value">{vendas}</div>
     </div>
+    """, unsafe_allow_html=True)
 
-    <div class="kpi">
-        <h4>Status únicos</h4>
-        <h2>{status_total}</h2>
+with c3:
+    st.markdown(f"""
+    <div class="card">
+        <div class="kpi-title">💰 Faturamento</div>
+        <div class="kpi-value">R$ {faturamento:,.0f}</div>
     </div>
+    """, unsafe_allow_html=True)
 
-</div>
-""", unsafe_allow_html=True)
+with c4:
+    st.markdown(f"""
+    <div class="card card-red">
+        <div class="kpi-title">🎯 Ticket médio</div>
+        <div class="kpi-value">R$ {ticket:,.0f}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.divider()
 
 # =========================
-# CHARTS (ESTILO SKOOB REAL)
+# GRÁFICOS PRINCIPAIS
 # =========================
 g1, g2 = st.columns(2)
 
 with g1:
-    st.markdown('<div class="box">', unsafe_allow_html=True)
-    st.subheader("Contatos por status")
+    st.subheader("📊 Contatos por status")
 
-    chart = df.groupby("Status").size().reset_index(name="Qtd")
-
-    fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
-    fig.update_layout(height=360, paper_bgcolor="white", plot_bgcolor="white")
-
+    fig = px.bar(
+        df_f.groupby("Status").size().reset_index(name="Qtd"),
+        x="Status",
+        y="Qtd",
+        text="Qtd"
+    )
     st.plotly_chart(fig, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with g2:
-    st.markdown('<div class="box">', unsafe_allow_html=True)
-    st.subheader("Vendas por unidade")
+    st.subheader("🏢 Vendas por unidade")
 
-    chart2 = df.groupby("Unidade").size().reset_index(name="Qtd")
-
-    fig2 = px.bar(chart2, x="Unidade", y="Qtd", text="Qtd")
-    fig2.update_layout(height=360, paper_bgcolor="white", plot_bgcolor="white")
-
+    fig2 = px.pie(
+        df_f.groupby("Unidade")["Valor"].sum().reset_index(),
+        names="Unidade",
+        values="Valor",
+        hole=0.45
+    )
     st.plotly_chart(fig2, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+
+st.divider()
 
 # =========================
-# TABLE
+# 🔥 NOVO: RAÇAS MAIS VENDIDAS
 # =========================
-st.markdown('<div class="box">', unsafe_allow_html=True)
-st.subheader("Dados da planilha")
-st.dataframe(df, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+g3, g4 = st.columns(2)
+
+with g3:
+    st.subheader("🐶 Raças mais vendidas")
+
+    fig3 = px.bar(
+        df_f.groupby("Raça").size().reset_index(name="Qtd"),
+        x="Raça",
+        y="Qtd",
+        text="Qtd"
+    )
+
+    st.plotly_chart(fig3, use_container_width=True)
+
+# =========================
+# 🔥 NOVO: VENDAS POR VENDEDORA
+# =========================
+with g4:
+    st.subheader("🏆 Vendas por vendedora")
+
+    fig4 = px.bar(
+        df_f.groupby("Nome").size().reset_index(name="Qtd"),
+        x="Nome",
+        y="Qtd",
+        text="Qtd"
+    )
+
+    st.plotly_chart(fig4, use_container_width=True)
+
+st.divider()
+
+# =========================
+# TABELA FINAL
+# =========================
+st.subheader("📄 Dados da planilha")
+st.dataframe(df_f, use_container_width=True)
+
+st.info("Dashboard Oppi conectado na Google Sheets + gráficos avançados")
