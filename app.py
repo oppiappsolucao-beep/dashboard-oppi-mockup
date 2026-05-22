@@ -97,28 +97,44 @@ header {visibility:hidden;}
         0 12px 28px rgba(160,0,212,0.35);
 }
 
-/* HAMBURGUER ROSA/ROXO COM BRILHO */
+/* HAMBURGUER ROSA/ROXO COM BRILHO IGUAL AO SAIR */
 div[data-testid="stPopover"] button {
     background: linear-gradient(135deg, #f23b9b, #a000d4) !important;
     color: white !important;
     border: 1px solid rgba(255,255,255,0.25) !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
+    min-height: 42px !important;
+    min-width: 58px !important;
+    padding: 0 14px !important;
+    font-weight: 800 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     box-shadow:
         0 0 0 2px rgba(242,59,155,0.22) !important,
         0 0 18px rgba(242,59,155,0.45) !important,
         0 0 26px rgba(160,0,212,0.35) !important,
-        0 6px 18px rgba(160,0,212,0.25) !important;
-    font-weight: 800 !important;
+        0 10px 25px rgba(160,0,212,0.25) !important;
     transition: all 0.25s ease !important;
 }
 
 div[data-testid="stPopover"] button:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px) !important;
     box-shadow:
         0 0 0 2px rgba(242,59,155,0.32) !important,
         0 0 26px rgba(242,59,155,0.60) !important,
         0 0 34px rgba(160,0,212,0.45) !important,
-        0 8px 22px rgba(160,0,212,0.35) !important;
+        0 12px 28px rgba(160,0,212,0.35) !important;
+}
+
+div[data-testid="stPopover"] button p {
+    color: white !important;
+    font-weight: 800 !important;
+}
+
+div[data-testid="stPopover"] button svg {
+    color: white !important;
+    fill: white !important;
 }
 
 /* LINKS DO MENU */
@@ -285,7 +301,7 @@ df = load_data().dropna(how="all")
 # =========================
 # TOPO COM MENU
 # =========================
-top_col1, top_col2, top_col3 = st.columns([1, 8, 2])
+top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
 
 with top_col1:
     with st.popover("☰"):
