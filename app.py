@@ -70,28 +70,54 @@ header {visibility:hidden;}
     margin-top: 14px;
 }
 
-/* BOTÃO SAIR */
+/* BOTÃO SAIR ROXO COM BRILHO */
 .logout-btn {
-    background: #1B1D6D;
+    background: linear-gradient(135deg, #2d2f92, #1B1D6D);
     color: white;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 13px 42px;
     font-weight: 800;
     font-size: 13px;
-    box-shadow: 0 10px 25px rgba(27,29,109,0.25);
     text-align: center;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+        0 0 0 2px rgba(124,58,237,0.22),
+        0 0 18px rgba(124,58,237,0.35),
+        0 10px 25px rgba(27,29,109,0.30);
+    transition: all 0.25s ease;
 }
 
-/* HAMBURGUER */
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 0 2px rgba(124,58,237,0.30),
+        0 0 24px rgba(124,58,237,0.45),
+        0 12px 28px rgba(27,29,109,0.38);
+}
+
+/* HAMBURGUER ROXO COM BRILHO */
 div[data-testid="stPopover"] button {
-    background: #ffffff !important;
-    color: #111827 !important;
-    border: 1px solid #e5e7eb !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.08) !important;
+    background: linear-gradient(135deg, #2d2f92, #1B1D6D) !important;
+    color: white !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    border-radius: 10px !important;
+    box-shadow:
+        0 0 0 2px rgba(124,58,237,0.22) !important,
+        0 0 18px rgba(124,58,237,0.35) !important,
+        0 6px 18px rgba(27,29,109,0.25) !important;
     font-weight: 800 !important;
+    transition: all 0.25s ease !important;
 }
 
+div[data-testid="stPopover"] button:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 0 0 2px rgba(124,58,237,0.30) !important,
+        0 0 24px rgba(124,58,237,0.45) !important,
+        0 8px 22px rgba(27,29,109,0.35) !important;
+}
+
+/* LINKS DO MENU */
 .menu-link {
     display: block;
     background: #ffffff;
@@ -101,12 +127,12 @@ div[data-testid="stPopover"] button {
     color: #111827 !important;
     text-decoration: none !important;
     font-weight: 800;
-    border-left: 4px solid #1B1D6D;
+    border-left: 4px solid #7c3aed;
     box-shadow: 0 4px 14px rgba(0,0,0,0.06);
 }
 
 .menu-link:hover {
-    background: #f3f4f6;
+    background: #f5f3ff;
 }
 
 /* LOGO */
