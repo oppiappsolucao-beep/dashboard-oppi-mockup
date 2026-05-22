@@ -14,12 +14,12 @@ st.set_page_config(
 )
 
 # =========================
-# CSS PREMIUM (ROXO RESTAURADO)
+# CSS PREMIUM (DARK SKOOB STYLE)
 # =========================
 st.markdown("""
 <style>
 
-/* 🔥 FUNDO ROXO (VOLTOU COMO VOCÊ PEDIU) */
+/* BACKGROUND PRINCIPAL (DARK GRADIENT PREMIUM) */
 .stApp {
     background: radial-gradient(circle at top left, #1a0b2e, #0b0f1a 60%);
     color: white;
@@ -75,14 +75,21 @@ header {visibility:hidden;}
     letter-spacing:2px;
 }
 
-/* CARDS */
+/* KPI CARDS (GLASSMORPHISM) */
 .card {
     background: rgba(255,255,255,0.06);
     border-radius: 22px;
     padding: 18px;
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.08);
     box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border: 1px solid rgba(236,72,153,0.4);
 }
 
 /* KPI TEXT */
@@ -105,15 +112,18 @@ header {visibility:hidden;}
     padding: 16px;
     backdrop-filter: blur(14px);
     border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    margin-top: 10px;
 }
 
-/* SELECT */
+/* SELECT BOX */
 .stSelectbox > div {
     background-color: rgba(255,255,255,0.08) !important;
     border-radius: 12px;
+    color: white;
 }
 
-/* HR */
+/* DIVISOR */
 hr {
     border: 1px solid rgba(255,255,255,0.08);
 }
@@ -122,7 +132,7 @@ hr {
 """, unsafe_allow_html=True)
 
 # =========================
-# DATA
+# PLANILHA
 # =========================
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
@@ -175,8 +185,6 @@ df_f = df[df["Mês"] == mes]
 if unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
 
-st.divider()
-
 # =========================
 # KPIs
 # =========================
@@ -226,51 +234,95 @@ with c3:
 st.divider()
 
 # =========================
-# GRÁFICOS STATUS
+# GRÁFICOS (SKOOB STYLE PREMIUM)
 # =========================
-st.subheader("Contatos por status")
+g1, g2 = st.columns(2)
 
-chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
+# STATUS
+with g1:
+    st.markdown("### Contatos por status")
 
-if not chart.empty:
+    chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
+
     fig = px.bar(
         chart,
         x="Status",
         y="Qtd",
         text="Qtd",
-        color_discrete_sequence=["#7c3aed"]
+        color="Qtd",
+        color_continuous_scale=["#7c3aed", "#ec4899"]
     )
 
     fig.update_layout(
-        height=380,
+        height=360,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="white",
+        margin=dict(l=10,r=10,t=10,b=10)
+    )
+
+    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+    st.plotly_chart(fig, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# UNIDADE
+with g2:
+    st.markdown("### Vendas por unidade")
+
+    uni = df_f["Unidade"].value_counts().reset_index()
+    uni.columns = ["Unidade", "Qtd"]
+
+    fig2 = px.bar(
+        uni,
+        x="Unidade",
+        y="Qtd",
+        text="Qtd",
+        color="Qtd",
+        color_continuous_scale=["#ec4899", "#7c3aed"]
+    )
+
+    fig2.update_layout(
+        height=360,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font_color="white"
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+    st.plotly_chart(fig2, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
-# UNIDADE
+# RAÇAS
 # =========================
-st.subheader("Vendas por unidade")
+st.markdown("### Raças mais vendidas")
 
-uni = df_f["Unidade"].value_counts().reset_index()
-uni.columns = ["Unidade", "Qtd"]
+raca = df_f["Raça"].value_counts().reset_index()
+raca.columns = ["Raça", "Qtd"]
 
-fig2 = px.bar(
-    uni,
-    x="Unidade",
+fig3 = px.bar(
+    raca,
+    x="Raça",
     y="Qtd",
     text="Qtd",
-    color_discrete_sequence=["#ec4899"]
+    color="Qtd",
+    color_continuous_scale=["#7c3aed", "#ec4899"]
 )
 
-fig2.update_layout(
+fig3.update_layout(
     height=380,
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
     font_color="white"
 )
 
-st.plotly_chart(fig2, use_container_width=True)
+st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+st.plotly_chart(fig3, use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# =========================
+# TABELA
+# =========================
+st.markdown("### Dados da planilha")
+st.dataframe(df_f, use_container_width=True)
+
