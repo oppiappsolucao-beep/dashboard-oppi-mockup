@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # =========================
-# STYLE (SEU DESIGN)
+# STYLE (mantido igual)
 # =========================
 st.markdown("""
 <style>
@@ -84,41 +84,21 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================
-# GOOGLE SHEET
+# PLANILHA
 # =========================
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
-
 
 @st.cache_data(ttl=60)
 def load_data():
     df = pd.read_csv(URL)
 
-    # =========================
-    # LIMPEZA BLINDADA DE COLUNAS
-    # =========================
-    df.columns = (
-        df.columns
-        .astype(str)
-        .str.strip()
-        .str.replace("\n", "")
-        .str.replace("\r", "")
-    )
+    df.columns = df.columns.str.strip()
 
-    # segurança
-    required = ["Nome", "Unidade", "Mês"]
-    for col in required:
-        if col not in df.columns:
-            st.error(f"Coluna faltando: {col} | Colunas: {df.columns.tolist()}")
-            st.stop()
-
-    # =========================
-    # VALOR FICTÍCIO ESTÁVEL
-    # =========================
-    df["Valor"] = df["Nome"].astype(str).apply(lambda x: (hash(x) % 5000) + 3000)
+    # valor fictício estável
+    df["Valor"] = df["Nome"].apply(lambda x: (hash(str(x)) % 5000) + 3000)
 
     return df
-
 
 df = load_data()
 
@@ -128,7 +108,7 @@ df = load_data()
 components.html("""
 <div style="text-align:center;font-family:Arial;">
     <div style="font-size:46px;font-weight:900;">📊 Operação Comercial</div>
-    <div style="font-size:14px;color:#666;">Oppi Vision - Dashboard conectado</div>
+    <div style="font-size:14px;color:#666;">Oppi Vision - Dashboard</div>
 </div>
 """, height=110)
 
@@ -209,26 +189,65 @@ with c4:
 st.divider()
 
 # =========================
-# GRÁFICOS
+# GRÁFICOS PRINCIPAIS
 # =========================
 g1, g2 = st.columns(2)
 
 with g1:
     st.subheader("📊 Contatos por status")
 
-    status = df_f["Mês"].value_counts().reset_index()
-    status.columns = ["Status", "Qtd"]
-
-    fig = px.bar(status, x="Status", y="Qtd", text="Qtd")
+    fig = px.bar(
+        df_f.groupby("Status").size().reset_index(name="Qtd"),
+        x="Status",
+        y="Qtd",
+        text="Qtd"
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 with g2:
     st.subheader("🏢 Vendas por unidade")
 
-    uni = df_f.groupby("Unidade")["Valor"].sum().reset_index()
-
-    fig2 = px.pie(uni, names="Unidade", values="Valor", hole=0.45)
+    fig2 = px.pie(
+        df_f.groupby("Unidade")["Valor"].sum().reset_index(),
+        names="Unidade",
+        values="Valor",
+        hole=0.45
+    )
     st.plotly_chart(fig2, use_container_width=True)
+
+st.divider()
+
+# =========================
+# 🔥 NOVO: RAÇAS MAIS VENDIDAS
+# =========================
+g3, g4 = st.columns(2)
+
+with g3:
+    st.subheader("🐶 Raças mais vendidas")
+
+    fig3 = px.bar(
+        df_f.groupby("Raça").size().reset_index(name="Qtd"),
+        x="Raça",
+        y="Qtd",
+        text="Qtd"
+    )
+
+    st.plotly_chart(fig3, use_container_width=True)
+
+# =========================
+# 🔥 NOVO: VENDAS POR VENDEDORA
+# =========================
+with g4:
+    st.subheader("🏆 Vendas por vendedora")
+
+    fig4 = px.bar(
+        df_f.groupby("Nome").size().reset_index(name="Qtd"),
+        x="Nome",
+        y="Qtd",
+        text="Qtd"
+    )
+
+    st.plotly_chart(fig4, use_container_width=True)
 
 st.divider()
 
@@ -238,4 +257,4 @@ st.divider()
 st.subheader("📄 Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
 
-st.info("Dashboard Oppi conectado direto ao Google Sheets (modo produção)")
+st.info("Dashboard Oppi conectado na Google Sheets + gráficos avançados")
