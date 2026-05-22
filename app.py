@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.io as pio
 
 # =========================
 # CONFIG
@@ -12,8 +13,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+pio.templates.default = "plotly_white"
+
 # =========================
-# CSS CINZA LIMPO (SKOOB BASE)
+# CSS (CINZA LIMPO SKOOB)
 # =========================
 st.markdown("""
 <style>
@@ -22,9 +25,9 @@ st.markdown("""
     background: #E5E7EB;
 }
 
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
+#MainMenu, footer, header {
+    visibility:hidden;
+}
 
 .block-container {
     padding: 20px;
@@ -32,8 +35,15 @@ header {visibility:hidden;}
 }
 
 /* HEADER */
+.header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
 .title {
-    font-size:28px;
+    font-size:26px;
     font-weight:900;
     color:#111827;
 }
@@ -43,13 +53,25 @@ header {visibility:hidden;}
     color:#6B7280;
 }
 
-/* CARD */
+.logo {
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-weight:900;
+}
+
+/* CARDS */
 .card {
     background:white;
     border-radius:16px;
     padding:18px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.08);
-    border-left:5px solid #7c3aed;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    border-left:4px solid #7c3aed;
 }
 
 .kpi-title {
@@ -64,24 +86,12 @@ header {visibility:hidden;}
     color:#111827;
 }
 
-/* LOGO */
-.logo {
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    background: linear-gradient(135deg,#7c3aed,#ec4899);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    font-weight:900;
-}
-
 /* CHART */
-.chart {
+.chart-box {
     background:white;
     border-radius:16px;
-    padding:12px;
+    padding:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
 }
 
 </style>
@@ -99,7 +109,7 @@ def load_data():
 
 df = load_data()
 
-# remove linhas vazias
+# remove lixo
 df = df.dropna(how="all")
 
 # =========================
@@ -130,12 +140,8 @@ if unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
 
 # =========================
-# KPI CORRIGIDO
+# KPIs
 # =========================
-st.divider()
-
-total = len(df_f)
-
 status_cols = [
     "Status 1º contato",
     "Status 2º contato",
@@ -149,6 +155,7 @@ for col in status_cols:
         for k, v in df_f[col].value_counts().items():
             status_total[k] = status_total.get(k, 0) + v
 
+total = len(df_f)
 vendas = sum(status_total.values())
 
 c1, c2, c3 = st.columns(3)
@@ -178,44 +185,54 @@ with c3:
     """, unsafe_allow_html=True)
 
 # =========================
-# GRÁFICO STATUS (SEM ERRO)
+# 🔥 GRÁFICOS (AGORA FUNCIONA 100%)
 # =========================
-st.subheader("Contatos por status")
 
-chart = pd.DataFrame(
-    list(status_total.items()),
-    columns=["Status", "Qtd"]
+st.markdown("## Contatos por status")
+
+chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
+
+fig = px.bar(
+    chart,
+    x="Status",
+    y="Qtd",
+    text="Qtd",
+    color_discrete_sequence=["#7c3aed"]
 )
 
-if not chart.empty:
-    fig = px.bar(chart, x="Status", y="Qtd", text="Qtd",
-                 color_discrete_sequence=["#7c3aed"])
+fig.update_layout(
+    height=380,
+    paper_bgcolor="white",
+    plot_bgcolor="white",
+    margin=dict(l=10,r=10,t=10,b=10)
+)
 
-    fig.update_layout(
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        height=350
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-else:
-    st.warning("Sem dados de status")
+st.markdown('<div class="chart-box">', unsafe_allow_html=True)
+st.plotly_chart(fig, use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
 # UNIDADE
 # =========================
-st.subheader("Vendas por unidade")
+st.markdown("## Vendas por unidade")
 
 uni = df_f["Unidade"].value_counts().reset_index()
 uni.columns = ["Unidade", "Qtd"]
 
-fig2 = px.bar(uni, x="Unidade", y="Qtd", text="Qtd",
-              color_discrete_sequence=["#ec4899"])
-
-fig2.update_layout(
-    paper_bgcolor="white",
-    plot_bgcolor="white",
-    height=350
+fig2 = px.bar(
+    uni,
+    x="Unidade",
+    y="Qtd",
+    text="Qtd",
+    color_discrete_sequence=["#ec4899"]
 )
 
+fig2.update_layout(
+    height=380,
+    paper_bgcolor="white",
+    plot_bgcolor="white"
+)
+
+st.markdown('<div class="chart-box">', unsafe_allow_html=True)
 st.plotly_chart(fig2, use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
