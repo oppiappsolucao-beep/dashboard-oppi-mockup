@@ -14,32 +14,40 @@ st.set_page_config(
 )
 
 # =========================
-# CSS SKOOB PREMIUM (CINZA + ROXO/ROSA)
+# CSS PREMIUM (DARK SKOOB STYLE)
 # =========================
 st.markdown("""
 <style>
 
+/* BACKGROUND PRINCIPAL (DARK GRADIENT PREMIUM) */
 .stApp {
-    background: #E5E7EB;
+    background: radial-gradient(circle at top left, #1a0b2e, #0b0f1a 60%);
+    color: white;
 }
 
+/* remove streamlit UI */
+#MainMenu {visibility:hidden;}
+footer {visibility:hidden;}
+header {visibility:hidden;}
+
+/* CONTAINER */
 .block-container {
-    max-width: 1200px;
     padding-top: 20px;
+    max-width: 1200px;
 }
 
-/* HEADER */
+/* TITULO */
 .title {
     text-align:center;
-    font-size:38px;
+    font-size:40px;
     font-weight:900;
-    color:#111827;
+    color:white;
 }
 
 .subtitle {
     text-align:center;
     font-size:13px;
-    color:#6B7280;
+    color:#a1a1aa;
 }
 
 /* LOGO */
@@ -47,66 +55,78 @@ st.markdown("""
     width:90px;
     height:90px;
     border-radius:50%;
-    background:white;
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
     display:flex;
     align-items:center;
     justify-content:center;
     flex-direction:column;
-    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    box-shadow:0 10px 40px rgba(124,58,237,0.4);
 }
 
 .logo .a {
     font-weight:900;
-    color:#7c3aed;
+    color:white;
 }
 
 .logo .b {
     font-size:10px;
     font-weight:900;
-    color:#ec4899;
+    color:#ffe4f2;
     letter-spacing:2px;
 }
 
-/* KPI CARD */
+/* KPI CARDS (GLASSMORPHISM) */
 .card {
-    background:white;
-    border-radius:18px;
-    padding:18px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.06);
-    border-left:4px solid transparent;
-    background-image: linear-gradient(white, white),
-                      linear-gradient(135deg,#7c3aed,#ec4899);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+    background: rgba(255,255,255,0.06);
+    border-radius: 22px;
+    padding: 18px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    transition: 0.3s;
 }
 
-/* GRÁFICO CARD (NOVO SKOOB STYLE) */
-.chart-card {
-    background:white;
-    border-radius:22px;
-    padding:16px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.06);
-    border:1px solid #E5E7EB;
-    height:420px;
+.card:hover {
+    transform: translateY(-3px);
+    border: 1px solid rgba(236,72,153,0.4);
 }
 
-/* TITULOS */
+/* KPI TEXT */
 .kpi-title {
     font-size:12px;
-    color:#6B7280;
+    color:#cbd5e1;
     font-weight:700;
 }
 
 .kpi-value {
-    font-size:36px;
+    font-size:34px;
     font-weight:900;
-    color:#111827;
+    color:white;
 }
 
-/* remove streamlit */
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
+/* CHART CARD */
+.chart-card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 24px;
+    padding: 16px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    margin-top: 10px;
+}
+
+/* SELECT BOX */
+.stSelectbox > div {
+    background-color: rgba(255,255,255,0.08) !important;
+    border-radius: 12px;
+    color: white;
+}
+
+/* DIVISOR */
+hr {
+    border: 1px solid rgba(255,255,255,0.08);
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -131,7 +151,7 @@ df = load_data().dropna(how="all")
 components.html("""
 <div>
     <div class="title">📊 Operação Comercial</div>
-    <div class="subtitle">Oppi Vision • Sistema de Gestão</div>
+    <div class="subtitle">Oppi Vision • Dashboard Premium</div>
 </div>
 """, height=90)
 
@@ -214,33 +234,30 @@ with c3:
 st.divider()
 
 # =========================
-# GRÁFICOS (SKOOB STYLE HORIZONTAL)
+# GRÁFICOS (SKOOB STYLE PREMIUM)
 # =========================
 g1, g2 = st.columns(2)
 
-# -------------------------
 # STATUS
-# -------------------------
 with g1:
     st.markdown("### Contatos por status")
 
-    chart = pd.DataFrame(
-        list(status_total.items()),
-        columns=["Status", "Qtd"]
-    )
+    chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
 
     fig = px.bar(
         chart,
         x="Status",
         y="Qtd",
         text="Qtd",
-        color_discrete_sequence=["#7c3aed"]
+        color="Qtd",
+        color_continuous_scale=["#7c3aed", "#ec4899"]
     )
 
     fig.update_layout(
         height=360,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="white",
         margin=dict(l=10,r=10,t=10,b=10)
     )
 
@@ -248,9 +265,7 @@ with g1:
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# -------------------------
 # UNIDADE
-# -------------------------
 with g2:
     st.markdown("### Vendas por unidade")
 
@@ -262,14 +277,15 @@ with g2:
         x="Unidade",
         y="Qtd",
         text="Qtd",
-        color_discrete_sequence=["#ec4899"]
+        color="Qtd",
+        color_continuous_scale=["#ec4899", "#7c3aed"]
     )
 
     fig2.update_layout(
         height=360,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        margin=dict(l=10,r=10,t=10,b=10)
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="white"
     )
 
     st.markdown('<div class="chart-card">', unsafe_allow_html=True)
@@ -289,13 +305,15 @@ fig3 = px.bar(
     x="Raça",
     y="Qtd",
     text="Qtd",
-    color_discrete_sequence=["#7c3aed"]
+    color="Qtd",
+    color_continuous_scale=["#7c3aed", "#ec4899"]
 )
 
 fig3.update_layout(
     height=380,
-    paper_bgcolor="white",
-    plot_bgcolor="white"
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font_color="white"
 )
 
 st.markdown('<div class="chart-card">', unsafe_allow_html=True)
@@ -303,7 +321,7 @@ st.plotly_chart(fig3, use_container_width=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
-# TABELA FINAL
+# TABELA
 # =========================
 st.markdown("### Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
