@@ -2,26 +2,25 @@ import streamlit as st
 import streamlit.components.v1 as components
 import plotly.express as px
 import pandas as pd
-from collections import Counter
 
 # =========================
 # CONFIG
 # =========================
 st.set_page_config(
-    page_title="Dashboard Oppi Mockup",
+    page_title="Operação Comercial",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # =========================
-# CSS (SEU ESTILO MANTIDO)
+# CSS PREMIUM ROXO / ROSA
 # =========================
 st.markdown("""
 <style>
 
 .stApp {
-    background: #D4D4D4;
+    background: linear-gradient(135deg, #1b0b2e, #2a0f3a, #3b1452);
 }
 
 .block-container {
@@ -29,66 +28,85 @@ st.markdown("""
     max-width: 1200px;
 }
 
+/* CARDS PREMIUM */
 .card {
-    background: white;
-    border-radius: 18px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 22px;
     padding: 22px;
-    box-shadow: 0 10px 28px rgba(15,23,42,.08);
-    border-left: 7px solid #1B1D6D;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+    border-left: 6px solid #a855f7;
+    backdrop-filter: blur(10px);
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 45px rgba(168,85,247,0.25);
 }
 
 .card-red {
-    border-left: 7px solid #9B0033;
+    border-left: 6px solid #ec4899;
 }
 
+/* KPI */
 .kpi-title {
     font-size: 13px;
     font-weight: 800;
-    color: #334155;
+    color: #4b5563;
 }
 
 .kpi-value {
-    font-size: 44px;
+    font-size: 46px;
     font-weight: 900;
-    color: #0f172a;
+    color: #111827;
 }
 
 .kpi-sub {
     font-size: 12px;
-    color: #64748b;
-    margin-top: 10px;
+    color: #6b7280;
 }
 
+/* LOGO */
 .logo-box {
-    background: white;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
     border-radius: 50%;
     width: 92px;
     height: 92px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px rgba(15,23,42,.12);
+    flex-direction: column;
+    box-shadow: 0 10px 25px rgba(168,85,247,0.35);
 }
 
 .logo-main {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 900;
-    color: #1B1D6D;
+    color: white;
 }
 
 .logo-sub {
     font-size: 9px;
     font-weight: 900;
-    color: #9B0033;
-    letter-spacing: 4px;
+    color: #ffe4f3;
+    letter-spacing: 3px;
 }
+
+/* TITLES */
+h1, h2, h3 {
+    color: white !important;
+}
+
+/* remove UI noise */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: visible;}
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# PLANILHA (GOOGLE SHEETS)
+# PLANILHA GOOGLE SHEETS
 # =========================
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
@@ -98,7 +116,7 @@ def load_data():
     df = pd.read_csv(URL)
     df.columns = df.columns.str.strip()
 
-    # evita quebra se não existir Nome
+    # valor seguro
     if "Nome" in df.columns:
         df["Valor"] = df["Nome"].apply(lambda x: (hash(str(x)) % 5000) + 3000)
     else:
@@ -107,8 +125,6 @@ def load_data():
     return df
 
 df = load_data()
-
-# remove linhas vazias
 df = df.dropna(how="all")
 
 # =========================
@@ -116,16 +132,20 @@ df = df.dropna(how="all")
 # =========================
 components.html("""
 <div style="text-align:center;font-family:Arial;">
-    <div style="font-size:46px;font-weight:900;">📊 Operação Comercial</div>
-    <div style="font-size:14px;color:#666;">Oppi Vision - Dashboard</div>
+    <div style="font-size:46px;font-weight:900;color:white;">
+        📊 Operação Comercial
+    </div>
+    <div style="font-size:14px;color:#ddd;">
+        Oppi Vision - Dashboard Premium
+    </div>
 </div>
 """, height=110)
 
 # =========================
-# FILTROS (BLINDADO)
+# FILTROS
 # =========================
-meses = sorted(df["Mês"].dropna().unique().tolist()) if "Mês" in df.columns else []
-unidades = sorted(df["Unidade"].dropna().unique().tolist()) if "Unidade" in df.columns else []
+meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
+unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
 
 col1, col2, col3 = st.columns([5,1,5])
 
@@ -144,14 +164,14 @@ with col3:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades if unidades else ["Todas"])
 
 # =========================
-# FILTRO SEGURANÇA
+# FILTRO
 # =========================
 df_f = df.copy()
 
-if "Mês" in df_f.columns and mes != "Todos":
+if "Mês" in df.columns and mes != "Todos":
     df_f = df_f[df_f["Mês"] == mes]
 
-if "Unidade" in df_f.columns and unidade != "Todas":
+if "Unidade" in df.columns and unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
 
 st.divider()
@@ -161,8 +181,7 @@ st.divider()
 # =========================
 total = len(df_f)
 vendas = len(df_f)
-
-faturamento = df_f["Valor"].sum() if "Valor" in df_f.columns else 0
+faturamento = df_f["Valor"].sum()
 ticket = faturamento / total if total else 0
 
 c1, c2, c3, c4 = st.columns(4)
@@ -202,10 +221,9 @@ with c4:
 st.divider()
 
 # =========================
-# CONTATOS POR STATUS (AGRUPADO POR MÊS - CORRETO SKOOB STYLE)
+# CONTATOS POR STATUS (CORRIGIDO)
 # =========================
-
-st.subheader("📊 Contatos por status (Total do mês)")
+st.subheader("📊 Contatos por status")
 
 colunas_status = [
     "Status 1º contato",
@@ -217,52 +235,44 @@ status_total = {}
 
 for col in colunas_status:
     if col in df_f.columns:
-        contagem = df_f[col].value_counts(dropna=True)
+        contagem = df_f[col].value_counts()
 
         for k, v in contagem.items():
             if pd.isna(k) or k == "":
                 continue
             status_total[k] = status_total.get(k, 0) + v
 
-chart = pd.DataFrame(
-    list(status_total.items()),
-    columns=["Status", "Qtd"]
-)
+chart = pd.DataFrame(status_total.items(), columns=["Status", "Qtd"])
 
 if not chart.empty:
-    fig = px.bar(
-        chart,
-        x="Status",
-        y="Qtd",
-        text="Qtd"
-    )
+    fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
 
     fig.update_layout(
         height=380,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        xaxis_title="Status",
-        yaxis_title="Qtd",
-        showlegend=False
+        paper_bgcolor="rgba(255,255,255,0.9)",
+        plot_bgcolor="rgba(255,255,255,0.0)"
     )
 
+    fig.update_traces(marker_color="#a855f7")
+
     st.plotly_chart(fig, use_container_width=True)
-else:
-    st.warning("Sem dados para exibir")
+
 # =========================
-# GRÁFICO UNIDADE (SEGURADO)
+# VENDAS POR UNIDADE
 # =========================
 st.subheader("🏢 Vendas por unidade")
 
-if "Unidade" in df_f.columns:
+if "Unidade" in df.columns:
     uni = df_f.groupby("Unidade").size().reset_index(name="Qtd")
 
     fig2 = px.bar(uni, x="Unidade", y="Qtd", text="Qtd")
     fig2.update_layout(
         height=350,
-        paper_bgcolor="white",
-        plot_bgcolor="white"
+        paper_bgcolor="rgba(255,255,255,0.9)",
+        plot_bgcolor="rgba(255,255,255,0.0)"
     )
+    fig2.update_traces(marker_color="#ec4899")
+
     st.plotly_chart(fig2, use_container_width=True)
 
 # =========================
@@ -270,68 +280,33 @@ if "Unidade" in df_f.columns:
 # =========================
 st.subheader("🐶 Raças mais vendidas")
 
-if "Raça" in df_f.columns:
+if "Raça" in df.columns:
     raca = df_f.groupby("Raça").size().reset_index(name="Qtd")
 
     fig3 = px.bar(raca, x="Raça", y="Qtd", text="Qtd")
+    fig3.update_layout(
+        height=350,
+        paper_bgcolor="rgba(255,255,255,0.9)",
+        plot_bgcolor="rgba(255,255,255,0.0)"
+    )
+    fig3.update_traces(marker_color="#a855f7")
+
     st.plotly_chart(fig3, use_container_width=True)
 
 # =========================
-# GRÁFICOS
-# =========================
-
-g3, g4 = st.columns(2)
-
-# RAÇAS
-with g3:
-    st.subheader("🐶 Raças mais vendidas")
-
-    if "Raça" in df_f.columns:
-        df_raca = (
-            df_f.groupby("Raça")
-            .size()
-            .reset_index(name="Qtd")
-            .sort_values("Qtd", ascending=False)
-        )
-
-        fig3 = px.bar(
-            df_raca,
-            x="Raça",
-            y="Qtd",
-            text="Qtd"
-        )
-
-        fig3.update_layout(
-            height=380,
-            paper_bgcolor="white",
-            plot_bgcolor="white"
-        )
-
-        st.plotly_chart(fig3, use_container_width=True)
-
 # VENDEDORA
-with g4:
-    st.subheader("🏆 Vendas por vendedora")
+# =========================
+st.subheader("🏆 Vendas por vendedora")
 
-    if "Vendedora" in df_f.columns:
-        df_vend = (
-            df_f.groupby("Vendedora")
-            .size()
-            .reset_index(name="Qtd")
-            .sort_values("Qtd", ascending=False)
-        )
+if "Vendedora" in df.columns:
+    vend = df_f.groupby("Vendedora").size().reset_index(name="Qtd")
 
-        fig4 = px.bar(
-            df_vend,
-            x="Vendedora",
-            y="Qtd",
-            text="Qtd"
-        )
+    fig4 = px.bar(vend, x="Vendedora", y="Qtd", text="Qtd")
+    fig4.update_layout(
+        height=350,
+        paper_bgcolor="rgba(255,255,255,0.9)",
+        plot_bgcolor="rgba(255,255,255,0.0)"
+    )
+    fig4.update_traces(marker_color="#ec4899")
 
-        fig4.update_layout(
-            height=380,
-            paper_bgcolor="white",
-            plot_bgcolor="white"
-        )
-
-        st.plotly_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig4, use_container_width=True)
