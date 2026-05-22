@@ -7,106 +7,97 @@ import pandas as pd
 # CONFIG
 # =========================
 st.set_page_config(
-    page_title="Operação Comercial",
+    page_title="Dashboard Oppi Mockup",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # =========================
-# CSS PREMIUM ROXO / ROSA
+# CSS PREMIUM (SKOOB + SAAS)
 # =========================
 st.markdown("""
 <style>
 
+/* FUNDO EXTERNO (Skoob clean) */
 .stApp {
-    background: linear-gradient(135deg, #1b0b2e, #2a0f3a, #3b1452);
+    background: #D4D4D4;
 }
 
+/* ÁREA CENTRAL (painel roxo premium) */
 .block-container {
-    padding-top: 1rem;
+    background: linear-gradient(135deg, #1b0b2e, #2a0f3a, #3b1452);
+    border-radius: 24px;
+    padding: 25px;
+    margin-top: 15px;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.35);
     max-width: 1200px;
 }
 
-/* CARDS PREMIUM */
+/* CARDS */
 .card {
-    background: rgba(255,255,255,0.92);
-    border-radius: 22px;
+    background: white;
+    border-radius: 20px;
     padding: 22px;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
-    border-left: 6px solid #a855f7;
-    backdrop-filter: blur(10px);
-    transition: 0.3s ease;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    border-left: 6px solid #c084fc;
+    transition: 0.25s ease;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 45px rgba(168,85,247,0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.25);
 }
 
-.card-red {
-    border-left: 6px solid #ec4899;
-}
-
-/* KPI */
+/* KPIs */
 .kpi-title {
-    font-size: 13px;
-    font-weight: 800;
-    color: #4b5563;
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
 }
 
 .kpi-value {
-    font-size: 46px;
+    font-size: 40px;
     font-weight: 900;
-    color: #111827;
+    color: #0f172a;
 }
 
 .kpi-sub {
-    font-size: 12px;
-    color: #6b7280;
+    font-size: 11px;
+    color: #64748b;
 }
 
 /* LOGO */
 .logo-box {
-    background: linear-gradient(135deg, #a855f7, #ec4899);
+    background: white;
     border-radius: 50%;
-    width: 92px;
-    height: 92px;
+    width: 90px;
+    height: 90px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    box-shadow: 0 10px 25px rgba(168,85,247,0.35);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
 .logo-main {
     font-size: 22px;
     font-weight: 900;
-    color: white;
+    color: #7c3aed;
 }
 
 .logo-sub {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 900;
-    color: #ffe4f3;
+    color: #ec4899;
     letter-spacing: 3px;
 }
-
-/* TITLES */
-h1, h2, h3 {
-    color: white !important;
-}
-
-/* remove UI noise */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: visible;}
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# PLANILHA GOOGLE SHEETS
+# GOOGLE SHEETS
 # =========================
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
@@ -116,7 +107,7 @@ def load_data():
     df = pd.read_csv(URL)
     df.columns = df.columns.str.strip()
 
-    # valor seguro
+    # garante coluna Valor
     if "Nome" in df.columns:
         df["Valor"] = df["Nome"].apply(lambda x: (hash(str(x)) % 5000) + 3000)
     else:
@@ -132,14 +123,14 @@ df = df.dropna(how="all")
 # =========================
 components.html("""
 <div style="text-align:center;font-family:Arial;">
-    <div style="font-size:46px;font-weight:900;color:white;">
+    <div style="font-size:44px;font-weight:900;color:white;">
         📊 Operação Comercial
     </div>
     <div style="font-size:14px;color:#ddd;">
-        Oppi Vision - Dashboard Premium
+        Oppi Vision • Dashboard Premium
     </div>
 </div>
-""", height=110)
+""", height=120)
 
 # =========================
 # FILTROS
@@ -168,10 +159,10 @@ with col3:
 # =========================
 df_f = df.copy()
 
-if "Mês" in df.columns and mes != "Todos":
+if "Mês" in df_f.columns and mes != "Todos":
     df_f = df_f[df_f["Mês"] == mes]
 
-if "Unidade" in df.columns and unidade != "Todas":
+if "Unidade" in df_f.columns and unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
 
 st.divider()
@@ -181,7 +172,7 @@ st.divider()
 # =========================
 total = len(df_f)
 vendas = len(df_f)
-faturamento = df_f["Valor"].sum()
+faturamento = df_f["Valor"].sum() if "Valor" in df_f.columns else 0
 ticket = faturamento / total if total else 0
 
 c1, c2, c3, c4 = st.columns(4)
@@ -196,7 +187,7 @@ with c1:
 
 with c2:
     st.markdown(f"""
-    <div class="card card-red">
+    <div class="card">
         <div class="kpi-title">✅ Registros</div>
         <div class="kpi-value">{vendas}</div>
     </div>
@@ -212,7 +203,7 @@ with c3:
 
 with c4:
     st.markdown(f"""
-    <div class="card card-red">
+    <div class="card">
         <div class="kpi-title">🎯 Ticket médio</div>
         <div class="kpi-value">R$ {ticket:,.0f}</div>
     </div>
@@ -221,11 +212,11 @@ with c4:
 st.divider()
 
 # =========================
-# CONTATOS POR STATUS (CORRIGIDO)
+# CONTATOS POR STATUS (SKOOB FIX)
 # =========================
 st.subheader("📊 Contatos por status")
 
-colunas_status = [
+status_cols = [
     "Status 1º contato",
     "Status 2º contato",
     "Status 3º contato"
@@ -233,46 +224,32 @@ colunas_status = [
 
 status_total = {}
 
-for col in colunas_status:
+for col in status_cols:
     if col in df_f.columns:
-        contagem = df_f[col].value_counts()
+        for k, v in df_f[col].value_counts().items():
+            if pd.notna(k) and k != "":
+                status_total[k] = status_total.get(k, 0) + v
 
-        for k, v in contagem.items():
-            if pd.isna(k) or k == "":
-                continue
-            status_total[k] = status_total.get(k, 0) + v
-
-chart = pd.DataFrame(status_total.items(), columns=["Status", "Qtd"])
+chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
 
 if not chart.empty:
     fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
-
     fig.update_layout(
         height=380,
-        paper_bgcolor="rgba(255,255,255,0.9)",
-        plot_bgcolor="rgba(255,255,255,0.0)"
+        paper_bgcolor="white",
+        plot_bgcolor="white"
     )
-
-    fig.update_traces(marker_color="#a855f7")
-
     st.plotly_chart(fig, use_container_width=True)
 
 # =========================
-# VENDAS POR UNIDADE
+# UNIDADE
 # =========================
 st.subheader("🏢 Vendas por unidade")
 
-if "Unidade" in df.columns:
+if "Unidade" in df_f.columns:
     uni = df_f.groupby("Unidade").size().reset_index(name="Qtd")
 
     fig2 = px.bar(uni, x="Unidade", y="Qtd", text="Qtd")
-    fig2.update_layout(
-        height=350,
-        paper_bgcolor="rgba(255,255,255,0.9)",
-        plot_bgcolor="rgba(255,255,255,0.0)"
-    )
-    fig2.update_traces(marker_color="#ec4899")
-
     st.plotly_chart(fig2, use_container_width=True)
 
 # =========================
@@ -280,17 +257,10 @@ if "Unidade" in df.columns:
 # =========================
 st.subheader("🐶 Raças mais vendidas")
 
-if "Raça" in df.columns:
+if "Raça" in df_f.columns:
     raca = df_f.groupby("Raça").size().reset_index(name="Qtd")
 
     fig3 = px.bar(raca, x="Raça", y="Qtd", text="Qtd")
-    fig3.update_layout(
-        height=350,
-        paper_bgcolor="rgba(255,255,255,0.9)",
-        plot_bgcolor="rgba(255,255,255,0.0)"
-    )
-    fig3.update_traces(marker_color="#a855f7")
-
     st.plotly_chart(fig3, use_container_width=True)
 
 # =========================
@@ -298,15 +268,17 @@ if "Raça" in df.columns:
 # =========================
 st.subheader("🏆 Vendas por vendedora")
 
-if "Vendedora" in df.columns:
+if "Vendedora" in df_f.columns:
     vend = df_f.groupby("Vendedora").size().reset_index(name="Qtd")
 
     fig4 = px.bar(vend, x="Vendedora", y="Qtd", text="Qtd")
-    fig4.update_layout(
-        height=350,
-        paper_bgcolor="rgba(255,255,255,0.9)",
-        plot_bgcolor="rgba(255,255,255,0.0)"
-    )
-    fig4.update_traces(marker_color="#ec4899")
-
     st.plotly_chart(fig4, use_container_width=True)
+
+# =========================
+# TABELA FINAL
+# =========================
+st.subheader("📄 Dados da planilha")
+
+st.dataframe(df_f, use_container_width=True)
+
+st.info("Dashboard premium estilo Skoob + Oppi Vision com UI SaaS moderna 💜")
