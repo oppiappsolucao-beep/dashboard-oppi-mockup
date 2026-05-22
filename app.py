@@ -14,24 +14,23 @@ st.set_page_config(
 )
 
 # =========================
-# CSS SKOOB REAL (CINZA + SAAS CLEAN)
+# CSS SKOOB REAL (CINZA PROFISSIONAL)
 # =========================
 st.markdown("""
 <style>
 
-/* FUNDO REAL (SISTEMA SaaS) */
+/* FUNDO GERAL (CORRETO SKOOB) */
 .stApp {
-    background: #E5E7EB;
+    background: #E5E7EB !important;
 }
 
-/* CONTAINER CENTRAL BRANCO */
+/* CONTAINER CENTRAL */
 .block-container {
-    background: white;
+    background: #F9FAFB;
     border-radius: 20px;
     padding: 28px;
     margin-top: 18px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-    max-width: 1200px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
 /* HEADER */
@@ -46,7 +45,6 @@ st.markdown("""
     text-align:center;
     font-size:13px;
     color:#6B7280;
-    margin-top:-6px;
 }
 
 /* LOGO */
@@ -59,8 +57,7 @@ st.markdown("""
     align-items:center;
     justify-content:center;
     flex-direction:column;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    border: 1px solid #eee;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 .logo-main {
@@ -73,23 +70,25 @@ st.markdown("""
     font-size:10px;
     font-weight:900;
     color:#ec4899;
+    letter-spacing:3px;
 }
 
-/* CARDS CLEAN SAAS */
+/* CARDS */
 .card {
     background: white;
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     border-left: 4px solid #7c3aed;
     transition: 0.2s ease;
 }
 
 .card:hover {
     transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
 }
 
-/* KPIs */
+/* KPI */
 .kpi-title {
     font-size:12px;
     font-weight:700;
@@ -102,12 +101,17 @@ st.markdown("""
     color:#111827;
 }
 
-/* gráficos */
+/* GRÁFICOS */
 .stPlotlyChart {
     background:white;
     border-radius:16px;
     padding:10px;
 }
+
+/* REMOVE POLUIÇÃO STREAMLIT */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
 
 </style>
 """, unsafe_allow_html=True)
@@ -123,7 +127,7 @@ components.html("""
 """, height=90)
 
 # =========================
-# DATA
+# GOOGLE SHEETS
 # =========================
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
@@ -144,7 +148,7 @@ df = load_data()
 df = df.dropna(how="all")
 
 # =========================
-# FILTERS
+# FILTROS
 # =========================
 meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
 unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
@@ -165,6 +169,9 @@ with c2:
 with c3:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades if unidades else ["Todas"])
 
+# =========================
+# FILTRO
+# =========================
 df_f = df.copy()
 
 if "Mês" in df_f.columns and mes != "Todos":
@@ -220,28 +227,48 @@ with k4:
 st.divider()
 
 # =========================
-# GRÁFICOS
+# CONTATOS POR STATUS (CORRIGIDO)
 # =========================
-g1, g2 = st.columns(2)
+st.subheader("Contatos por status")
 
-with g1:
-    st.subheader("Contatos por status")
+status_cols = [
+    "Status 1º contato",
+    "Status 2º contato",
+    "Status 3º contato"
+]
 
-    if "Status" in df_f.columns:
-        chart = df_f.groupby("Status").size().reset_index(name="Qtd")
-        fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
-        st.plotly_chart(fig, use_container_width=True)
+status_total = {}
 
-with g2:
-    st.subheader("Vendas por unidade")
+for col in status_cols:
+    if col in df_f.columns:
+        for k, v in df_f[col].value_counts().items():
+            if pd.notna(k) and k != "":
+                status_total[k] = status_total.get(k, 0) + v
 
-    if "Unidade" in df_f.columns:
-        uni = df_f.groupby("Unidade").size().reset_index(name="Qtd")
-        fig2 = px.bar(uni, x="Unidade", y="Qtd", text="Qtd")
-        st.plotly_chart(fig2, use_container_width=True)
+chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
 
-st.divider()
+if not chart.empty:
+    fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
+    fig.update_layout(
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        height=380
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
+# =========================
+# UNIDADE
+# =========================
+st.subheader("Vendas por unidade")
+
+if "Unidade" in df_f.columns:
+    uni = df_f.groupby("Unidade").size().reset_index(name="Qtd")
+    fig2 = px.bar(uni, x="Unidade", y="Qtd", text="Qtd")
+    st.plotly_chart(fig2, use_container_width=True)
+
+# =========================
+# RAÇAS
+# =========================
 st.subheader("Raças mais vendidas")
 
 if "Raça" in df_f.columns:
@@ -249,6 +276,9 @@ if "Raça" in df_f.columns:
     fig3 = px.bar(raca, x="Raça", y="Qtd", text="Qtd")
     st.plotly_chart(fig3, use_container_width=True)
 
+# =========================
+# VENDEDORA
+# =========================
 st.subheader("Vendas por vendedora")
 
 if "Vendedora" in df_f.columns:
@@ -256,7 +286,8 @@ if "Vendedora" in df_f.columns:
     fig4 = px.bar(vend, x="Vendedora", y="Qtd", text="Qtd")
     st.plotly_chart(fig4, use_container_width=True)
 
-st.divider()
-
+# =========================
+# TABELA
+# =========================
 st.subheader("Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
