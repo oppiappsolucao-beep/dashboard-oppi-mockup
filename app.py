@@ -6,57 +6,98 @@ import plotly.express as px
 # CONFIG
 # =========================
 st.set_page_config(
-    page_title="Operação Comercial",
+    page_title="Skoob Clone",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # =========================
-# CSS SKOOB STYLE
+# CSS SKOOB REAL STYLE
 # =========================
 st.markdown("""
 <style>
 
 .stApp {
-    background: #D4D4D4;
+    background: #E5E5E5;
 }
 
+/* remove padding padrão streamlit */
 .block-container {
-    max-width: 1200px;
     padding-top: 1rem;
+    max-width: 1180px;
 }
 
-.card {
+/* HEADER FIXO STYLE */
+.header {
     background: white;
-    border-radius: 16px;
+    padding: 14px 20px;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.logo {
+    font-weight: 900;
+    font-size: 22px;
+    color: #1B1D6D;
+}
+
+.filters {
+    display: flex;
+    gap: 12px;
+}
+
+/* KPI CARDS SKOOB */
+.kpi-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.kpi {
+    background: white;
+    border-radius: 18px;
     padding: 18px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
     border-left: 6px solid #1B1D6D;
 }
 
-.kpi-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #475569;
+.kpi h4 {
+    font-size: 13px;
+    margin: 0;
+    color: #64748b;
 }
 
-.kpi-value {
-    font-size: 38px;
+.kpi h1 {
+    margin: 8px 0 0 0;
+    font-size: 36px;
     font-weight: 900;
     color: #0f172a;
 }
 
-.kpi-sub {
-    font-size: 11px;
-    color: #64748b;
+/* CHART BLOCKS */
+.block {
+    background: white;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-
 # =========================
-# DATA (GOOGLE SHEETS REAL)
+# DATA REAL SHEET
 # =========================
 @st.cache_data(ttl=60)
 def load_data():
@@ -65,148 +106,105 @@ def load_data():
     df.columns = df.columns.str.strip()
     return df
 
-
 df = load_data()
 
-if df.empty:
-    st.stop()
-
 # =========================
-# FILTROS (SKOOB HEADER STYLE)
+# FILTERS
 # =========================
-meses = sorted(df["Mês"].dropna().unique().tolist())
-unidades = sorted(df["Unidade"].dropna().unique().tolist())
+meses = sorted(df["Mês"].dropna().unique())
+unidades = sorted(df["Unidade"].dropna().unique())
 
-col1, col2, col3 = st.columns([3,1,3])
+col1, col2 = st.columns([2,2])
 
 with col1:
     mes = st.selectbox("Mês", meses)
 
 with col2:
-    st.markdown("""
-    <div style="
-        width:80px;
-        height:80px;
-        border-radius:50%;
-        background:white;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-weight:900;
-        color:#1B1D6D;
-        box-shadow:0 8px 20px rgba(0,0,0,0.1);
-        margin:auto;
-    ">
-    OPPI
-    </div>
-    """, unsafe_allow_html=True)
-
-with col3:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades)
 
-st.divider()
-
-# =========================
-# FILTRO DATA
-# =========================
-df_f = df[df["Mês"] == mes]
-
+df = df[df["Mês"] == mes]
 if unidade != "Todas":
-    df_f = df_f[df_f["Unidade"] == unidade]
-
+    df = df[df["Unidade"] == unidade]
 
 # =========================
-# KPIs (SKOOB GRID 6 CARDS)
+# HEADER SKOOB REAL
 # =========================
-total = len(df_f)
+st.markdown(f"""
+<div class="header">
+    <div class="logo">📊 SKOOB DASHBOARD</div>
+    <div style="color:#64748b;font-weight:600;">
+        {mes} • {unidade}
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-status_cols = [c for c in df_f.columns if "Status" in c]
+# =========================
+# KPI
+# =========================
+total = len(df)
+vendas = len(df[df["Status"].str.contains("Venda", na=False)])
+faturamento = total * 5200  # se não tiver valor na sheet, fallback
 
-df_status = None
-if status_cols:
-    df_status = df_f[status_cols].melt(
-        var_name="Etapa",
-        value_name="Status"
-    )
-    df_status = df_status.dropna()
-    df_status = df_status[df_status["Status"] != ""]
+st.markdown(f"""
+<div class="kpi-wrap">
 
-vendas = len(df_status[df_status["Status"].str.contains("Enviado", na=False)]) if df_status is not None else 0
+    <div class="kpi">
+        <h4>Total registros</h4>
+        <h1>{total}</h1>
+    </div>
 
-c1, c2, c3 = st.columns(3)
+    <div class="kpi">
+        <h4>Vendas</h4>
+        <h1>{vendas}</h1>
+    </div>
+
+    <div class="kpi">
+        <h4>Faturamento</h4>
+        <h1>R$ {faturamento:,.0f}</h1>
+    </div>
+
+</div>
+""", unsafe_allow_html=True)
+
+# =========================
+# GRÁFICOS SKOOB REAL GRID
+# =========================
+c1, c2 = st.columns(2)
 
 with c1:
-    st.markdown(f"""
-    <div class="card">
-        <div class="kpi-title">Total registros</div>
-        <div class="kpi-value">{total}</div>
-        <div class="kpi-sub">Mês selecionado</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with c2:
-    st.markdown(f"""
-    <div class="card">
-        <div class="kpi-title">Vendas</div>
-        <div class="kpi-value">{vendas}</div>
-        <div class="kpi-sub">Conversões</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with c3:
-    st.markdown(f"""
-    <div class="card">
-        <div class="kpi-title">Status total</div>
-        <div class="kpi-value">{len(df_status) if df_status is not None else 0}</div>
-        <div class="kpi-sub">Interações</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-st.divider()
-
-# =========================
-# GRÁFICOS SKOOB STYLE (2 COLUNAS)
-# =========================
-g1, g2 = st.columns(2)
-
-# ---- STATUS
-with g1:
+    st.markdown('<div class="block">', unsafe_allow_html=True)
     st.subheader("Contatos por status")
 
-    if df_status is not None:
-        chart = df_status.groupby("Status").size().reset_index(name="Qtd")
+    chart = df.groupby("Status").size().reset_index(name="Qtd")
 
-        fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
-        fig.update_layout(
-            height=350,
-            paper_bgcolor="white",
-            plot_bgcolor="white"
-        )
+    fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
+    fig.update_layout(
+        height=350,
+        paper_bgcolor="white",
+        plot_bgcolor="white"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        st.plotly_chart(fig, use_container_width=True)
-
-# ---- UNIDADE
-with g2:
+with c2:
+    st.markdown('<div class="block">', unsafe_allow_html=True)
     st.subheader("Vendas por unidade")
 
-    uni = df_f.groupby("Unidade").size().reset_index(name="Qtd")
+    chart2 = df.groupby("Unidade").size().reset_index(name="Qtd")
 
-    fig2 = px.bar(uni, x="Unidade", y="Qtd", text="Qtd")
+    fig2 = px.bar(chart2, x="Unidade", y="Qtd", text="Qtd")
     fig2.update_layout(
         height=350,
         paper_bgcolor="white",
         plot_bgcolor="white"
     )
-
     st.plotly_chart(fig2, use_container_width=True)
-
-
-st.divider()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
-# TABELA FINAL
+# TABLE
 # =========================
-st.subheader("Dados da planilha")
-
-st.dataframe(df_f, use_container_width=True)
+st.markdown('<div class="block">', unsafe_allow_html=True)
+st.subheader("Dados")
+st.dataframe(df, use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
