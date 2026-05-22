@@ -14,63 +14,58 @@ st.set_page_config(
 )
 
 # =========================
-# CSS SKOOB REAL (AJUSTADO)
+# CSS SKOOB REAL (CINZA + SAAS CLEAN)
 # =========================
 st.markdown("""
 <style>
 
-/* fundo externo Skoob */
+/* FUNDO REAL (SISTEMA SaaS) */
 .stApp {
-    background: #D4D4D4;
+    background: #E5E7EB;
 }
 
-/* container central REAL SaaS */
+/* CONTAINER CENTRAL BRANCO */
 .block-container {
-    background: linear-gradient(135deg, #12021f, #2a0f3a, #3b1452);
-    border-radius: 26px;
-    padding: 28px 30px;
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
     margin-top: 18px;
-    box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
     max-width: 1200px;
 }
 
-/* remove espaçamento quebrado */
-div[data-testid="stVerticalBlock"] {
-    gap: 14px;
-}
-
-/* ===== HEADER ===== */
+/* HEADER */
 .header-title {
     text-align:center;
-    color:white;
-    font-size:42px;
+    font-size:40px;
     font-weight:900;
-    letter-spacing:-1px;
+    color:#111827;
 }
 
 .header-sub {
     text-align:center;
-    color:#c7b6ff;
     font-size:13px;
+    color:#6B7280;
     margin-top:-6px;
 }
 
-/* ===== LOGO ===== */
+/* LOGO */
 .logo-box {
     background: white;
     border-radius: 50%;
-    width: 92px;
-    height: 92px;
+    width: 90px;
+    height: 90px;
     display:flex;
     align-items:center;
     justify-content:center;
     flex-direction:column;
-    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
 }
 
 .logo-main {
-    font-weight:900;
     font-size:20px;
+    font-weight:900;
     color:#7c3aed;
 }
 
@@ -78,50 +73,39 @@ div[data-testid="stVerticalBlock"] {
     font-size:10px;
     font-weight:900;
     color:#ec4899;
-    letter-spacing:3px;
 }
 
-/* ===== FILTERS ===== */
-div[data-baseweb="select"] {
-    border-radius: 14px;
-}
-
-/* ===== CARDS ===== */
+/* CARDS CLEAN SAAS */
 .card {
-    background: rgba(255,255,255,0.96);
-    border-radius: 18px;
+    background: white;
+    border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 14px 35px rgba(0,0,0,0.25);
-    border-left: 5px solid #a855f7;
-    transition: .25s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    border-left: 4px solid #7c3aed;
+    transition: 0.2s ease;
 }
 
 .card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
 }
 
-/* KPI TEXT */
+/* KPIs */
 .kpi-title {
     font-size:12px;
     font-weight:700;
-    color:#475569;
+    color:#6B7280;
 }
 
 .kpi-value {
     font-size:38px;
     font-weight:900;
-    color:#0f172a;
+    color:#111827;
 }
 
-.kpi-sub {
-    font-size:11px;
-    color:#64748b;
-}
-
-/* charts */
+/* gráficos */
 .stPlotlyChart {
     background:white;
-    border-radius:18px;
+    border-radius:16px;
     padding:10px;
 }
 
@@ -134,7 +118,7 @@ div[data-baseweb="select"] {
 components.html("""
 <div>
     <div class="header-title">📊 Operação Comercial</div>
-    <div class="header-sub">Oppi Vision • Dashboard Premium</div>
+    <div class="header-sub">Oppi Vision • Sistema de Gestão</div>
 </div>
 """, height=90)
 
@@ -192,7 +176,7 @@ if "Unidade" in df_f.columns and unidade != "Todas":
 st.divider()
 
 # =========================
-# KPIs (SKOOB CLEAN)
+# KPIs
 # =========================
 total = len(df_f)
 vendas = len(df_f)
@@ -204,7 +188,7 @@ k1, k2, k3, k4 = st.columns(4)
 with k1:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">📌 Total registros</div>
+        <div class="kpi-title">Total registros</div>
         <div class="kpi-value">{total}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -212,7 +196,7 @@ with k1:
 with k2:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">✅ Registros</div>
+        <div class="kpi-title">Registros</div>
         <div class="kpi-value">{vendas}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -220,7 +204,7 @@ with k2:
 with k3:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">💰 Faturamento</div>
+        <div class="kpi-title">Faturamento</div>
         <div class="kpi-value">R$ {faturamento:,.0f}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -228,7 +212,7 @@ with k3:
 with k4:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">🎯 Ticket médio</div>
+        <div class="kpi-title">Ticket médio</div>
         <div class="kpi-value">R$ {ticket:,.0f}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -236,58 +220,43 @@ with k4:
 st.divider()
 
 # =========================
-# CHARTS
+# GRÁFICOS
 # =========================
 g1, g2 = st.columns(2)
 
 with g1:
-    st.subheader("📊 Contatos por status")
+    st.subheader("Contatos por status")
 
     if "Status" in df_f.columns:
         chart = df_f.groupby("Status").size().reset_index(name="Qtd")
-
         fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
-        fig.update_layout(
-            height=360,
-            paper_bgcolor="white",
-            plot_bgcolor="white",
-            margin=dict(l=10,r=10,t=20,b=20)
-        )
         st.plotly_chart(fig, use_container_width=True)
 
 with g2:
-    st.subheader("🏢 Vendas por unidade")
+    st.subheader("Vendas por unidade")
 
     if "Unidade" in df_f.columns:
         uni = df_f.groupby("Unidade").size().reset_index(name="Qtd")
-
         fig2 = px.bar(uni, x="Unidade", y="Qtd", text="Qtd")
         st.plotly_chart(fig2, use_container_width=True)
 
 st.divider()
 
-# =========================
-# RAÇAS + VENDEDORA
-# =========================
-g3, g4 = st.columns(2)
+st.subheader("Raças mais vendidas")
 
-with g3:
-    st.subheader("🐶 Raças mais vendidas")
+if "Raça" in df_f.columns:
+    raca = df_f.groupby("Raça").size().reset_index(name="Qtd")
+    fig3 = px.bar(raca, x="Raça", y="Qtd", text="Qtd")
+    st.plotly_chart(fig3, use_container_width=True)
 
-    if "Raça" in df_f.columns:
-        raca = df_f.groupby("Raça").size().reset_index(name="Qtd")
-        fig3 = px.bar(raca, x="Raça", y="Qtd", text="Qtd")
-        st.plotly_chart(fig3, use_container_width=True)
+st.subheader("Vendas por vendedora")
 
-with g4:
-    st.subheader("🏆 Vendas por vendedora")
-
-    if "Vendedora" in df_f.columns:
-        vend = df_f.groupby("Vendedora").size().reset_index(name="Qtd")
-        fig4 = px.bar(vend, x="Vendedora", y="Qtd", text="Qtd")
-        st.plotly_chart(fig4, use_container_width=True)
+if "Vendedora" in df_f.columns:
+    vend = df_f.groupby("Vendedora").size().reset_index(name="Qtd")
+    fig4 = px.bar(vend, x="Vendedora", y="Qtd", text="Qtd")
+    st.plotly_chart(fig4, use_container_width=True)
 
 st.divider()
 
-st.subheader("📄 Dados da planilha")
+st.subheader("Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
