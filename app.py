@@ -19,7 +19,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* BACKGROUND PRINCIPAL (DARK GRADIENT PREMIUM) */
+/* BACKGROUND PRINCIPAL (light gray) */
 .stApp {
     background: radial-gradient(circle at top left, #1a0b2e, #0b0f1a 60%);
     color: white;
