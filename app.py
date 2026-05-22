@@ -202,38 +202,33 @@ with c4:
 st.divider()
 
 # =========================
-# GRÁFICO STATUS (CORRIGIDO SKOOB STYLE REAL)
+# CONTATOS POR STATUS (AGRUPADO POR MÊS - CORRETO SKOOB STYLE)
 # =========================
 
-st.subheader("📊 Contatos por status")
+st.subheader("📊 Contatos por status (Total do mês)")
 
-status_counter = {}
+colunas_status = [
+    "Status 1º contato",
+    "Status 2º contato",
+    "Status 3º contato"
+]
 
-# 1º contato
-if "Status 1º contato" in df_f.columns:
-    for v in df_f["Status 1º contato"].fillna("Vazio").astype(str):
-        key = "1º contato - " + v
-        status_counter[key] = status_counter.get(key, 0) + 1
+status_total = {}
 
-# 2º contato
-if "Status 2º contato" in df_f.columns:
-    for v in df_f["Status 2º contato"].fillna("Vazio").astype(str):
-        key = "2º contato - " + v
-        status_counter[key] = status_counter.get(key, 0) + 1
+for col in colunas_status:
+    if col in df_f.columns:
+        contagem = df_f[col].value_counts(dropna=True)
 
-# 3º contato
-if "Status 3º contato" in df_f.columns:
-    for v in df_f["Status 3º contato"].fillna("Vazio").astype(str):
-        key = "3º contato - " + v
-        status_counter[key] = status_counter.get(key, 0) + 1
+        for k, v in contagem.items():
+            if pd.isna(k) or k == "":
+                continue
+            status_total[k] = status_total.get(k, 0) + v
 
-# transforma em dataframe
 chart = pd.DataFrame(
-    list(status_counter.items()),
+    list(status_total.items()),
     columns=["Status", "Qtd"]
 )
 
-# plot seguro
 if not chart.empty:
     fig = px.bar(
         chart,
@@ -247,12 +242,13 @@ if not chart.empty:
         paper_bgcolor="white",
         plot_bgcolor="white",
         xaxis_title="Status",
-        yaxis_title="Qtd"
+        yaxis_title="Qtd",
+        showlegend=False
     )
 
     st.plotly_chart(fig, use_container_width=True)
 else:
-    st.warning("Sem dados para status")
+    st.warning("Sem dados para exibir")
 # =========================
 # GRÁFICO UNIDADE (SEGURADO)
 # =========================
