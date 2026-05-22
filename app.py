@@ -19,24 +19,20 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* BACKGROUND PRINCIPAL CINZA */
 .stApp {
     background: #d9d9d9;
     color: #111827;
 }
 
-/* remove streamlit UI */
 #MainMenu {visibility:hidden;}
 footer {visibility:hidden;}
 header {visibility:hidden;}
 
-/* CONTAINER */
 .block-container {
     padding-top: 28px;
     max-width: 1280px;
 }
 
-/* TOPO */
 .header-left {
     display: flex;
     align-items: flex-start;
@@ -83,11 +79,6 @@ header {visibility:hidden;}
 
 .logout-btn:hover {
     transform: translateY(-2px);
-    box-shadow:
-        0 0 0 2px rgba(242,59,155,0.32),
-        0 0 26px rgba(242,59,155,0.60),
-        0 0 34px rgba(160,0,212,0.45),
-        0 12px 28px rgba(160,0,212,0.35);
 }
 
 /* HAMBURGUER */
@@ -111,15 +102,6 @@ div[data-testid="stPopover"] button {
     transition: all 0.25s ease !important;
 }
 
-div[data-testid="stPopover"] button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow:
-        0 0 0 2px rgba(242,59,155,0.32) !important,
-        0 0 26px rgba(242,59,155,0.60) !important,
-        0 0 34px rgba(160,0,212,0.45) !important,
-        0 12px 28px rgba(160,0,212,0.35) !important;
-}
-
 div[data-testid="stPopover"] button p {
     color: white !important;
     font-weight: 800 !important;
@@ -130,7 +112,6 @@ div[data-testid="stPopover"] button svg {
     fill: white !important;
 }
 
-/* LINKS DO MENU */
 .menu-link {
     display: block;
     background: #ffffff;
@@ -244,10 +225,6 @@ div[data-testid="stPopover"] button svg {
 
 .wide-card:hover {
     transform: translateY(-2px);
-    box-shadow:
-        0 8px 22px rgba(0,0,0,0.10),
-        0 0 18px rgba(242,59,155,0.18),
-        0 0 28px rgba(160,0,212,0.12);
 }
 
 .wide-title {
@@ -270,20 +247,37 @@ div[data-testid="stPopover"] button svg {
     margin-top: 8px;
 }
 
-/* CARDS DE GRÁFICO */
-.chart-card {
+/* CABEÇALHO DOS GRÁFICOS */
+.graph-title-card {
     background: #ffffff;
-    border-radius: 14px;
-    padding: 16px;
-    border: 1px solid rgba(242,59,155,0.10);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 14px 20px 12px 20px;
     margin-top: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border: 1px solid rgba(242,59,155,0.10);
 }
 
-/* TITULOS */
-h3 {
-    color: #111827 !important;
-    font-weight: 900 !important;
+.graph-title {
+    font-size: 19px;
+    font-weight: 900;
+    color: #031b4e;
+    margin-bottom: 4px;
+}
+
+.graph-subtitle {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* CARD DO GRÁFICO */
+.chart-card {
+    background: #ffffff;
+    border-radius: 0px;
+    padding: 8px 10px 14px 10px;
+    border: 1px solid rgba(242,59,155,0.08);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    margin-bottom: 16px;
 }
 
 /* SELECT */
@@ -400,12 +394,61 @@ def render_wide_card(title, value, subtitle, accent):
     </div>
     """, unsafe_allow_html=True)
 
+def render_graph_header(title, subtitle):
+    st.markdown(f"""
+    <div class="graph-title-card">
+        <div class="graph-title">{title}</div>
+        <div class="graph-subtitle">{subtitle}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def apply_bar_layout(fig, height=360):
+    fig.update_layout(
+        height=height,
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        font_color="#031b4e",
+        margin=dict(l=10, r=10, t=10, b=20),
+        showlegend=False,
+        coloraxis_showscale=False,
+        xaxis=dict(
+            showgrid=False,
+            zeroline=False,
+            tickfont=dict(size=11, color="#334155")
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor="#eef2f7",
+            zeroline=False,
+            tickfont=dict(size=11, color="#64748b")
+        )
+    )
+
+    fig.update_traces(
+        textposition="outside",
+        textfont=dict(size=11, color="#031b4e"),
+        marker_line_width=0
+    )
+
+    return fig
+
 # =========================
 # CORES OPPI
 # =========================
 ROXO_OPPI = "#b012d9"
 ROSA_OPPI = "#f23b9b"
 ROSA_FORTE = "#ff4d7a"
+
+CORES_GRAFICO = [
+    "#24206f",
+    "#b00045",
+    "#39379a",
+    "#d00055",
+    "#43536e",
+    "#9aa8ba",
+    "#262480",
+    "#000000"
+]
 
 # =========================
 # COLUNAS IMPORTANTES
@@ -429,6 +472,16 @@ data_3_col = find_col(
     ["Data 3º contato", "3º contato", "Terceiro contato", "Data terceiro contato"],
     exclude_terms=["status"]
 )
+
+vendedora_col = find_col(df, [
+    "Vendedora",
+    "Vendedor",
+    "Consultora",
+    "Consultor",
+    "Responsável",
+    "Responsavel",
+    "Atendente"
+])
 
 # =========================
 # TOPO COM MENU
@@ -512,13 +565,20 @@ def today_count(dataframe, col):
     d = parse_date_series(dataframe[col]).dt.date
     return int((d == today).sum())
 
+def monthly_contact_count(dataframe, date_col, status_col):
+    if date_col and date_col in dataframe.columns:
+        return count_non_empty(dataframe[date_col])
+    if status_col and status_col in dataframe.columns:
+        return count_non_empty(dataframe[status_col])
+    return 0
+
 contato1_hoje = today_count(df_today_base, data_1_col)
 contato2_hoje = today_count(df_today_base, data_2_col)
 contato3_hoje = today_count(df_today_base, data_3_col)
 
-primeiro_mes = count_non_empty(df_f[status_1_col]) if status_1_col and status_1_col in df_f.columns else 0
-segundo_mes = count_non_empty(df_f[status_2_col]) if status_2_col and status_2_col in df_f.columns else 0
-terceiro_mes = count_non_empty(df_f[status_3_col]) if status_3_col and status_3_col in df_f.columns else 0
+primeiro_mes = monthly_contact_count(df_f, data_1_col, status_1_col)
+segundo_mes = monthly_contact_count(df_f, data_2_col, status_2_col)
+terceiro_mes = monthly_contact_count(df_f, data_3_col, status_3_col)
 
 error_mask = pd.Series(False, index=df_f.index)
 
@@ -573,113 +633,161 @@ with row2[1]:
 st.divider()
 
 # =========================
-# GRÁFICOS
+# GRÁFICOS DETALHADOS
 # =========================
 g1, g2 = st.columns(2)
 
-# STATUS
+# =========================
+# CONTATOS POR MÊS
+# =========================
 with g1:
-    st.markdown("### Contatos por status")
-
-    status_total = {}
-
-    for col in [status_1_col, status_2_col, status_3_col]:
-        if col and col in df_f.columns:
-            for k, v in df_f[col].fillna("").astype(str).str.strip().value_counts().items():
-                if k and k.lower() != "nan":
-                    status_total[k] = status_total.get(k, 0) + v
-
-    chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"]) if status_total else pd.DataFrame(columns=["Status", "Qtd"])
-
-    fig = px.bar(
-        chart,
-        x="Status",
-        y="Qtd",
-        text="Qtd",
-        color="Qtd",
-        color_continuous_scale=["#f23b9b", "#a000d4"]
-    ) if not chart.empty else px.bar(pd.DataFrame({"Status": [], "Qtd": []}), x="Status", y="Qtd")
-
-    fig.update_layout(
-        height=360,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        font_color="#111827",
-        margin=dict(l=10, r=10, t=10, b=10)
+    render_graph_header(
+        "📞 Contatos por mês",
+        "Distribuição mensal dos 3 contatos"
     )
 
-    fig.update_traces(textposition="outside")
+    contatos_mes = pd.DataFrame({
+        "Contato": ["1º contato", "2º contato", "3º contato"],
+        "Qtd": [primeiro_mes, segundo_mes, terceiro_mes]
+    })
+
+    fig_contatos = px.bar(
+        contatos_mes,
+        x="Contato",
+        y="Qtd",
+        text="Qtd",
+        color="Contato",
+        color_discrete_sequence=CORES_GRAFICO
+    )
+
+    fig_contatos = apply_bar_layout(fig_contatos, height=370)
 
     st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig_contatos, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# UNIDADE
+# =========================
+# VENDAS POR UNIDADE
+# =========================
 with g2:
-    st.markdown("### Vendas por unidade")
+    render_graph_header(
+        "🏙️ Vendas por unidade no mês",
+        "Quantidade de vendas registradas por unidade no mês selecionado"
+    )
 
     if "Unidade" in df_f.columns:
-        uni = df_f["Unidade"].value_counts().reset_index()
-        uni.columns = ["Unidade", "Qtd"]
+        vendas_unidade = (
+            df_f["Unidade"]
+            .fillna("Sem unidade")
+            .astype(str)
+            .str.strip()
+            .replace("", "Sem unidade")
+            .value_counts()
+            .reset_index()
+        )
+        vendas_unidade.columns = ["Unidade", "Qtd"]
     else:
-        uni = pd.DataFrame(columns=["Unidade", "Qtd"])
+        vendas_unidade = pd.DataFrame(columns=["Unidade", "Qtd"])
 
-    fig2 = px.bar(
-        uni,
+    fig_unidade = px.bar(
+        vendas_unidade,
         x="Unidade",
         y="Qtd",
         text="Qtd",
-        color="Qtd",
-        color_continuous_scale=["#f23b9b", "#a000d4"]
-    ) if not uni.empty else px.bar(pd.DataFrame({"Unidade": [], "Qtd": []}), x="Unidade", y="Qtd")
-
-    fig2.update_layout(
-        height=360,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        font_color="#111827",
-        margin=dict(l=10, r=10, t=10, b=10)
+        color="Unidade",
+        color_discrete_sequence=CORES_GRAFICO
     )
 
-    fig2.update_traces(textposition="outside")
+    fig_unidade = apply_bar_layout(fig_unidade, height=370)
+    fig_unidade.update_xaxes(tickangle=-18)
 
     st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig_unidade, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+g3, g4 = st.columns(2)
+
+# =========================
+# RAÇAS MAIS VENDIDAS
+# =========================
+with g3:
+    render_graph_header(
+        "🐶 Raças mais vendidas (mês)",
+        "Top 10 raças do mês filtrado"
+    )
+
+    if "Raça" in df_f.columns:
+        racas = (
+            df_f["Raça"]
+            .fillna("Sem raça")
+            .astype(str)
+            .str.strip()
+            .replace("", "Sem raça")
+            .value_counts()
+            .head(10)
+            .reset_index()
+        )
+        racas.columns = ["Raça", "Qtd"]
+    else:
+        racas = pd.DataFrame(columns=["Raça", "Qtd"])
+
+    fig_racas = px.bar(
+        racas,
+        x="Raça",
+        y="Qtd",
+        text="Qtd",
+        color="Raça",
+        color_discrete_sequence=CORES_GRAFICO
+    )
+
+    fig_racas = apply_bar_layout(fig_racas, height=370)
+    fig_racas.update_xaxes(tickangle=-28)
+
+    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+    st.plotly_chart(fig_racas, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
-# RAÇAS
+# VENDAS POR VENDEDORA
 # =========================
-st.markdown("### Raças mais vendidas")
+with g4:
+    render_graph_header(
+        "🏆 Vendas por vendedora (mês)",
+        "Todas as vendas do mês, incluindo sem nome"
+    )
 
-if "Raça" in df_f.columns:
-    raca = df_f["Raça"].value_counts().reset_index()
-    raca.columns = ["Raça", "Qtd"]
-else:
-    raca = pd.DataFrame(columns=["Raça", "Qtd"])
+    if vendedora_col and vendedora_col in df_f.columns:
+        vendas_vendedora = (
+            df_f[vendedora_col]
+            .fillna("Sem nome")
+            .astype(str)
+            .str.strip()
+            .replace("", "Sem nome")
+            .value_counts()
+            .reset_index()
+        )
+        vendas_vendedora.columns = ["Vendedora", "Qtd"]
+    else:
+        vendas_vendedora = pd.DataFrame({
+            "Vendedora": ["Sem coluna de vendedora"],
+            "Qtd": [0]
+        })
 
-fig3 = px.bar(
-    raca,
-    x="Raça",
-    y="Qtd",
-    text="Qtd",
-    color="Qtd",
-    color_continuous_scale=["#f23b9b", "#a000d4"]
-) if not raca.empty else px.bar(pd.DataFrame({"Raça": [], "Qtd": []}), x="Raça", y="Qtd")
+    fig_vendedora = px.bar(
+        vendas_vendedora,
+        x="Vendedora",
+        y="Qtd",
+        text="Qtd",
+        color="Vendedora",
+        color_discrete_sequence=CORES_GRAFICO
+    )
 
-fig3.update_layout(
-    height=380,
-    paper_bgcolor="white",
-    plot_bgcolor="white",
-    font_color="#111827",
-    margin=dict(l=10, r=10, t=10, b=10)
-)
+    fig_vendedora = apply_bar_layout(fig_vendedora, height=370)
+    fig_vendedora.update_xaxes(tickangle=-28)
 
-fig3.update_traces(textposition="outside")
-
-st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-st.plotly_chart(fig3, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+    st.plotly_chart(fig_vendedora, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
 # TABELA
