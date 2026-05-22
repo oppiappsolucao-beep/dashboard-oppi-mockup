@@ -21,7 +21,7 @@ st.markdown("""
 
 /* BACKGROUND PRINCIPAL (light gray) */
 .stApp {
-    background: radial-gradient(circle at top left, #1a0b2e, #0b0f1a 60%);
+    background: light gray(circle at top left, #1a0b2e, #0b0f1a 60%);
     color: white;
 }
 
