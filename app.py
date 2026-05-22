@@ -14,18 +14,18 @@ st.set_page_config(
 )
 
 # =========================
-# CSS (SKOOB + ROXO/ROSA + FUNDO CINZA)
+# CSS PREMIUM (DARK SKOOB STYLE)
 # =========================
 st.markdown("""
 <style>
 
-/* FUNDO CINZA (SKOOB STYLE) */
+/* BACKGROUND PRINCIPAL (DARK GRADIENT PREMIUM) */
 .stApp {
-    background: linear-gradient(180deg, #eef1f5 0%, #e5e7eb 100%);
-    color: #0f172a;
+    background: radial-gradient(circle at top left, #1a0b2e, #0b0f1a 60%);
+    color: white;
 }
 
-/* REMOVE UI STREAMLIT */
+/* remove streamlit UI */
 #MainMenu {visibility:hidden;}
 footer {visibility:hidden;}
 header {visibility:hidden;}
@@ -36,18 +36,18 @@ header {visibility:hidden;}
     max-width: 1200px;
 }
 
-/* HEADER */
+/* TITULO */
 .title {
     text-align:center;
     font-size:40px;
     font-weight:900;
-    color:#0f172a;
+    color:white;
 }
 
 .subtitle {
     text-align:center;
     font-size:13px;
-    color:#64748b;
+    color:#a1a1aa;
 }
 
 /* LOGO */
@@ -60,7 +60,7 @@ header {visibility:hidden;}
     align-items:center;
     justify-content:center;
     flex-direction:column;
-    box-shadow:0 10px 25px rgba(124,58,237,0.25);
+    box-shadow:0 10px 40px rgba(124,58,237,0.4);
 }
 
 .logo .a {
@@ -72,39 +72,60 @@ header {visibility:hidden;}
     font-size:10px;
     font-weight:900;
     color:#ffe4f2;
+    letter-spacing:2px;
 }
 
-/* CARDS PREMIUM */
+/* KPI CARDS (GLASSMORPHISM) */
 .card {
-    background: #ffffff;
+    background: rgba(255,255,255,0.06);
     border-radius: 22px;
     padding: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    border-left: 6px solid #7c3aed;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
     transition: 0.3s;
 }
 
 .card:hover {
     transform: translateY(-3px);
-    border-left: 6px solid #ec4899;
+    border: 1px solid rgba(236,72,153,0.4);
 }
 
-/* TITULOS KPI */
+/* KPI TEXT */
 .kpi-title {
     font-size:12px;
+    color:#cbd5e1;
     font-weight:700;
-    color:#475569;
 }
 
 .kpi-value {
     font-size:34px;
     font-weight:900;
-    color:#0f172a;
+    color:white;
 }
 
-/* DIVIDER */
+/* CHART CARD */
+.chart-card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 24px;
+    padding: 16px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    margin-top: 10px;
+}
+
+/* SELECT BOX */
+.stSelectbox > div {
+    background-color: rgba(255,255,255,0.08) !important;
+    border-radius: 12px;
+    color: white;
+}
+
+/* DIVISOR */
 hr {
-    border: 1px solid #e5e7eb;
+    border: 1px solid rgba(255,255,255,0.08);
 }
 
 </style>
@@ -130,7 +151,7 @@ df = load_data().dropna(how="all")
 components.html("""
 <div>
     <div class="title">📊 Operação Comercial</div>
-    <div class="subtitle">Oppi Vision • Sistema de Gestão</div>
+    <div class="subtitle">Oppi Vision • Dashboard Premium</div>
 </div>
 """, height=90)
 
@@ -165,7 +186,7 @@ if unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
 
 # =========================
-# KPIS
+# KPIs
 # =========================
 total = len(df_f)
 
@@ -213,60 +234,68 @@ with c3:
 st.divider()
 
 # =========================
-# CONTATOS POR STATUS
+# GRÁFICOS (SKOOB STYLE PREMIUM)
 # =========================
-st.subheader("Contatos por status")
+g1, g2 = st.columns(2)
 
-chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
+# STATUS
+with g1:
+    st.markdown("### Contatos por status")
 
-fig = px.bar(
-    chart,
-    x="Status",
-    y="Qtd",
-    text="Qtd",
-    color="Qtd",
-    color_continuous_scale=["#7c3aed", "#ec4899"]
-)
+    chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
 
-fig.update_layout(
-    height=380,
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font_color="#0f172a"
-)
+    fig = px.bar(
+        chart,
+        x="Status",
+        y="Qtd",
+        text="Qtd",
+        color="Qtd",
+        color_continuous_scale=["#7c3aed", "#ec4899"]
+    )
 
-st.plotly_chart(fig, use_container_width=True)
+    fig.update_layout(
+        height=360,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="white",
+        margin=dict(l=10,r=10,t=10,b=10)
+    )
 
-# =========================
-# VENDAS POR UNIDADE
-# =========================
-st.subheader("Vendas por unidade")
+    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+    st.plotly_chart(fig, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-uni = df_f["Unidade"].value_counts().reset_index()
-uni.columns = ["Unidade", "Qtd"]
+# UNIDADE
+with g2:
+    st.markdown("### Vendas por unidade")
 
-fig2 = px.bar(
-    uni,
-    x="Unidade",
-    y="Qtd",
-    text="Qtd",
-    color="Qtd",
-    color_continuous_scale=["#ec4899", "#7c3aed"]
-)
+    uni = df_f["Unidade"].value_counts().reset_index()
+    uni.columns = ["Unidade", "Qtd"]
 
-fig2.update_layout(
-    height=380,
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font_color="#0f172a"
-)
+    fig2 = px.bar(
+        uni,
+        x="Unidade",
+        y="Qtd",
+        text="Qtd",
+        color="Qtd",
+        color_continuous_scale=["#ec4899", "#7c3aed"]
+    )
 
-st.plotly_chart(fig2, use_container_width=True)
+    fig2.update_layout(
+        height=360,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="white"
+    )
+
+    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+    st.plotly_chart(fig2, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
 # RAÇAS
 # =========================
-st.subheader("Raças mais vendidas")
+st.markdown("### Raças mais vendidas")
 
 raca = df_f["Raça"].value_counts().reset_index()
 raca.columns = ["Raça", "Qtd"]
@@ -284,13 +313,15 @@ fig3.update_layout(
     height=380,
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
-    font_color="#0f172a"
+    font_color="white"
 )
 
+st.markdown('<div class="chart-card">', unsafe_allow_html=True)
 st.plotly_chart(fig3, use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
 # TABELA
 # =========================
-st.subheader("Dados da planilha")
+st.markdown("### Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
