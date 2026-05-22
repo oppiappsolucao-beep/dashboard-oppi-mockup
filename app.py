@@ -277,9 +277,39 @@ if "Raça" in df_f.columns:
     st.plotly_chart(fig3, use_container_width=True)
 
 # =========================
-# VENDAS POR VENDEDORA (CORRIGIDO)
+# GRÁFICOS
 # =========================
 
+g3, g4 = st.columns(2)
+
+# RAÇAS
+with g3:
+    st.subheader("🐶 Raças mais vendidas")
+
+    if "Raça" in df_f.columns:
+        df_raca = (
+            df_f.groupby("Raça")
+            .size()
+            .reset_index(name="Qtd")
+            .sort_values("Qtd", ascending=False)
+        )
+
+        fig3 = px.bar(
+            df_raca,
+            x="Raça",
+            y="Qtd",
+            text="Qtd"
+        )
+
+        fig3.update_layout(
+            height=380,
+            paper_bgcolor="white",
+            plot_bgcolor="white"
+        )
+
+        st.plotly_chart(fig3, use_container_width=True)
+
+# VENDEDORA
 with g4:
     st.subheader("🏆 Vendas por vendedora")
 
@@ -301,12 +331,7 @@ with g4:
         fig4.update_layout(
             height=380,
             paper_bgcolor="white",
-            plot_bgcolor="white",
-            xaxis_title="Vendedora",
-            yaxis_title="Quantidade"
+            plot_bgcolor="white"
         )
 
         st.plotly_chart(fig4, use_container_width=True)
-
-    else:
-        st.warning("Coluna 'Vendedora' não encontrada na planilha")
