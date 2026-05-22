@@ -407,26 +407,26 @@ def apply_bar_layout(fig, height=360):
         height=height,
         paper_bgcolor="white",
         plot_bgcolor="white",
-        font_color="#031b4e",
+        font_color="#2f175c",
         margin=dict(l=10, r=10, t=10, b=20),
         showlegend=False,
         coloraxis_showscale=False,
         xaxis=dict(
             showgrid=False,
             zeroline=False,
-            tickfont=dict(size=11, color="#334155")
+            tickfont=dict(size=11, color="#6b218c")
         ),
         yaxis=dict(
             showgrid=True,
             gridcolor="#eef2f7",
             zeroline=False,
-            tickfont=dict(size=11, color="#64748b")
+            tickfont=dict(size=11, color="#7a4b9a")
         )
     )
 
     fig.update_traces(
         textposition="outside",
-        textfont=dict(size=11, color="#031b4e"),
+        textfont=dict(size=11, color="#2f175c"),
         marker_line_width=0
     )
 
@@ -440,14 +440,16 @@ ROSA_OPPI = "#f23b9b"
 ROSA_FORTE = "#ff4d7a"
 
 CORES_GRAFICO = [
-    "#24206f",
-    "#b00045",
-    "#39379a",
-    "#d00055",
-    "#43536e",
-    "#9aa8ba",
-    "#262480",
-    "#000000"
+    "#a000d4",
+    "#f23b9b",
+    "#a000d4",
+    "#f23b9b",
+    "#a000d4",
+    "#f23b9b",
+    "#a000d4",
+    "#f23b9b",
+    "#a000d4",
+    "#f23b9b"
 ]
 
 # =========================
