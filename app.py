@@ -202,34 +202,57 @@ with c4:
 st.divider()
 
 # =========================
-# 🔥 GRÁFICO STATUS (CORRIGIDO 100%)
+# GRÁFICO STATUS (CORRIGIDO SKOOB STYLE REAL)
 # =========================
-
-status_cols = [c for c in df_f.columns if "Status" in c]
-
-counter = Counter()
-
-for col in status_cols:
-    if col in df_f.columns:
-        valores = df_f[col].fillna("Vazio").astype(str)
-        for v in valores:
-            counter[f"{col} - {v}"] += 1
-
-chart = pd.DataFrame(counter.items(), columns=["Status", "Qtd"])
 
 st.subheader("📊 Contatos por status")
 
+status_counter = {}
+
+# 1º contato
+if "Status 1º contato" in df_f.columns:
+    for v in df_f["Status 1º contato"].fillna("Vazio").astype(str):
+        key = "1º contato - " + v
+        status_counter[key] = status_counter.get(key, 0) + 1
+
+# 2º contato
+if "Status 2º contato" in df_f.columns:
+    for v in df_f["Status 2º contato"].fillna("Vazio").astype(str):
+        key = "2º contato - " + v
+        status_counter[key] = status_counter.get(key, 0) + 1
+
+# 3º contato
+if "Status 3º contato" in df_f.columns:
+    for v in df_f["Status 3º contato"].fillna("Vazio").astype(str):
+        key = "3º contato - " + v
+        status_counter[key] = status_counter.get(key, 0) + 1
+
+# transforma em dataframe
+chart = pd.DataFrame(
+    list(status_counter.items()),
+    columns=["Status", "Qtd"]
+)
+
+# plot seguro
 if not chart.empty:
-    fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
-    fig.update_layout(
-        height=350,
-        paper_bgcolor="white",
-        plot_bgcolor="white"
+    fig = px.bar(
+        chart,
+        x="Status",
+        y="Qtd",
+        text="Qtd"
     )
+
+    fig.update_layout(
+        height=380,
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        xaxis_title="Status",
+        yaxis_title="Qtd"
+    )
+
     st.plotly_chart(fig, use_container_width=True)
 else:
-    st.warning("Sem dados de status para exibir")
-
+    st.warning("Sem dados para status")
 # =========================
 # GRÁFICO UNIDADE (SEGURADO)
 # =========================
