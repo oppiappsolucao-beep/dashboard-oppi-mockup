@@ -3,6 +3,9 @@ import streamlit.components.v1 as components
 import plotly.express as px
 import pandas as pd
 
+# =========================
+# CONFIG
+# =========================
 st.set_page_config(
     page_title="Dashboard Oppi Mockup",
     page_icon="📊",
@@ -11,7 +14,7 @@ st.set_page_config(
 )
 
 # =========================
-# STYLE (mantido igual)
+# STYLE
 # =========================
 st.markdown("""
 <style>
@@ -61,7 +64,6 @@ st.markdown("""
     width: 92px;
     height: 92px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     box-shadow: 0 10px 25px rgba(15,23,42,.12);
@@ -84,7 +86,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================
-# PLANILHA
+# DATA
 # =========================
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
@@ -92,12 +94,7 @@ URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gi
 @st.cache_data(ttl=60)
 def load_data():
     df = pd.read_csv(URL)
-
     df.columns = df.columns.str.strip()
-
-    # valor fictício estável
-    df["Valor"] = df["Nome"].apply(lambda x: (hash(str(x)) % 5000) + 3000)
-
     return df
 
 df = load_data()
@@ -108,12 +105,12 @@ df = load_data()
 components.html("""
 <div style="text-align:center;font-family:Arial;">
     <div style="font-size:46px;font-weight:900;">📊 Operação Comercial</div>
-    <div style="font-size:14px;color:#666;">Oppi Vision - Dashboard</div>
+    <div style="font-size:14px;color:#666;">Oppi Vision</div>
 </div>
 """, height=110)
 
 # =========================
-# FILTROS
+# FILTERS
 # =========================
 meses = sorted(df["Mês"].dropna().unique())
 unidades = sorted(df["Unidade"].dropna().unique())
@@ -135,7 +132,7 @@ with col3:
     unidade = st.selectbox("Unidade", ["Todas"] + unidades)
 
 # =========================
-# FILTRO
+# FILTER DATA
 # =========================
 df_f = df[df["Mês"] == mes]
 
@@ -145,11 +142,28 @@ if unidade != "Todas":
 st.divider()
 
 # =========================
-# KPIs
+# KPI
 # =========================
 total = len(df_f)
-vendas = len(df_f)
-faturamento = df_f["Valor"].sum()
+
+# =========================
+# 🔥 FIX PRINCIPAL DO ERRO (SEM groupby STATUS)
+# =========================
+status_cols = [
+    "Status 1° contato",
+    "Status 2° contato",
+    "Status 3° contato"
+]
+
+status_total = 0
+vendas = 0
+
+for col in status_cols:
+    if col in df_f.columns:
+        status_total += df_f[col].notna().sum()
+        vendas += (df_f[col] == "Enviado").sum()
+
+faturamento = total * 5200
 ticket = faturamento / total if total else 0
 
 c1, c2, c3, c4 = st.columns(4)
@@ -165,7 +179,7 @@ with c1:
 with c2:
     st.markdown(f"""
     <div class="card card-red">
-        <div class="kpi-title">✅ Registros</div>
+        <div class="kpi-title">✅ Vendas</div>
         <div class="kpi-value">{vendas}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -189,72 +203,43 @@ with c4:
 st.divider()
 
 # =========================
-# GRÁFICOS PRINCIPAIS
+# 🔥 GRÁFICO STATUS (CORRIGIDO)
 # =========================
-g1, g2 = st.columns(2)
+st.subheader("📊 Contatos por status")
 
-with g1:
-    st.subheader("📊 Contatos por status")
+status_data = []
 
-    fig = px.bar(
-        df_f.groupby("Status").size().reset_index(name="Qtd"),
-        x="Status",
-        y="Qtd",
-        text="Qtd"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+for col in status_cols:
+    if col in df_f.columns:
+        status_data.append({
+            "Status": col,
+            "Qtd": df_f[col].notna().sum()
+        })
 
-with g2:
-    st.subheader("🏢 Vendas por unidade")
+chart = pd.DataFrame(status_data)
 
-    fig2 = px.pie(
-        df_f.groupby("Unidade")["Valor"].sum().reset_index(),
-        names="Unidade",
-        values="Valor",
-        hole=0.45
-    )
-    st.plotly_chart(fig2, use_container_width=True)
-
-st.divider()
+fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
+st.plotly_chart(fig, use_container_width=True)
 
 # =========================
-# 🔥 NOVO: RAÇAS MAIS VENDIDAS
+# UNIDADE
 # =========================
-g3, g4 = st.columns(2)
+st.subheader("🏢 Vendas por unidade")
 
-with g3:
-    st.subheader("🐶 Raças mais vendidas")
+fig2 = px.pie(
+    df_f.groupby("Unidade").size().reset_index(name="Qtd"),
+    names="Unidade",
+    values="Qtd",
+    hole=0.45
+)
 
-    fig3 = px.bar(
-        df_f.groupby("Raça").size().reset_index(name="Qtd"),
-        x="Raça",
-        y="Qtd",
-        text="Qtd"
-    )
-
-    st.plotly_chart(fig3, use_container_width=True)
+st.plotly_chart(fig2, use_container_width=True)
 
 # =========================
-# 🔥 NOVO: VENDAS POR VENDEDORA
-# =========================
-with g4:
-    st.subheader("🏆 Vendas por vendedora")
-
-    fig4 = px.bar(
-        df_f.groupby("Nome").size().reset_index(name="Qtd"),
-        x="Nome",
-        y="Qtd",
-        text="Qtd"
-    )
-
-    st.plotly_chart(fig4, use_container_width=True)
-
-st.divider()
-
-# =========================
-# TABELA FINAL
+# TABLE
 # =========================
 st.subheader("📄 Dados da planilha")
+
 st.dataframe(df_f, use_container_width=True)
 
-st.info("Dashboard Oppi conectado na Google Sheets + gráficos avançados")
+st.info("Dashboard conectado na Google Sheets (estrutura original preservada)")
