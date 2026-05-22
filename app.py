@@ -161,10 +161,10 @@ components.html("""
 # DADOS (FICÇÃO)
 # =========================
 dados = [
-    {"Cliente": "João Mendes", "Unidade": "Unidade 1", "Raça": "Spitz Alemão", "Valor": 5200, "Status": "1º contato", "Mês": "05/2026"},
-    {"Cliente": "Marina Costa", "Unidade": "Unidade 2", "Raça": "Golden Retriever", "Valor": 6800, "Status": "2º contato", "Mês": "05/2026"},
-    {"Cliente": "Carlos Lima", "Unidade": "Unidade 1", "Raça": "Maine Coon", "Valor": 6100, "Status": "3º contato", "Mês": "05/2026"},
-    {"Cliente": "Fernanda Alves", "Unidade": "Unidade 3", "Raça": "Shih Tzu", "Valor": 3900, "Status": "Venda registrada", "Mês": "05/2026"},
+    {"Cliente": "João Mendes", "Unidade": "Unidade 1", "Raça": "Spitz Alemão", "Valor": 5200, "Status": "1º contato", "Mês": "04/2026"},
+    {"Cliente": "Marina Costa", "Unidade": "Unidade 2", "Raça": "Golden Retriever", "Valor": 6800, "Status": "2º contato", "Mês": "03/2026"},
+    {"Cliente": "Carlos Lima", "Unidade": "Unidade 1", "Raça": "Maine Coon", "Valor": 6100, "Status": "3º contato", "Mês": "02/2026"},
+    {"Cliente": "Fernanda Alves", "Unidade": "Unidade 3", "Raça": "Shih Tzu", "Valor": 3900, "Status": "Venda registrada", "Mês": "01/2026"},
     {"Cliente": "Rafael Souza", "Unidade": "Unidade 2", "Raça": "Bulldog Francês", "Valor": 7500, "Status": "Venda registrada", "Mês": "05/2026"},
 ]
 
