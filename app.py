@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # =========================
-# CSS PREMIUM (FUNDO CINZA SKOOB STYLE)
+# CSS PREMIUM (FUNDO CINZA + ROSA/ROXO OPPI)
 # =========================
 st.markdown("""
 <style>
@@ -70,41 +70,44 @@ header {visibility:hidden;}
     margin-top: 14px;
 }
 
-/* BOTÃO SAIR ROXO COM BRILHO */
+/* BOTÃO SAIR ROSA/ROXO COM BRILHO */
 .logout-btn {
-    background: linear-gradient(135deg, #2d2f92, #1B1D6D);
+    background: linear-gradient(135deg, #f23b9b, #a000d4);
     color: white;
     border-radius: 12px;
     padding: 13px 42px;
     font-weight: 800;
     font-size: 13px;
     text-align: center;
-    border: 1px solid rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.25);
     box-shadow:
-        0 0 0 2px rgba(124,58,237,0.22),
-        0 0 18px rgba(124,58,237,0.35),
-        0 10px 25px rgba(27,29,109,0.30);
+        0 0 0 2px rgba(242,59,155,0.22),
+        0 0 18px rgba(242,59,155,0.45),
+        0 0 26px rgba(160,0,212,0.35),
+        0 10px 25px rgba(160,0,212,0.25);
     transition: all 0.25s ease;
 }
 
 .logout-btn:hover {
     transform: translateY(-2px);
     box-shadow:
-        0 0 0 2px rgba(124,58,237,0.30),
-        0 0 24px rgba(124,58,237,0.45),
-        0 12px 28px rgba(27,29,109,0.38);
+        0 0 0 2px rgba(242,59,155,0.32),
+        0 0 26px rgba(242,59,155,0.60),
+        0 0 34px rgba(160,0,212,0.45),
+        0 12px 28px rgba(160,0,212,0.35);
 }
 
-/* HAMBURGUER ROXO COM BRILHO */
+/* HAMBURGUER ROSA/ROXO COM BRILHO */
 div[data-testid="stPopover"] button {
-    background: linear-gradient(135deg, #2d2f92, #1B1D6D) !important;
+    background: linear-gradient(135deg, #f23b9b, #a000d4) !important;
     color: white !important;
-    border: 1px solid rgba(255,255,255,0.18) !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
     border-radius: 10px !important;
     box-shadow:
-        0 0 0 2px rgba(124,58,237,0.22) !important,
-        0 0 18px rgba(124,58,237,0.35) !important,
-        0 6px 18px rgba(27,29,109,0.25) !important;
+        0 0 0 2px rgba(242,59,155,0.22) !important,
+        0 0 18px rgba(242,59,155,0.45) !important,
+        0 0 26px rgba(160,0,212,0.35) !important,
+        0 6px 18px rgba(160,0,212,0.25) !important;
     font-weight: 800 !important;
     transition: all 0.25s ease !important;
 }
@@ -112,9 +115,10 @@ div[data-testid="stPopover"] button {
 div[data-testid="stPopover"] button:hover {
     transform: translateY(-1px);
     box-shadow:
-        0 0 0 2px rgba(124,58,237,0.30) !important,
-        0 0 24px rgba(124,58,237,0.45) !important,
-        0 8px 22px rgba(27,29,109,0.35) !important;
+        0 0 0 2px rgba(242,59,155,0.32) !important,
+        0 0 26px rgba(242,59,155,0.60) !important,
+        0 0 34px rgba(160,0,212,0.45) !important,
+        0 8px 22px rgba(160,0,212,0.35) !important;
 }
 
 /* LINKS DO MENU */
@@ -127,12 +131,12 @@ div[data-testid="stPopover"] button:hover {
     color: #111827 !important;
     text-decoration: none !important;
     font-weight: 800;
-    border-left: 4px solid #7c3aed;
+    border-left: 4px solid #f23b9b;
     box-shadow: 0 4px 14px rgba(0,0,0,0.06);
 }
 
 .menu-link:hover {
-    background: #f5f3ff;
+    background: #fff0fa;
 }
 
 /* LOGO */
@@ -152,20 +156,22 @@ div[data-testid="stPopover"] button:hover {
     align-items:center;
     justify-content:center;
     flex-direction:column;
-    box-shadow:0 8px 25px rgba(0,0,0,0.12);
+    box-shadow:
+        0 0 0 2px rgba(242,59,155,0.10),
+        0 8px 25px rgba(160,0,212,0.18);
     border: 1px solid #e5e7eb;
 }
 
 .logo .a {
     font-weight:900;
-    color:#1B1D6D;
+    color:#a000d4;
     font-size:16px;
 }
 
 .logo .b {
     font-size:9px;
     font-weight:900;
-    color:#ec4899;
+    color:#f23b9b;
     letter-spacing:2px;
 }
 
@@ -181,7 +187,10 @@ div[data-testid="stPopover"] button:hover {
 
 .card:hover {
     transform: translateY(-3px);
-    border: 1px solid rgba(236,72,153,0.45);
+    border: 1px solid rgba(242,59,155,0.45);
+    box-shadow:
+        0 0 0 2px rgba(242,59,155,0.10),
+        0 8px 24px rgba(160,0,212,0.16);
 }
 
 /* KPI TEXT */
@@ -401,7 +410,7 @@ with g1:
         y="Qtd",
         text="Qtd",
         color="Qtd",
-        color_continuous_scale=["#7c3aed", "#ec4899"]
+        color_continuous_scale=["#f23b9b", "#a000d4"]
     )
 
     fig.update_layout(
@@ -433,7 +442,7 @@ with g2:
         y="Qtd",
         text="Qtd",
         color="Qtd",
-        color_continuous_scale=["#ec4899", "#7c3aed"]
+        color_continuous_scale=["#f23b9b", "#a000d4"]
     )
 
     fig2.update_layout(
@@ -466,7 +475,7 @@ fig3 = px.bar(
     y="Qtd",
     text="Qtd",
     color="Qtd",
-    color_continuous_scale=["#7c3aed", "#ec4899"]
+    color_continuous_scale=["#f23b9b", "#a000d4"]
 )
 
 fig3.update_layout(
