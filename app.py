@@ -1,54 +1,52 @@
 import streamlit as st
-import streamlit.components.v1 as components
-import plotly.express as px
 import pandas as pd
+import plotly.express as px
+import streamlit.components.v1 as components
 
 # =========================
 # CONFIG
 # =========================
 st.set_page_config(
-    page_title="Operação Comercial",
+    page_title="Operação Oppi",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # =========================
-# CSS (CINZA SKOOB REAL)
+# CSS Skoob + Roxo/Rosa
 # =========================
 st.markdown("""
 <style>
 
 .stApp {
-    background: #E5E7EB !important;
+    background: #E5E7EB;
 }
 
-/* container branco central */
+/* container principal */
 .block-container {
-    background: #F9FAFB;
-    border-radius: 22px;
-    padding: 24px;
-    margin-top: 18px;
+    max-width: 1200px;
+    padding-top: 20px;
 }
 
 /* HEADER */
-.header {
+.header-title {
     text-align:center;
+    font-size:38px;
     font-weight:900;
-    font-size:40px;
     color:#111827;
 }
 
-.subheader {
+.header-sub {
     text-align:center;
-    color:#6B7280;
     font-size:13px;
+    color:#6B7280;
 }
 
 /* LOGO */
 .logo {
-    width:85px;
-    height:85px;
+    width:90px;
+    height:90px;
     border-radius:50%;
     background:white;
     display:flex;
@@ -56,28 +54,31 @@ st.markdown("""
     justify-content:center;
     flex-direction:column;
     box-shadow:0 10px 25px rgba(0,0,0,0.08);
-    margin:auto;
 }
 
-.logo .a {
+.logo .t1 {
     font-weight:900;
     color:#7c3aed;
 }
 
-.logo .b {
+.logo .t2 {
     font-size:10px;
     font-weight:900;
     color:#ec4899;
     letter-spacing:2px;
 }
 
-/* CARDS */
+/* CARD PREMIUM (ROXO + ROSA) */
 .card {
     background:white;
     border-radius:18px;
-    padding:20px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.06);
-    border-left:4px solid #7c3aed;
+    padding:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.06);
+    border-left:5px solid transparent;
+    background-image: linear-gradient(white, white),
+                      linear-gradient(135deg,#7c3aed,#ec4899);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 .kpi-title {
@@ -92,7 +93,12 @@ st.markdown("""
     color:#111827;
 }
 
-/* remove streamlit */
+/* GRID GAP CONTROL */
+div[data-testid="column"] {
+    padding: 0.6rem;
+}
+
+/* remove poluição */
 #MainMenu {visibility:hidden;}
 footer {visibility:hidden;}
 header {visibility:hidden;}
@@ -101,7 +107,7 @@ header {visibility:hidden;}
 """, unsafe_allow_html=True)
 
 # =========================
-# DATA
+# PLANILHA
 # =========================
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
@@ -119,53 +125,63 @@ df = load_data().dropna(how="all")
 # =========================
 components.html("""
 <div>
-    <div class="header">📊 Operação Comercial</div>
-    <div class="subheader">Oppi Vision • Sistema de Gestão</div>
+    <div class="header-title">📊 Operação Comercial</div>
+    <div class="header-sub">Oppi Vision • Sistema de Gestão</div>
 </div>
 """, height=90)
 
 # =========================
 # FILTROS
 # =========================
-meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
-unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
+meses = sorted(df["Mês"].dropna().unique())
+unidades = sorted(df["Unidade"].dropna().unique())
 
-c1, c2, c3 = st.columns([4,1,4])
+col1, col2, col3 = st.columns([4,1,4])
 
-with c1:
-    mes = st.selectbox("Mês", meses if meses else ["Todos"])
+with col1:
+    mes = st.selectbox("Mês", meses)
 
-with c2:
+with col2:
     st.markdown("""
     <div class="logo">
-        <div class="a">OPPI</div>
-        <div class="b">VISION</div>
+        <div class="t1">OPPI</div>
+        <div class="t2">VISION</div>
     </div>
     """, unsafe_allow_html=True)
 
-with c3:
-    unidade = st.selectbox("Unidade", ["Todas"] + unidades if unidades else ["Todas"])
+with col3:
+    unidade = st.selectbox("Unidade", ["Todas"] + unidades)
 
 # =========================
-# FILTRO
+# FILTRO DATA
 # =========================
-df_f = df.copy()
+df_f = df[df["Mês"] == mes]
 
-if "Mês" in df_f.columns and mes != "Todos":
-    df_f = df_f[df_f["Mês"] == mes]
-
-if "Unidade" in df_f.columns and unidade != "Todas":
+if unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
 
 # =========================
-# KPIs
+# KPIs (SKOOB STYLE REAL)
 # =========================
 total = len(df_f)
 
-# vendas (seguro)
-vendas = len(df_f)
+# status agrupado real
+status_cols = [
+    "Status 1º contato",
+    "Status 2º contato",
+    "Status 3º contato"
+]
 
-c1, c2, c3, c4 = st.columns(4)
+status_total = {}
+
+for col in status_cols:
+    if col in df_f.columns:
+        for k, v in df_f[col].value_counts().items():
+            status_total[k] = status_total.get(k, 0) + v
+
+vendas = sum(status_total.values())
+
+c1, c2, c3 = st.columns(3)
 
 with c1:
     st.markdown(f"""
@@ -178,7 +194,7 @@ with c1:
 with c2:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">Registros</div>
+        <div class="kpi-title">Conversões</div>
         <div class="kpi-value">{vendas}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -186,48 +202,36 @@ with c2:
 with c3:
     st.markdown(f"""
     <div class="card">
-        <div class="kpi-title">Faturamento</div>
-        <div class="kpi-value">R$ {total * 5000:,.0f}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with c4:
-    st.markdown(f"""
-    <div class="card">
-        <div class="kpi-title">Ticket médio</div>
-        <div class="kpi-value">R$ {(total * 5000 / total) if total else 0:,.0f}</div>
+        <div class="kpi-title">Interações</div>
+        <div class="kpi-value">{len(status_total)}</div>
     </div>
     """, unsafe_allow_html=True)
 
 st.divider()
 
 # =========================
-# CONTATOS POR STATUS (CORRIGIDO DE VERDADE)
+# CONTATOS POR STATUS (SKOOB REAL)
 # =========================
 st.subheader("Contatos por status")
 
-status_cols = [
-    "Status 1º contato",
-    "Status 2º contato",
-    "Status 3º contato"
-]
+chart = pd.DataFrame(
+    list(status_total.items()),
+    columns=["Status", "Qtd"]
+)
 
-status_data = []
+if not chart.empty:
+    fig = px.bar(
+        chart,
+        x="Status",
+        y="Qtd",
+        text="Qtd",
+        color_discrete_sequence=["#7c3aed"]
+    )
 
-for col in status_cols:
-    if col in df_f.columns:
-        tmp = df_f[col].value_counts().reset_index()
-        tmp.columns = ["Status", "Qtd"]
-        status_data.append(tmp)
-
-if status_data:
-    chart = pd.concat(status_data).groupby("Status").sum().reset_index()
-
-    fig = px.bar(chart, x="Status", y="Qtd", text="Qtd")
     fig.update_layout(
+        height=380,
         paper_bgcolor="white",
-        plot_bgcolor="white",
-        height=380
+        plot_bgcolor="white"
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -241,7 +245,14 @@ if "Unidade" in df_f.columns:
     uni = df_f["Unidade"].value_counts().reset_index()
     uni.columns = ["Unidade", "Qtd"]
 
-    fig2 = px.bar(uni, x="Unidade", y="Qtd", text="Qtd")
+    fig2 = px.bar(
+        uni,
+        x="Unidade",
+        y="Qtd",
+        text="Qtd",
+        color_discrete_sequence=["#ec4899"]
+    )
+
     st.plotly_chart(fig2, use_container_width=True)
 
 # =========================
@@ -253,11 +264,18 @@ if "Raça" in df_f.columns:
     raca = df_f["Raça"].value_counts().reset_index()
     raca.columns = ["Raça", "Qtd"]
 
-    fig3 = px.bar(raca, x="Raça", y="Qtd", text="Qtd")
+    fig3 = px.bar(
+        raca,
+        x="Raça",
+        y="Qtd",
+        text="Qtd",
+        color_discrete_sequence=["#7c3aed"]
+    )
+
     st.plotly_chart(fig3, use_container_width=True)
 
 # =========================
-# TABELA
+# TABELA FINAL
 # =========================
 st.subheader("Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
