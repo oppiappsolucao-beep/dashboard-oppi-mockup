@@ -14,14 +14,14 @@ st.set_page_config(
 )
 
 # =========================
-# CSS SKOOB CINZA PREMIUM
+# CSS (SKOOB + ROXO/ROSA + FUNDO CINZA)
 # =========================
 st.markdown("""
 <style>
 
-/* FUNDO CINZA SÓLIDO SKOOB */
+/* FUNDO CINZA (SKOOB STYLE) */
 .stApp {
-    background: #eef1f5;
+    background: linear-gradient(180deg, #eef1f5 0%, #e5e7eb 100%);
     color: #0f172a;
 }
 
@@ -32,30 +32,68 @@ header {visibility:hidden;}
 
 /* CONTAINER */
 .block-container {
-    padding-top: 15px;
+    padding-top: 20px;
     max-width: 1200px;
 }
 
-/* CARD KPI */
+/* HEADER */
+.title {
+    text-align:center;
+    font-size:40px;
+    font-weight:900;
+    color:#0f172a;
+}
+
+.subtitle {
+    text-align:center;
+    font-size:13px;
+    color:#64748b;
+}
+
+/* LOGO */
+.logo {
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    box-shadow:0 10px 25px rgba(124,58,237,0.25);
+}
+
+.logo .a {
+    font-weight:900;
+    color:white;
+}
+
+.logo .b {
+    font-size:10px;
+    font-weight:900;
+    color:#ffe4f2;
+}
+
+/* CARDS PREMIUM */
 .card {
     background: #ffffff;
-    border-radius: 20px;
+    border-radius: 22px;
     padding: 18px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     border-left: 6px solid #7c3aed;
     transition: 0.3s;
 }
 
 .card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     border-left: 6px solid #ec4899;
 }
 
-/* KPI TEXT */
+/* TITULOS KPI */
 .kpi-title {
     font-size:12px;
     font-weight:700;
-    color:#64748b;
+    color:#475569;
 }
 
 .kpi-value {
@@ -64,45 +102,7 @@ header {visibility:hidden;}
     color:#0f172a;
 }
 
-/* HEADER MENU */
-.menu-btn {
-    width:44px;
-    height:44px;
-    background:white;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:0 6px 18px rgba(0,0,0,0.08);
-    font-size:18px;
-    font-weight:900;
-}
-
-/* LOGO CENTRAL */
-.logo {
-    width:90px;
-    height:90px;
-    border-radius:50%;
-    background: linear-gradient(135deg,#7c3aed,#ec4899);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    box-shadow:0 10px 25px rgba(124,58,237,0.25);
-}
-
-.logo .a {
-    color:white;
-    font-weight:900;
-}
-
-.logo .b {
-    color:#ffe4f2;
-    font-size:10px;
-    font-weight:900;
-}
-
-/* DIVISOR */
+/* DIVIDER */
 hr {
     border: 1px solid #e5e7eb;
 }
@@ -125,35 +125,20 @@ def load_data():
 df = load_data().dropna(how="all")
 
 # =========================
-# HEADER (Skoob real + menu)
+# HEADER
 # =========================
-
-col_menu, col_title = st.columns([0.1, 0.9])
-
-with col_menu:
-    st.markdown("""
-    <div class="menu-btn">☰</div>
-    """, unsafe_allow_html=True)
-
-with col_title:
-    st.markdown("""
-    <div style="margin-left:10px;">
-        <div style="font-size:28px;font-weight:900;color:#0f172a;">
-            📊 Operação Comercial
-        </div>
-        <div style="font-size:12px;color:#64748b;">
-            Oppi Vision • Sistema de Gestão
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+components.html("""
+<div>
+    <div class="title">📊 Operação Comercial</div>
+    <div class="subtitle">Oppi Vision • Sistema de Gestão</div>
+</div>
+""", height=90)
 
 # =========================
 # FILTROS
 # =========================
 meses = sorted(df["Mês"].dropna().unique())
 unidades = sorted(df["Unidade"].dropna().unique())
-
-st.markdown("<br>", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns([4,1,4])
 
@@ -179,10 +164,8 @@ df_f = df[df["Mês"] == mes]
 if unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
 
-st.markdown("<hr>", unsafe_allow_html=True)
-
 # =========================
-# KPIs
+# KPIS
 # =========================
 total = len(df_f)
 
@@ -227,10 +210,10 @@ with c3:
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown("<hr>", unsafe_allow_html=True)
+st.divider()
 
 # =========================
-# GRÁFICO STATUS
+# CONTATOS POR STATUS
 # =========================
 st.subheader("Contatos por status")
 
