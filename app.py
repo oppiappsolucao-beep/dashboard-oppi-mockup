@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.io as pio
+import streamlit.components.v1 as components
 
 # =========================
 # CONFIG
@@ -13,85 +13,109 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-pio.templates.default = "plotly_white"
-
 # =========================
-# CSS (CINZA LIMPO SKOOB)
+# CSS PREMIUM (ROXO RESTAURADO)
 # =========================
 st.markdown("""
 <style>
 
+/* 🔥 FUNDO ROXO (VOLTOU COMO VOCÊ PEDIU) */
 .stApp {
-    background: #E5E7EB;
+    background: radial-gradient(circle at top left, #1a0b2e, #0b0f1a 60%);
+    color: white;
 }
 
-#MainMenu, footer, header {
-    visibility:hidden;
-}
+/* remove streamlit UI */
+#MainMenu {visibility:hidden;}
+footer {visibility:hidden;}
+header {visibility:hidden;}
 
+/* CONTAINER */
 .block-container {
-    padding: 20px;
+    padding-top: 20px;
     max-width: 1200px;
 }
 
-/* HEADER */
-.header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-}
-
+/* TITULO */
 .title {
-    font-size:26px;
+    text-align:center;
+    font-size:40px;
     font-weight:900;
-    color:#111827;
+    color:white;
 }
 
 .subtitle {
-    font-size:12px;
-    color:#6B7280;
+    text-align:center;
+    font-size:13px;
+    color:#a1a1aa;
 }
 
+/* LOGO */
 .logo {
-    width:70px;
-    height:70px;
+    width:90px;
+    height:90px;
     border-radius:50%;
-    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
     display:flex;
     align-items:center;
     justify-content:center;
-    color:white;
+    flex-direction:column;
+    box-shadow:0 10px 40px rgba(124,58,237,0.4);
+}
+
+.logo .a {
     font-weight:900;
+    color:white;
+}
+
+.logo .b {
+    font-size:10px;
+    font-weight:900;
+    color:#ffe4f2;
+    letter-spacing:2px;
 }
 
 /* CARDS */
 .card {
-    background:white;
-    border-radius:16px;
-    padding:18px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.08);
-    border-left:4px solid #7c3aed;
+    background: rgba(255,255,255,0.06);
+    border-radius: 22px;
+    padding: 18px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
 }
 
+/* KPI TEXT */
 .kpi-title {
     font-size:12px;
-    color:#6B7280;
+    color:#cbd5e1;
     font-weight:700;
 }
 
 .kpi-value {
-    font-size:30px;
+    font-size:34px;
     font-weight:900;
-    color:#111827;
+    color:white;
 }
 
-/* CHART */
-.chart-box {
-    background:white;
-    border-radius:16px;
-    padding:10px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+/* CHART CARD */
+.chart-card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 24px;
+    padding: 16px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* SELECT */
+.stSelectbox > div {
+    background-color: rgba(255,255,255,0.08) !important;
+    border-radius: 12px;
+}
+
+/* HR */
+hr {
+    border: 1px solid rgba(255,255,255,0.08);
 }
 
 </style>
@@ -100,48 +124,64 @@ st.markdown("""
 # =========================
 # DATA
 # =========================
-@st.cache_data
+SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
+URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
+
+@st.cache_data(ttl=60)
 def load_data():
-    url = "https://docs.google.com/spreadsheets/d/1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk/gviz/tq?tqx=out:csv"
-    df = pd.read_csv(url)
+    df = pd.read_csv(URL)
     df.columns = df.columns.str.strip()
     return df
 
-df = load_data()
-
-# remove lixo
-df = df.dropna(how="all")
+df = load_data().dropna(how="all")
 
 # =========================
 # HEADER
 # =========================
-col1, col2 = st.columns([8,1])
-
-with col1:
-    st.markdown("""
+components.html("""
+<div>
     <div class="title">📊 Operação Comercial</div>
-    <div class="subtitle">Oppi Vision • Sistema de Gestão</div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.markdown("""
-    <div class="logo">OPPI</div>
-    """, unsafe_allow_html=True)
+    <div class="subtitle">Oppi Vision • Dashboard Premium</div>
+</div>
+""", height=90)
 
 # =========================
 # FILTROS
 # =========================
-mes = st.selectbox("Mês", sorted(df["Mês"].dropna().unique()))
-unidade = st.selectbox("Unidade", ["Todas"] + sorted(df["Unidade"].dropna().unique()))
+meses = sorted(df["Mês"].dropna().unique())
+unidades = sorted(df["Unidade"].dropna().unique())
 
+col1, col2, col3 = st.columns([4,1,4])
+
+with col1:
+    mes = st.selectbox("Mês", meses)
+
+with col2:
+    st.markdown("""
+    <div class="logo">
+        <div class="a">OPPI</div>
+        <div class="b">VISION</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    unidade = st.selectbox("Unidade", ["Todas"] + unidades)
+
+# =========================
+# FILTRO
+# =========================
 df_f = df[df["Mês"] == mes]
 
 if unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
 
+st.divider()
+
 # =========================
 # KPIs
 # =========================
+total = len(df_f)
+
 status_cols = [
     "Status 1º contato",
     "Status 2º contato",
@@ -155,7 +195,6 @@ for col in status_cols:
         for k, v in df_f[col].value_counts().items():
             status_total[k] = status_total.get(k, 0) + v
 
-total = len(df_f)
 vendas = sum(status_total.values())
 
 c1, c2, c3 = st.columns(3)
@@ -184,37 +223,37 @@ with c3:
     </div>
     """, unsafe_allow_html=True)
 
-# =========================
-# 🔥 GRÁFICOS (AGORA FUNCIONA 100%)
-# =========================
+st.divider()
 
-st.markdown("## Contatos por status")
+# =========================
+# GRÁFICOS STATUS
+# =========================
+st.subheader("Contatos por status")
 
 chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
 
-fig = px.bar(
-    chart,
-    x="Status",
-    y="Qtd",
-    text="Qtd",
-    color_discrete_sequence=["#7c3aed"]
-)
+if not chart.empty:
+    fig = px.bar(
+        chart,
+        x="Status",
+        y="Qtd",
+        text="Qtd",
+        color_discrete_sequence=["#7c3aed"]
+    )
 
-fig.update_layout(
-    height=380,
-    paper_bgcolor="white",
-    plot_bgcolor="white",
-    margin=dict(l=10,r=10,t=10,b=10)
-)
+    fig.update_layout(
+        height=380,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="white"
+    )
 
-st.markdown('<div class="chart-box">', unsafe_allow_html=True)
-st.plotly_chart(fig, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    st.plotly_chart(fig, use_container_width=True)
 
 # =========================
 # UNIDADE
 # =========================
-st.markdown("## Vendas por unidade")
+st.subheader("Vendas por unidade")
 
 uni = df_f["Unidade"].value_counts().reset_index()
 uni.columns = ["Unidade", "Qtd"]
@@ -229,10 +268,9 @@ fig2 = px.bar(
 
 fig2.update_layout(
     height=380,
-    paper_bgcolor="white",
-    plot_bgcolor="white"
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font_color="white"
 )
 
-st.markdown('<div class="chart-box">', unsafe_allow_html=True)
 st.plotly_chart(fig2, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
