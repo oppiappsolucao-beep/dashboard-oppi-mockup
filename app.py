@@ -277,20 +277,36 @@ if "Raça" in df_f.columns:
     st.plotly_chart(fig3, use_container_width=True)
 
 # =========================
-# VENDEDORAS
+# VENDAS POR VENDEDORA (CORRIGIDO)
 # =========================
-st.subheader("🏆 Vendas por vendedora")
 
-if "Nome" in df_f.columns:
-    vend = df_f.groupby("Nome").size().reset_index(name="Qtd")
+with g4:
+    st.subheader("🏆 Vendas por vendedora")
 
-    fig4 = px.bar(vend, x="Nome", y="Qtd", text="Qtd")
-    st.plotly_chart(fig4, use_container_width=True)
+    if "Vendedora" in df_f.columns:
+        df_vend = (
+            df_f.groupby("Vendedora")
+            .size()
+            .reset_index(name="Qtd")
+            .sort_values("Qtd", ascending=False)
+        )
 
-# =========================
-# TABELA FINAL
-# =========================
-st.subheader("📄 Dados da planilha")
-st.dataframe(df_f, use_container_width=True)
+        fig4 = px.bar(
+            df_vend,
+            x="Vendedora",
+            y="Qtd",
+            text="Qtd"
+        )
 
-st.info("Dashboard Oppi conectado na Google Sheets (versão blindada)")
+        fig4.update_layout(
+            height=380,
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            xaxis_title="Vendedora",
+            yaxis_title="Quantidade"
+        )
+
+        st.plotly_chart(fig4, use_container_width=True)
+
+    else:
+        st.warning("Coluna 'Vendedora' não encontrada na planilha")
