@@ -14,118 +14,97 @@ st.set_page_config(
 )
 
 # =========================
-# CSS PREMIUM (DARK SKOOB STYLE)
+# CSS SKOOB CINZA PREMIUM
 # =========================
 st.markdown("""
 <style>
 
-/* BACKGROUND PRINCIPAL (light gray) */
+/* FUNDO CINZA SÓLIDO SKOOB */
 .stApp {
-    background: light gray(circle at top left, #1a0b2e, #0b0f1a 60%);
-    color: white;
+    background: #eef1f5;
+    color: #0f172a;
 }
 
-/* remove streamlit UI */
+/* REMOVE UI STREAMLIT */
 #MainMenu {visibility:hidden;}
 footer {visibility:hidden;}
 header {visibility:hidden;}
 
 /* CONTAINER */
 .block-container {
-    padding-top: 20px;
+    padding-top: 15px;
     max-width: 1200px;
 }
 
-/* TITULO */
-.title {
-    text-align:center;
-    font-size:40px;
-    font-weight:900;
-    color:white;
-}
-
-.subtitle {
-    text-align:center;
-    font-size:13px;
-    color:#a1a1aa;
-}
-
-/* LOGO */
-.logo {
-    width:90px;
-    height:90px;
-    border-radius:50%;
-    background: linear-gradient(135deg, #7c3aed, #ec4899);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    box-shadow:0 10px 40px rgba(124,58,237,0.4);
-}
-
-.logo .a {
-    font-weight:900;
-    color:white;
-}
-
-.logo .b {
-    font-size:10px;
-    font-weight:900;
-    color:#ffe4f2;
-    letter-spacing:2px;
-}
-
-/* KPI CARDS (GLASSMORPHISM) */
+/* CARD KPI */
 .card {
-    background: rgba(255,255,255,0.06);
-    border-radius: 22px;
+    background: #ffffff;
+    border-radius: 20px;
     padding: 18px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    border-left: 6px solid #7c3aed;
     transition: 0.3s;
 }
 
 .card:hover {
-    transform: translateY(-3px);
-    border: 1px solid rgba(236,72,153,0.4);
+    transform: translateY(-2px);
+    border-left: 6px solid #ec4899;
 }
 
 /* KPI TEXT */
 .kpi-title {
     font-size:12px;
-    color:#cbd5e1;
     font-weight:700;
+    color:#64748b;
 }
 
 .kpi-value {
     font-size:34px;
     font-weight:900;
+    color:#0f172a;
+}
+
+/* HEADER MENU */
+.menu-btn {
+    width:44px;
+    height:44px;
+    background:white;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    font-size:18px;
+    font-weight:900;
+}
+
+/* LOGO CENTRAL */
+.logo {
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 10px 25px rgba(124,58,237,0.25);
+}
+
+.logo .a {
     color:white;
+    font-weight:900;
 }
 
-/* CHART CARD */
-.chart-card {
-    background: rgba(255,255,255,0.06);
-    border-radius: 24px;
-    padding: 16px;
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-    margin-top: 10px;
-}
-
-/* SELECT BOX */
-.stSelectbox > div {
-    background-color: rgba(255,255,255,0.08) !important;
-    border-radius: 12px;
-    color: white;
+.logo .b {
+    color:#ffe4f2;
+    font-size:10px;
+    font-weight:900;
 }
 
 /* DIVISOR */
 hr {
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid #e5e7eb;
 }
 
 </style>
@@ -146,20 +125,35 @@ def load_data():
 df = load_data().dropna(how="all")
 
 # =========================
-# HEADER
+# HEADER (Skoob real + menu)
 # =========================
-components.html("""
-<div>
-    <div class="title">📊 Operação Comercial</div>
-    <div class="subtitle">Oppi Vision • Dashboard Premium</div>
-</div>
-""", height=90)
+
+col_menu, col_title = st.columns([0.1, 0.9])
+
+with col_menu:
+    st.markdown("""
+    <div class="menu-btn">☰</div>
+    """, unsafe_allow_html=True)
+
+with col_title:
+    st.markdown("""
+    <div style="margin-left:10px;">
+        <div style="font-size:28px;font-weight:900;color:#0f172a;">
+            📊 Operação Comercial
+        </div>
+        <div style="font-size:12px;color:#64748b;">
+            Oppi Vision • Sistema de Gestão
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # =========================
 # FILTROS
 # =========================
 meses = sorted(df["Mês"].dropna().unique())
 unidades = sorted(df["Unidade"].dropna().unique())
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns([4,1,4])
 
@@ -184,6 +178,8 @@ df_f = df[df["Mês"] == mes]
 
 if unidade != "Todas":
     df_f = df_f[df_f["Unidade"] == unidade]
+
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # =========================
 # KPIs
@@ -231,71 +227,63 @@ with c3:
     </div>
     """, unsafe_allow_html=True)
 
-st.divider()
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # =========================
-# GRÁFICOS (SKOOB STYLE PREMIUM)
+# GRÁFICO STATUS
 # =========================
-g1, g2 = st.columns(2)
+st.subheader("Contatos por status")
 
-# STATUS
-with g1:
-    st.markdown("### Contatos por status")
+chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
 
-    chart = pd.DataFrame(list(status_total.items()), columns=["Status", "Qtd"])
+fig = px.bar(
+    chart,
+    x="Status",
+    y="Qtd",
+    text="Qtd",
+    color="Qtd",
+    color_continuous_scale=["#7c3aed", "#ec4899"]
+)
 
-    fig = px.bar(
-        chart,
-        x="Status",
-        y="Qtd",
-        text="Qtd",
-        color="Qtd",
-        color_continuous_scale=["#7c3aed", "#ec4899"]
-    )
+fig.update_layout(
+    height=380,
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font_color="#0f172a"
+)
 
-    fig.update_layout(
-        height=360,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font_color="white",
-        margin=dict(l=10,r=10,t=10,b=10)
-    )
+st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.plotly_chart(fig, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+# =========================
+# VENDAS POR UNIDADE
+# =========================
+st.subheader("Vendas por unidade")
 
-# UNIDADE
-with g2:
-    st.markdown("### Vendas por unidade")
+uni = df_f["Unidade"].value_counts().reset_index()
+uni.columns = ["Unidade", "Qtd"]
 
-    uni = df_f["Unidade"].value_counts().reset_index()
-    uni.columns = ["Unidade", "Qtd"]
+fig2 = px.bar(
+    uni,
+    x="Unidade",
+    y="Qtd",
+    text="Qtd",
+    color="Qtd",
+    color_continuous_scale=["#ec4899", "#7c3aed"]
+)
 
-    fig2 = px.bar(
-        uni,
-        x="Unidade",
-        y="Qtd",
-        text="Qtd",
-        color="Qtd",
-        color_continuous_scale=["#ec4899", "#7c3aed"]
-    )
+fig2.update_layout(
+    height=380,
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font_color="#0f172a"
+)
 
-    fig2.update_layout(
-        height=360,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font_color="white"
-    )
-
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.plotly_chart(fig2, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+st.plotly_chart(fig2, use_container_width=True)
 
 # =========================
 # RAÇAS
 # =========================
-st.markdown("### Raças mais vendidas")
+st.subheader("Raças mais vendidas")
 
 raca = df_f["Raça"].value_counts().reset_index()
 raca.columns = ["Raça", "Qtd"]
@@ -313,15 +301,13 @@ fig3.update_layout(
     height=380,
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
-    font_color="white"
+    font_color="#0f172a"
 )
 
-st.markdown('<div class="chart-card">', unsafe_allow_html=True)
 st.plotly_chart(fig3, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
 # TABELA
 # =========================
-st.markdown("### Dados da planilha")
+st.subheader("Dados da planilha")
 st.dataframe(df_f, use_container_width=True)
