@@ -22,6 +22,13 @@ if "page" not in st.session_state:
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
 
+# Logout via link visual
+if st.query_params.get("logout_financeiro") == "1":
+    st.session_state.financeiro_logado = False
+    st.session_state.page = "operacao"
+    st.query_params.clear()
+    st.rerun()
+
 # =========================
 # CSS PREMIUM OPPI
 # =========================
@@ -65,19 +72,33 @@ header {visibility:hidden;}
 
 /* BOTÃO SAIR VISUAL */
 .logout-btn {
+    display: block;
     background: linear-gradient(135deg, #1D4ED8, #7C3AED);
-    color: #F8FAFC;
+    color: #F8FAFC !important;
     border-radius: 12px;
     padding: 13px 42px;
     font-weight: 800;
     font-size: 13px;
     text-align: center;
     border: 1px solid rgba(6,182,212,0.35);
+    text-decoration: none !important;
     box-shadow:
         0 0 0 2px rgba(29,78,216,0.25),
         0 0 18px rgba(124,58,237,0.45),
         0 0 28px rgba(6,182,212,0.25),
         0 10px 25px rgba(0,0,0,0.35);
+    transition: all 0.25s ease;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    color: #F8FAFC !important;
+    text-decoration: none !important;
+    box-shadow:
+        0 0 0 2px rgba(6,182,212,0.30),
+        0 0 26px rgba(124,58,237,0.55),
+        0 0 34px rgba(6,182,212,0.35),
+        0 12px 28px rgba(0,0,0,0.45);
 }
 
 /* HAMBURGUER */
@@ -1012,10 +1033,9 @@ def render_financeiro_dashboard():
         """, unsafe_allow_html=True)
 
     with top_col3:
-        if st.button("Sair", use_container_width=True):
-            st.session_state.financeiro_logado = False
-            st.session_state.page = "operacao"
-            st.rerun()
+        st.markdown("""
+        <a class="logout-btn" href="?logout_financeiro=1" target="_self">Sair</a>
+        """, unsafe_allow_html=True)
 
     meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
     unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
