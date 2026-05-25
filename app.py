@@ -127,71 +127,50 @@ div[data-testid="stPopover"] button svg {
     fill: #F8FAFC !important;
 }
 
-/* MENU INTERNO DO POPOVER */
-.menu-panel-custom {
-    min-width: 285px;
-    padding: 6px 4px 2px 4px;
+/* MENU INTERNO COM BOTÕES NATIVOS */
+div[data-testid="stPopoverBody"] {
+    min-width: 320px !important;
 }
 
-.menu-panel-title {
-    font-size: 22px;
-    font-weight: 900;
-    color: #0F172A;
-    margin-bottom: 8px;
+div[data-testid="stPopoverBody"] h3 {
+    color: #0F172A !important;
+    font-weight: 900 !important;
 }
 
-.menu-panel-subtitle {
-    font-size: 13px;
-    color: #64748b;
-    margin-bottom: 22px;
+div[data-testid="stPopoverBody"] p {
+    color: #64748b !important;
 }
 
-.menu-panel-line {
-    height: 1px;
-    background: #e5e7eb;
-    margin-bottom: 18px;
-}
-
-.menu-big-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: linear-gradient(135deg, #1D2671, #0F172A);
+/* link_button do menu */
+div[data-testid="stLinkButton"] a {
+    background: linear-gradient(135deg, #1D2671, #0F172A) !important;
     color: #F8FAFC !important;
+    border-radius: 12px !important;
+    padding: 16px 18px !important;
+    font-weight: 900 !important;
+    font-size: 15px !important;
+    border: 3px solid #fb7185 !important;
+    box-shadow: 0 12px 26px rgba(15,23,42,0.22) !important;
     text-decoration: none !important;
-    font-weight: 900;
-    font-size: 15px;
-    border-radius: 12px;
-    padding: 17px 18px;
-    margin-bottom: 16px;
-    box-shadow: 0 12px 26px rgba(15,23,42,0.22);
-    transition: all 0.25s ease;
 }
 
-.menu-big-link:hover {
+div[data-testid="stLinkButton"] a:hover {
+    background: linear-gradient(135deg, #1D4ED8, #7C3AED) !important;
+    color: #F8FAFC !important;
     transform: translateY(-2px);
-    background: linear-gradient(135deg, #1D4ED8, #7C3AED);
-    box-shadow:
-        0 0 0 2px rgba(6,182,212,0.20),
-        0 14px 30px rgba(15,23,42,0.30);
 }
 
-.menu-big-link.active {
-    border: 3px solid #fb7185;
-}
-
-.menu-big-link.disabled {
-    cursor: not-allowed;
-    opacity: 0.95;
-}
-
-.menu-panel-footer {
-    text-align: center;
-    color: #94a3b8;
-    font-size: 11px;
-    margin-top: 28px;
-    margin-bottom: 2px;
+/* botão financeiro desabilitado */
+div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
+    background: linear-gradient(135deg, #1D2671, #0F172A) !important;
+    color: #F8FAFC !important;
+    border-radius: 12px !important;
+    padding: 16px 18px !important;
+    font-weight: 900 !important;
+    font-size: 15px !important;
+    border: none !important;
+    box-shadow: 0 12px 26px rgba(15,23,42,0.22) !important;
+    opacity: 0.95 !important;
 }
 
 /* LOGO */
@@ -525,11 +504,13 @@ data_1_col = find_col(
     ["Data 1º contato", "1º contato", "Primeiro contato", "Data primeiro contato"],
     exclude_terms=["status"]
 )
+
 data_2_col = find_col(
     df,
     ["Data 2º contato", "2º contato", "Segundo contato", "Data segundo contato"],
     exclude_terms=["status"]
 )
+
 data_3_col = find_col(
     df,
     ["Data 3º contato", "3º contato", "Terceiro contato", "Data terceiro contato"],
@@ -553,23 +534,26 @@ top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
 
 with top_col1:
     with st.popover("☰"):
-        st.markdown("""
-<div class="menu-panel-custom">
-    <div class="menu-panel-title">Menu</div>
-    <div class="menu-panel-subtitle">Escolha uma área para acessar</div>
-    <div class="menu-panel-line"></div>
+        st.markdown("### Menu")
+        st.caption("Escolha uma área para acessar")
+        st.divider()
 
-    <a class="menu-big-link active" href="https://n8n.oppitech.com.br/form-test/e1269af5-6cac-492c-8919-7d3345fd79fa" target="_blank">
-        📄 Novo Contrato
-    </a>
+        st.link_button(
+            "📄 Novo Contrato",
+            "https://n8n.oppitech.com.br/form-test/e1269af5-6cac-492c-8919-7d3345fd79fa",
+            use_container_width=True
+        )
 
-    <a class="menu-big-link disabled" href="#" target="_self">
-        💰 Financeiro
-    </a>
+        st.button(
+            "💰 Financeiro",
+            use_container_width=True,
+            disabled=True
+        )
 
-    <div class="menu-panel-footer">Painel interno • Oppi Vision</div>
-</div>
-""", unsafe_allow_html=True)
+        st.markdown(
+            "<div style='text-align:center; color:#94a3b8; font-size:11px; margin-top:24px;'>Painel interno • Oppi Vision</div>",
+            unsafe_allow_html=True
+        )
 
 with top_col2:
     st.markdown(f"""
