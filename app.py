@@ -554,26 +554,22 @@ top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
 with top_col1:
     with st.popover("☰"):
         st.markdown("""
-        <div class="menu-panel-custom">
-            <div class="menu-panel-title">Menu</div>
-            <div class="menu-panel-subtitle">Escolha uma área para acessar</div>
-            <div class="menu-panel-line"></div>
+<div class="menu-panel-custom">
+    <div class="menu-panel-title">Menu</div>
+    <div class="menu-panel-subtitle">Escolha uma área para acessar</div>
+    <div class="menu-panel-line"></div>
 
-            <a class="menu-big-link active" 
-               href="https://n8n.oppitech.com.br/form-test/e1269af5-6cac-492c-8919-7d3345fd79fa" 
-               target="_blank">
-                📄 Novo Contrato
-            </a>
+    <a class="menu-big-link active" href="https://n8n.oppitech.com.br/form-test/e1269af5-6cac-492c-8919-7d3345fd79fa" target="_blank">
+        📄 Novo Contrato
+    </a>
 
-            <a class="menu-big-link disabled" 
-               href="#" 
-               target="_self">
-                💰 Financeiro
-            </a>
+    <a class="menu-big-link disabled" href="#" target="_self">
+        💰 Financeiro
+    </a>
 
-            <div class="menu-panel-footer">Painel interno • Oppi Vision</div>
-        </div>
-        """, unsafe_allow_html=True)
+    <div class="menu-panel-footer">Painel interno • Oppi Vision</div>
+</div>
+""", unsafe_allow_html=True)
 
 with top_col2:
     st.markdown(f"""
