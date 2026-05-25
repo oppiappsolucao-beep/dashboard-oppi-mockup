@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import unicodedata
-from streamlit_autorefresh import st_autorefresh
 
 # =========================
 # CONFIG
@@ -25,16 +24,6 @@ if "page" not in st.session_state:
 
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
-
-# =========================
-# AUTO REFRESH
-# =========================
-# Atualiza a cada 20 segundos somente após o login principal.
-# Não volta para o login porque o acesso fica salvo no st.session_state.
-if st.session_state.app_logado and (
-    st.session_state.page == "operacao" or st.session_state.financeiro_logado
-):
-    st_autorefresh(interval=20000, key="auto_refresh_dashboard")
 
 # LOGOUT GERAL
 if st.query_params.get("logout_app") == "1":
@@ -546,7 +535,7 @@ hr {
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
 
-@st.cache_data(ttl=20)
+@st.cache_data(ttl=60)
 def load_data():
     df = pd.read_csv(URL)
     df.columns = df.columns.str.strip()
