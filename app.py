@@ -127,22 +127,71 @@ div[data-testid="stPopover"] button svg {
     fill: #F8FAFC !important;
 }
 
-/* LINKS DO MENU */
-.menu-link {
-    display: block;
-    background: #0F172A;
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
-    color: #F8FAFC !important;
-    text-decoration: none !important;
-    font-weight: 800;
-    border-left: 4px solid #06B6D4;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+/* MENU INTERNO DO POPOVER */
+.menu-panel-custom {
+    min-width: 285px;
+    padding: 6px 4px 2px 4px;
 }
 
-.menu-link:hover {
-    background: #1E293B;
+.menu-panel-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: #0F172A;
+    margin-bottom: 8px;
+}
+
+.menu-panel-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 22px;
+}
+
+.menu-panel-line {
+    height: 1px;
+    background: #e5e7eb;
+    margin-bottom: 18px;
+}
+
+.menu-big-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #1D2671, #0F172A);
+    color: #F8FAFC !important;
+    text-decoration: none !important;
+    font-weight: 900;
+    font-size: 15px;
+    border-radius: 12px;
+    padding: 17px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 12px 26px rgba(15,23,42,0.22);
+    transition: all 0.25s ease;
+}
+
+.menu-big-link:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #1D4ED8, #7C3AED);
+    box-shadow:
+        0 0 0 2px rgba(6,182,212,0.20),
+        0 14px 30px rgba(15,23,42,0.30);
+}
+
+.menu-big-link.active {
+    border: 3px solid #fb7185;
+}
+
+.menu-big-link.disabled {
+    cursor: not-allowed;
+    opacity: 0.95;
+}
+
+.menu-panel-footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: 28px;
+    margin-bottom: 2px;
 }
 
 /* LOGO */
@@ -505,9 +554,25 @@ top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
 with top_col1:
     with st.popover("☰"):
         st.markdown("""
-        <a class="menu-link" href="#" target="_self">📊 Dashboard</a>
-        <a class="menu-link" href="#" target="_self">📋 Dados da planilha</a>
-        <a class="menu-link" href="#" target="_self">⚙️ Configurações</a>
+        <div class="menu-panel-custom">
+            <div class="menu-panel-title">Menu</div>
+            <div class="menu-panel-subtitle">Escolha uma área para acessar</div>
+            <div class="menu-panel-line"></div>
+
+            <a class="menu-big-link active" 
+               href="https://n8n.oppitech.com.br/form-test/e1269af5-6cac-492c-8919-7d3345fd79fa" 
+               target="_blank">
+                📄 Novo Contrato
+            </a>
+
+            <a class="menu-big-link disabled" 
+               href="#" 
+               target="_self">
+                💰 Financeiro
+            </a>
+
+            <div class="menu-panel-footer">Painel interno • Oppi Vision</div>
+        </div>
         """, unsafe_allow_html=True)
 
 with top_col2:
