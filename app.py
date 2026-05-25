@@ -14,14 +14,14 @@ st.set_page_config(
 )
 
 # =========================
-# CSS PREMIUM DARK OPPI
+# CSS PREMIUM OPPI
 # =========================
 st.markdown("""
 <style>
 
 .stApp {
-    background: #050816;
-    color: #F8FAFC;
+    background: #d9d9d9;
+    color: #111827;
 }
 
 #MainMenu {visibility:hidden;}
@@ -43,20 +43,20 @@ header {visibility:hidden;}
 .header-title {
     font-size: 30px;
     font-weight: 900;
-    color: #F8FAFC;
+    color: #111827;
     line-height: 1.1;
     margin-bottom: 8px;
 }
 
 .header-subtitle {
     font-size: 13px;
-    color: #A1A1AA;
+    color: #64748b;
     font-weight: 600;
 }
 
 .header-total {
     font-size: 12px;
-    color: #A1A1AA;
+    color: #64748b;
     margin-top: 14px;
 }
 
@@ -300,24 +300,24 @@ div[data-testid="stPopover"] button svg {
 
 /* SELECT */
 .stSelectbox label {
-    color: #F8FAFC !important;
+    color: #111827 !important;
     font-weight: 700 !important;
 }
 
 .stSelectbox > div > div {
-    background-color: #0F172A !important;
+    background-color: #ffffff !important;
     border-radius: 10px !important;
-    color: #F8FAFC !important;
-    border: 1px solid rgba(6,182,212,0.25) !important;
+    color: #111827 !important;
+    border: 1px solid rgba(15,23,42,0.18) !important;
 }
 
 .stSelectbox div {
-    color: #F8FAFC !important;
+    color: #111827 !important;
 }
 
 /* DIVISOR */
 hr {
-    border: 1px solid rgba(161,161,170,0.18);
+    border: 1px solid rgba(15,23,42,0.18);
     margin-top: 28px;
     margin-bottom: 28px;
 }
@@ -431,14 +431,18 @@ def apply_bar_layout(fig, height=360):
             showgrid=False,
             zeroline=False,
             tickfont=dict(size=11, color="#A1A1AA"),
-            titlefont=dict(color="#A1A1AA")
+            title=dict(
+                font=dict(color="#A1A1AA")
+            )
         ),
         yaxis=dict(
             showgrid=True,
             gridcolor="#1E293B",
             zeroline=False,
             tickfont=dict(size=11, color="#A1A1AA"),
-            titlefont=dict(color="#A1A1AA")
+            title=dict(
+                font=dict(color="#A1A1AA")
+            )
         )
     )
 
