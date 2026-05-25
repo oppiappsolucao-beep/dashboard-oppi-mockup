@@ -22,7 +22,6 @@ if "page" not in st.session_state:
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
 
-# Logout via link visual
 if st.query_params.get("logout_financeiro") == "1":
     st.session_state.financeiro_logado = False
     st.session_state.page = "operacao"
@@ -682,7 +681,6 @@ data_3_col = find_col(df, ["Data 3º contato", "3º contato", "Terceiro contato"
 
 vendedora_col = find_col(df, ["Vendedora", "Vendedor", "Consultora", "Consultor", "Responsável", "Responsavel", "Atendente"])
 valor_col = find_col(df, ["Valor Filhote", "Valor", "Valor Total", "Total", "Preço", "Preco", "Faturamento"])
-data_compra_col = find_col(df, ["Data Compra", "Data da compra", "Data Venda", "Data da venda"])
 
 # =========================
 # MENU
@@ -819,20 +817,10 @@ def render_operacao():
     row2 = st.columns(2)
 
     with row2[0]:
-        render_wide_card(
-            "Status com erro",
-            status_com_erro,
-            f"Mês selecionado: {mes}" if mes else "Mês selecionado: -",
-            LARANJA_ATENCAO
-        )
+        render_wide_card("Status com erro", status_com_erro, f"Mês selecionado: {mes}" if mes else "-", LARANJA_ATENCAO)
 
     with row2[1]:
-        render_wide_card(
-            "Vendas registradas no mês",
-            vendas_mes,
-            f"Mês Venda: {mes}" if mes else "Mês Venda: -",
-            VERDE_SUCESSO
-        )
+        render_wide_card("Vendas registradas no mês", vendas_mes, f"Mês Venda: {mes}" if mes else "-", VERDE_SUCESSO)
 
     st.divider()
 
@@ -1098,10 +1086,10 @@ def render_financeiro_dashboard():
         render_mini_card("💰 Faturamento total", money_br(faturamento_total), str(mes) if mes else "-", AZUL_OPPI)
 
     with k2:
-        render_mini_card("🛍️ Vendas no mês", vendas_mes, str(mes) if mes else "-", ROSA_DESTAQUE)
+        render_mini_card("🛍️ Vendas no mês", vendas_mes, str(mes) if mes else "-", ROXO_TEC)
 
     with k3:
-        render_mini_card("📊 Ticket médio", money_br(ticket_medio), "por venda", ROSA_DESTAQUE)
+        render_mini_card("📊 Ticket médio", money_br(ticket_medio), "por venda", CIANO_DETALHE)
 
     with k4:
         render_mini_card("🐶 Raças vendidas", racas_vendidas, "no mês", AZUL_OPPI)
