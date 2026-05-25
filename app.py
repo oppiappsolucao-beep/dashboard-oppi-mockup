@@ -187,7 +187,7 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
     -webkit-text-fill-color: #F8FAFC !important;
 }
 
-/* LOGO OPPI */
+/* LOGO PRINCIPAL */
 .logo-wrap {
     display: flex;
     justify-content: center;
@@ -196,8 +196,8 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
 }
 
 .logo {
-    width: 82px;
-    height: 82px;
+    width: 86px;
+    height: 86px;
     border-radius: 50%;
     background: #0F172A;
     display: flex;
@@ -208,22 +208,26 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
         0 0 0 2px rgba(6,182,212,0.20),
         0 8px 25px rgba(124,58,237,0.35);
     border: 1px solid rgba(6,182,212,0.28);
+    text-align: center;
+    line-height: 1.1;
 }
 
 .logo .a {
     font-weight: 900;
     color: #06B6D4;
-    font-size: 16px;
+    font-size: 12px;
 }
 
 .logo .b {
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 900;
     color: #7C3AED;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
+    margin-top: 3px;
+    text-transform: lowercase;
 }
 
-/* LOGO LOGIN - ESTILO OPPI VISION */
+/* LOGO LOGIN */
 .login-logo-wrap {
     display: flex;
     justify-content: center;
@@ -477,8 +481,16 @@ hr {
     }
 
     .logo {
-        width: 70px;
-        height: 70px;
+        width: 78px;
+        height: 78px;
+    }
+
+    .logo .a {
+        font-size: 11px;
+    }
+
+    .logo .b {
+        font-size: 10px;
     }
 
     div[data-testid="stPopoverBody"] {
@@ -728,8 +740,8 @@ def render_operacao():
         st.markdown("""
         <div class="logo-wrap">
             <div class="logo">
-                <div class="a">OPPI</div>
-                <div class="b">VISION</div>
+                <div class="a">Sua marca</div>
+                <div class="b">aqui</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1049,8 +1061,8 @@ def render_financeiro_dashboard():
         st.markdown("""
         <div class="logo-wrap">
             <div class="logo">
-                <div class="a">OPPI</div>
-                <div class="b">VISION</div>
+                <div class="a">Sua marca</div>
+                <div class="b">aqui</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
