@@ -14,6 +14,15 @@ st.set_page_config(
 )
 
 # =========================
+# SESSION STATE
+# =========================
+if "page" not in st.session_state:
+    st.session_state.page = "operacao"
+
+if "financeiro_logado" not in st.session_state:
+    st.session_state.financeiro_logado = False
+
+# =========================
 # CSS PREMIUM OPPI
 # =========================
 st.markdown("""
@@ -34,12 +43,6 @@ header {visibility:hidden;}
 }
 
 /* TOPO */
-.header-left {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-}
-
 .header-title {
     font-size: 30px;
     font-weight: 900;
@@ -60,7 +63,7 @@ header {visibility:hidden;}
     margin-top: 14px;
 }
 
-/* BOTÃO SAIR */
+/* BOTÃO SAIR VISUAL */
 .logout-btn {
     background: linear-gradient(135deg, #1D4ED8, #7C3AED);
     color: #F8FAFC;
@@ -75,16 +78,6 @@ header {visibility:hidden;}
         0 0 18px rgba(124,58,237,0.45),
         0 0 28px rgba(6,182,212,0.25),
         0 10px 25px rgba(0,0,0,0.35);
-    transition: all 0.25s ease;
-}
-
-.logout-btn:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 0 0 2px rgba(6,182,212,0.30),
-        0 0 26px rgba(124,58,237,0.55),
-        0 0 34px rgba(6,182,212,0.35),
-        0 12px 28px rgba(0,0,0,0.45);
 }
 
 /* HAMBURGUER */
@@ -97,47 +90,26 @@ div[data-testid="stPopover"] button {
     min-width: 58px !important;
     padding: 0 14px !important;
     font-weight: 800 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     box-shadow:
         0 0 0 2px rgba(29,78,216,0.25) !important,
         0 0 18px rgba(124,58,237,0.45) !important,
         0 0 28px rgba(6,182,212,0.25) !important,
         0 10px 25px rgba(0,0,0,0.35) !important;
-    transition: all 0.25s ease !important;
 }
 
-div[data-testid="stPopover"] button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow:
-        0 0 0 2px rgba(6,182,212,0.30) !important,
-        0 0 26px rgba(124,58,237,0.55) !important,
-        0 0 34px rgba(6,182,212,0.35) !important,
-        0 12px 28px rgba(0,0,0,0.45) !important;
-}
-
-div[data-testid="stPopover"] button p {
-    color: #F8FAFC !important;
-    font-weight: 800 !important;
-}
-
+div[data-testid="stPopover"] button p,
 div[data-testid="stPopover"] button svg {
     color: #F8FAFC !important;
     fill: #F8FAFC !important;
+    font-weight: 800 !important;
 }
 
-/* MENU - ESTILO MAIOR */
+/* MENU */
 div[data-testid="stPopoverBody"] {
     min-width: 330px !important;
     padding: 16px !important;
 }
 
-div[data-testid="stPopoverBody"] .stVerticalBlock {
-    gap: 12px !important;
-}
-
-/* TÍTULO / SUBTÍTULO DO MENU */
 .menu-title {
     font-size: 24px;
     font-weight: 900;
@@ -158,7 +130,7 @@ div[data-testid="stPopoverBody"] .stVerticalBlock {
     margin-top: 8px;
 }
 
-/* BOTÃO LINK - NOVO CONTRATO */
+/* BOTÃO LINK DO MENU */
 div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a {
     background: linear-gradient(135deg, #1B2A6B, #081634) !important;
     color: #F8FAFC !important;
@@ -172,22 +144,9 @@ div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a {
     box-shadow:
         inset 5px 0 0 #06B6D4,
         0 10px 20px rgba(15,23,42,0.22) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    transition: all 0.25s ease !important;
 }
 
-div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a:hover {
-    background: linear-gradient(135deg, #21378a, #0b1f4c) !important;
-    color: #F8FAFC !important;
-    transform: translateY(-2px) !important;
-    box-shadow:
-        inset 5px 0 0 #06B6D4,
-        0 14px 24px rgba(15,23,42,0.28) !important;
-}
-
-/* BOTÃO NORMAL - FINANCEIRO */
+/* BOTÕES DO MENU */
 div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
     background: linear-gradient(135deg, #1B2A6B, #081634) !important;
     color: #F8FAFC !important;
@@ -200,22 +159,14 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
     box-shadow:
         inset 5px 0 0 #06B6D4,
         0 10px 20px rgba(15,23,42,0.22) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    transition: all 0.25s ease !important;
-    opacity: 1 !important;
 }
 
-/* GARANTE TEXTO BRANCO MESMO DESABILITADO */
-div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p,
-div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
+div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
     color: #F8FAFC !important;
     -webkit-text-fill-color: #F8FAFC !important;
-    opacity: 1 !important;
 }
 
-/* LOGO */
+/* LOGO OPPI */
 .logo-wrap {
     display: flex;
     justify-content: center;
@@ -251,7 +202,34 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
     letter-spacing: 2px;
 }
 
-/* CARDS PEQUENOS - BRANCOS */
+/* LOGO LOGIN */
+.login-logo-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    margin-bottom: 14px;
+}
+
+.login-logo {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid rgba(6,182,212,0.35);
+    box-shadow:
+        0 0 0 3px rgba(124,58,237,0.10),
+        0 10px 28px rgba(15,23,42,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #0F172A;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1.15;
+}
+
+/* CARDS */
 .mini-card {
     background: #FFFFFF;
     border-radius: 18px;
@@ -289,7 +267,6 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
     margin-top: 8px;
 }
 
-/* CARDS GRANDES - BRANCOS */
 .wide-card {
     background: #FFFFFF;
     border-radius: 18px;
@@ -299,12 +276,6 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
     margin-top: 8px;
     margin-bottom: 8px;
     border: 1px solid rgba(15,23,42,0.06);
-    transition: all 0.25s ease;
-}
-
-.wide-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(0,0,0,0.15);
 }
 
 .wide-title {
@@ -327,7 +298,7 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
     margin-top: 8px;
 }
 
-/* CABEÇALHO DOS GRÁFICOS - BRANCO */
+/* GRÁFICOS */
 .graph-title-card {
     background: #FFFFFF;
     border-radius: 18px;
@@ -350,7 +321,6 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
     color: #64748b;
 }
 
-/* CARD DO GRÁFICO - BRANCO */
 .chart-card {
     background: #FFFFFF;
     border-radius: 14px;
@@ -360,21 +330,49 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
     margin-bottom: 16px;
 }
 
-/* SELECT */
-.stSelectbox label {
+/* LOGIN HEADER */
+.login-header-card {
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 14px 20px 12px 20px;
+    margin-top: 10px;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    border: 1px solid rgba(15,23,42,0.06);
+    text-align: center;
+}
+
+.login-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: #111827;
+}
+
+.login-subtitle {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* SELECT / INPUT */
+.stSelectbox label,
+.stTextInput label {
     color: #111827 !important;
     font-weight: 700 !important;
 }
 
-.stSelectbox > div > div {
+.stSelectbox > div > div,
+.stTextInput > div > div > input {
     background-color: #FFFFFF !important;
     border-radius: 10px !important;
     color: #111827 !important;
     border: 1px solid rgba(15,23,42,0.18) !important;
 }
 
-.stSelectbox div {
-    color: #111827 !important;
+/* BOTÕES GERAIS */
+div[data-testid="stFormSubmitButton"] button,
+div[data-testid="stButton"] button {
+    border-radius: 12px !important;
+    font-weight: 900 !important;
 }
 
 /* DIVISOR */
@@ -382,6 +380,12 @@ hr {
     border: 1px solid rgba(15,23,42,0.18);
     margin-top: 28px;
     margin-bottom: 28px;
+}
+
+/* TABELA */
+[data-testid="stDataFrame"] {
+    background: white;
+    border-radius: 14px;
 }
 
 @media (max-width: 768px) {
@@ -454,6 +458,41 @@ def find_col(dataframe, aliases, exclude_terms=None):
 def parse_date_series(series):
     return pd.to_datetime(series, errors="coerce", dayfirst=True)
 
+def parse_money(value):
+    if pd.isna(value):
+        return 0.0
+
+    s = str(value).strip()
+
+    if s == "":
+        return 0.0
+
+    s = (
+        s.replace("R$", "")
+         .replace(" ", "")
+         .replace("\u00a0", "")
+    )
+
+    if "," in s:
+        s = s.replace(".", "").replace(",", ".")
+    else:
+        s = s.replace(",", "")
+
+    try:
+        return float(s)
+    except:
+        return 0.0
+
+def money_br(value):
+    try:
+        value = float(value)
+    except:
+        value = 0.0
+
+    txt = f"R$ {value:,.2f}"
+    txt = txt.replace(",", "X").replace(".", ",").replace("X", ".")
+    return txt
+
 def count_non_empty(series):
     s = series.fillna("").astype(str).str.strip()
     return int(((s != "") & (s.str.lower() != "nan") & (s.str.lower() != "none")).sum())
@@ -524,6 +563,7 @@ ROXO_TEC = "#7C3AED"
 CIANO_DETALHE = "#06B6D4"
 VERDE_SUCESSO = "#22C55E"
 LARANJA_ATENCAO = "#F97316"
+ROSA_DESTAQUE = "#C00446"
 
 CORES_GRAFICO = [
     "#1D4ED8",
@@ -539,342 +579,593 @@ CORES_GRAFICO = [
 ]
 
 # =========================
-# COLUNAS IMPORTANTES
+# COLUNAS
 # =========================
 status_1_col = find_col(df, ["Status 1º contato", "Status 1 contato", "Status primeiro contato"])
 status_2_col = find_col(df, ["Status 2º contato", "Status 2 contato", "Status segundo contato"])
 status_3_col = find_col(df, ["Status 3º contato", "Status 3 contato", "Status terceiro contato"])
 
-data_1_col = find_col(
-    df,
-    ["Data 1º contato", "1º contato", "Primeiro contato", "Data primeiro contato"],
-    exclude_terms=["status"]
-)
+data_1_col = find_col(df, ["Data 1º contato", "1º contato", "Primeiro contato", "Data primeiro contato"], exclude_terms=["status"])
+data_2_col = find_col(df, ["Data 2º contato", "2º contato", "Segundo contato", "Data segundo contato"], exclude_terms=["status"])
+data_3_col = find_col(df, ["Data 3º contato", "3º contato", "Terceiro contato", "Data terceiro contato"], exclude_terms=["status"])
 
-data_2_col = find_col(
-    df,
-    ["Data 2º contato", "2º contato", "Segundo contato", "Data segundo contato"],
-    exclude_terms=["status"]
-)
-
-data_3_col = find_col(
-    df,
-    ["Data 3º contato", "3º contato", "Terceiro contato", "Data terceiro contato"],
-    exclude_terms=["status"]
-)
-
-vendedora_col = find_col(df, [
-    "Vendedora",
-    "Vendedor",
-    "Consultora",
-    "Consultor",
-    "Responsável",
-    "Responsavel",
-    "Atendente"
-])
+vendedora_col = find_col(df, ["Vendedora", "Vendedor", "Consultora", "Consultor", "Responsável", "Responsavel", "Atendente"])
+valor_col = find_col(df, ["Valor Filhote", "Valor", "Valor Total", "Total", "Preço", "Preco", "Faturamento"])
+data_compra_col = find_col(df, ["Data Compra", "Data da compra", "Data Venda", "Data da venda"])
 
 # =========================
-# TOPO COM MENU
+# MENU
 # =========================
-top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
+def render_top_menu():
+    top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
 
-with top_col1:
-    with st.popover("☰"):
-        st.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
-        st.markdown('<div class="menu-subtitle">Escolha uma área para acessar</div>', unsafe_allow_html=True)
-        st.divider()
+    with top_col1:
+        with st.popover("☰"):
+            st.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
+            st.markdown('<div class="menu-subtitle">Escolha uma área para acessar</div>', unsafe_allow_html=True)
+            st.divider()
 
-        st.link_button(
-            "📄 Novo Contrato",
-            "https://n8n.oppitech.com.br/form/e1269af5-6cac-492c-8919-7d3345fd79fa",
-            use_container_width=True
-        )
+            st.link_button(
+                "📄 Novo Contrato",
+                "https://n8n.oppitech.com.br/form/e1269af5-6cac-492c-8919-7d3345fd79fa",
+                use_container_width=True
+            )
 
-        st.button(
-            "💰 Financeiro",
-            use_container_width=True,
-            disabled=True
-        )
+            if st.button("💰 Financeiro", use_container_width=True):
+                st.session_state.page = "financeiro"
+                st.rerun()
 
-        st.markdown('<div class="menu-footer">Painel interno • Oppi Vision</div>', unsafe_allow_html=True)
+            st.markdown('<div class="menu-footer">Painel interno • Oppi Vision</div>', unsafe_allow_html=True)
 
-with top_col2:
-    st.markdown(f"""
-    <div class="header-left">
+    return top_col2, top_col3
+
+# =========================
+# OPERAÇÃO
+# =========================
+def render_operacao():
+    top_col2, top_col3 = render_top_menu()
+
+    with top_col2:
+        st.markdown(f"""
         <div>
             <div class="header-title">⚙️ Operação Comercial</div>
             <div class="header-subtitle">Oppi Vision • Dashboard Premium</div>
             <div class="header-total">Total de registros: {len(df)}</div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-with top_col3:
-    st.markdown("""
-    <div class="logout-btn">Sair</div>
-    """, unsafe_allow_html=True)
+    with top_col3:
+        st.markdown("""<div class="logout-btn">Sair</div>""", unsafe_allow_html=True)
 
-# =========================
-# FILTROS
-# =========================
-meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
-unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
+    meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
+    unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
 
-col1, col2, col3 = st.columns([4, 1, 4])
+    col1, col2, col3 = st.columns([4, 1, 4])
 
-with col1:
-    mes = st.selectbox("Mês", meses) if meses else None
+    with col1:
+        mes = st.selectbox("Mês", meses, key="mes_operacao") if meses else None
 
-with col2:
-    st.markdown("""
-    <div class="logo-wrap">
-        <div class="logo">
-            <div class="a">OPPI</div>
-            <div class="b">VISION</div>
+    with col2:
+        st.markdown("""
+        <div class="logo-wrap">
+            <div class="logo">
+                <div class="a">OPPI</div>
+                <div class="b">VISION</div>
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-with col3:
-    unidade = st.selectbox("Unidade", ["Todas"] + unidades) if unidades else "Todas"
+    with col3:
+        unidade = st.selectbox("Unidade", ["Todas"] + unidades, key="unidade_operacao") if unidades else "Todas"
 
-st.divider()
+    st.divider()
 
-# =========================
-# FILTROS DE DADOS
-# =========================
-df_f = df.copy()
+    df_f = df.copy()
 
-if mes is not None and "Mês" in df_f.columns:
-    df_f = df_f[df_f["Mês"] == mes]
+    if mes is not None and "Mês" in df_f.columns:
+        df_f = df_f[df_f["Mês"] == mes]
 
-if unidade != "Todas" and "Unidade" in df_f.columns:
-    df_f = df_f[df_f["Unidade"] == unidade]
+    if unidade != "Todas" and "Unidade" in df_f.columns:
+        df_f = df_f[df_f["Unidade"] == unidade]
 
-df_today_base = df.copy()
+    df_today_base = df.copy()
 
-if unidade != "Todas" and "Unidade" in df_today_base.columns:
-    df_today_base = df_today_base[df_today_base["Unidade"] == unidade]
+    if unidade != "Todas" and "Unidade" in df_today_base.columns:
+        df_today_base = df_today_base[df_today_base["Unidade"] == unidade]
 
-# =========================
-# MÉTRICAS
-# =========================
-today = pd.Timestamp.now(tz="America/Sao_Paulo").date()
+    today = pd.Timestamp.now(tz="America/Sao_Paulo").date()
 
-def today_count(dataframe, col):
-    if not col or col not in dataframe.columns:
+    def today_count(dataframe, col):
+        if not col or col not in dataframe.columns:
+            return 0
+        d = parse_date_series(dataframe[col]).dt.date
+        return int((d == today).sum())
+
+    def monthly_contact_count(dataframe, date_col, status_col):
+        if date_col and date_col in dataframe.columns:
+            return count_non_empty(dataframe[date_col])
+        if status_col and status_col in dataframe.columns:
+            return count_non_empty(dataframe[status_col])
         return 0
-    d = parse_date_series(dataframe[col]).dt.date
-    return int((d == today).sum())
 
-def monthly_contact_count(dataframe, date_col, status_col):
-    if date_col and date_col in dataframe.columns:
-        return count_non_empty(dataframe[date_col])
-    if status_col and status_col in dataframe.columns:
-        return count_non_empty(dataframe[status_col])
-    return 0
+    contato1_hoje = today_count(df_today_base, data_1_col)
+    contato2_hoje = today_count(df_today_base, data_2_col)
+    contato3_hoje = today_count(df_today_base, data_3_col)
 
-contato1_hoje = today_count(df_today_base, data_1_col)
-contato2_hoje = today_count(df_today_base, data_2_col)
-contato3_hoje = today_count(df_today_base, data_3_col)
+    primeiro_mes = monthly_contact_count(df_f, data_1_col, status_1_col)
+    segundo_mes = monthly_contact_count(df_f, data_2_col, status_2_col)
+    terceiro_mes = monthly_contact_count(df_f, data_3_col, status_3_col)
 
-primeiro_mes = monthly_contact_count(df_f, data_1_col, status_1_col)
-segundo_mes = monthly_contact_count(df_f, data_2_col, status_2_col)
-terceiro_mes = monthly_contact_count(df_f, data_3_col, status_3_col)
+    error_mask = pd.Series(False, index=df_f.index)
 
-error_mask = pd.Series(False, index=df_f.index)
+    for c in [status_1_col, status_2_col, status_3_col]:
+        if c and c in df_f.columns:
+            error_mask = error_mask | df_f[c].fillna("").astype(str).str.contains("erro", case=False, na=False)
 
-for c in [status_1_col, status_2_col, status_3_col]:
-    if c and c in df_f.columns:
-        error_mask = error_mask | df_f[c].fillna("").astype(str).str.contains("erro", case=False, na=False)
+    status_com_erro = int(error_mask.sum())
+    vendas_mes = len(df_f)
 
-status_com_erro = int(error_mask.sum())
-vendas_mes = len(df_f)
+    row1 = st.columns(6)
 
-# =========================
-# CARDS DO TOPO
-# =========================
-row1 = st.columns(6)
+    with row1[0]:
+        render_mini_card("💬 1º contato<br>hoje", contato1_hoje, "registros de hoje", AZUL_OPPI)
 
-with row1[0]:
-    render_mini_card("💬 1º contato<br>hoje", contato1_hoje, "registros de hoje", AZUL_OPPI)
+    with row1[1]:
+        render_mini_card("💬 2º contato<br>hoje", contato2_hoje, "registros de hoje", ROXO_TEC)
 
-with row1[1]:
-    render_mini_card("💬 2º contato<br>hoje", contato2_hoje, "registros de hoje", ROXO_TEC)
+    with row1[2]:
+        render_mini_card("💬 3º contato<br>hoje", contato3_hoje, "registros de hoje", CIANO_DETALHE)
 
-with row1[2]:
-    render_mini_card("💬 3º contato<br>hoje", contato3_hoje, "registros de hoje", CIANO_DETALHE)
+    with row1[3]:
+        render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes) if mes else "-", AZUL_OPPI)
 
-with row1[3]:
-    render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes) if mes else "-", AZUL_OPPI)
+    with row1[4]:
+        render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes) if mes else "-", ROXO_TEC)
 
-with row1[4]:
-    render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes) if mes else "-", ROXO_TEC)
+    with row1[5]:
+        render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes) if mes else "-", CIANO_DETALHE)
 
-with row1[5]:
-    render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes) if mes else "-", CIANO_DETALHE)
+    row2 = st.columns(2)
 
-row2 = st.columns(2)
-
-with row2[0]:
-    render_wide_card(
-        "Status com erro",
-        status_com_erro,
-        f"Mês selecionado: {mes}" if mes else "Mês selecionado: -",
-        LARANJA_ATENCAO
-    )
-
-with row2[1]:
-    render_wide_card(
-        "Vendas registradas no mês",
-        vendas_mes,
-        f"Mês Venda: {mes}" if mes else "Mês Venda: -",
-        VERDE_SUCESSO
-    )
-
-st.divider()
-
-# =========================
-# GRÁFICOS DETALHADOS
-# =========================
-g1, g2 = st.columns(2)
-
-with g1:
-    render_graph_header(
-        "📞 Contatos por mês",
-        "Distribuição mensal dos 3 contatos"
-    )
-
-    contatos_mes = pd.DataFrame({
-        "Contato": ["1º contato", "2º contato", "3º contato"],
-        "Qtd": [primeiro_mes, segundo_mes, terceiro_mes]
-    })
-
-    fig_contatos = px.bar(
-        contatos_mes,
-        x="Contato",
-        y="Qtd",
-        text="Qtd",
-        color="Contato",
-        color_discrete_sequence=CORES_GRAFICO
-    )
-
-    fig_contatos = apply_bar_layout(fig_contatos, height=370)
-
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.plotly_chart(fig_contatos, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with g2:
-    render_graph_header(
-        "🏙️ Vendas por unidade no mês",
-        "Quantidade de vendas registradas por unidade no mês selecionado"
-    )
-
-    if "Unidade" in df_f.columns:
-        vendas_unidade = (
-            df_f["Unidade"]
-            .fillna("Sem unidade")
-            .astype(str)
-            .str.strip()
-            .replace("", "Sem unidade")
-            .value_counts()
-            .reset_index()
+    with row2[0]:
+        render_wide_card(
+            "Status com erro",
+            status_com_erro,
+            f"Mês selecionado: {mes}" if mes else "Mês selecionado: -",
+            LARANJA_ATENCAO
         )
-        vendas_unidade.columns = ["Unidade", "Qtd"]
-    else:
-        vendas_unidade = pd.DataFrame(columns=["Unidade", "Qtd"])
 
-    fig_unidade = px.bar(
-        vendas_unidade,
-        x="Unidade",
-        y="Qtd",
-        text="Qtd",
-        color="Unidade",
-        color_discrete_sequence=CORES_GRAFICO
-    )
-
-    fig_unidade = apply_bar_layout(fig_unidade, height=370)
-    fig_unidade.update_xaxes(tickangle=-18)
-
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.plotly_chart(fig_unidade, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-g3, g4 = st.columns(2)
-
-with g3:
-    render_graph_header(
-        "🐶 Raças mais vendidas (mês)",
-        "Top 10 raças do mês filtrado"
-    )
-
-    if "Raça" in df_f.columns:
-        racas = (
-            df_f["Raça"]
-            .fillna("Sem raça")
-            .astype(str)
-            .str.strip()
-            .replace("", "Sem raça")
-            .value_counts()
-            .head(10)
-            .reset_index()
+    with row2[1]:
+        render_wide_card(
+            "Vendas registradas no mês",
+            vendas_mes,
+            f"Mês Venda: {mes}" if mes else "Mês Venda: -",
+            VERDE_SUCESSO
         )
-        racas.columns = ["Raça", "Qtd"]
-    else:
-        racas = pd.DataFrame(columns=["Raça", "Qtd"])
 
-    fig_racas = px.bar(
-        racas,
-        x="Raça",
-        y="Qtd",
-        text="Qtd",
-        color="Raça",
-        color_discrete_sequence=CORES_GRAFICO
-    )
+    st.divider()
 
-    fig_racas = apply_bar_layout(fig_racas, height=370)
-    fig_racas.update_xaxes(tickangle=-28)
+    g1, g2 = st.columns(2)
 
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.plotly_chart(fig_racas, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with g1:
+        render_graph_header("📞 Contatos por mês", "Distribuição mensal dos 3 contatos")
 
-with g4:
-    render_graph_header(
-        "🏆 Vendas por vendedora (mês)",
-        "Todas as vendas do mês, incluindo sem nome"
-    )
-
-    if vendedora_col and vendedora_col in df_f.columns:
-        vendas_vendedora = (
-            df_f[vendedora_col]
-            .fillna("Sem nome")
-            .astype(str)
-            .str.strip()
-            .replace("", "Sem nome")
-            .value_counts()
-            .reset_index()
-        )
-        vendas_vendedora.columns = ["Vendedora", "Qtd"]
-    else:
-        vendas_vendedora = pd.DataFrame({
-            "Vendedora": ["Sem coluna de vendedora"],
-            "Qtd": [0]
+        contatos_mes = pd.DataFrame({
+            "Contato": ["1º contato", "2º contato", "3º contato"],
+            "Qtd": [primeiro_mes, segundo_mes, terceiro_mes]
         })
 
-    fig_vendedora = px.bar(
-        vendas_vendedora,
-        x="Vendedora",
-        y="Qtd",
-        text="Qtd",
-        color="Vendedora",
-        color_discrete_sequence=CORES_GRAFICO
+        fig_contatos = px.bar(
+            contatos_mes,
+            x="Contato",
+            y="Qtd",
+            text="Qtd",
+            color="Contato",
+            color_discrete_sequence=CORES_GRAFICO
+        )
+
+        fig_contatos = apply_bar_layout(fig_contatos, height=370)
+
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+        st.plotly_chart(fig_contatos, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with g2:
+        render_graph_header("🏙️ Vendas por unidade no mês", "Quantidade de vendas registradas por unidade no mês selecionado")
+
+        if "Unidade" in df_f.columns:
+            vendas_unidade = (
+                df_f["Unidade"]
+                .fillna("Sem unidade")
+                .astype(str)
+                .str.strip()
+                .replace("", "Sem unidade")
+                .value_counts()
+                .reset_index()
+            )
+            vendas_unidade.columns = ["Unidade", "Qtd"]
+        else:
+            vendas_unidade = pd.DataFrame(columns=["Unidade", "Qtd"])
+
+        fig_unidade = px.bar(
+            vendas_unidade,
+            x="Unidade",
+            y="Qtd",
+            text="Qtd",
+            color="Unidade",
+            color_discrete_sequence=CORES_GRAFICO
+        )
+
+        fig_unidade = apply_bar_layout(fig_unidade, height=370)
+        fig_unidade.update_xaxes(tickangle=-18)
+
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+        st.plotly_chart(fig_unidade, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    g3, g4 = st.columns(2)
+
+    with g3:
+        render_graph_header("🐶 Raças mais vendidas (mês)", "Top 10 raças do mês filtrado")
+
+        if "Raça" in df_f.columns:
+            racas = (
+                df_f["Raça"]
+                .fillna("Sem raça")
+                .astype(str)
+                .str.strip()
+                .replace("", "Sem raça")
+                .value_counts()
+                .head(10)
+                .reset_index()
+            )
+            racas.columns = ["Raça", "Qtd"]
+        else:
+            racas = pd.DataFrame(columns=["Raça", "Qtd"])
+
+        fig_racas = px.bar(
+            racas,
+            x="Raça",
+            y="Qtd",
+            text="Qtd",
+            color="Raça",
+            color_discrete_sequence=CORES_GRAFICO
+        )
+
+        fig_racas = apply_bar_layout(fig_racas, height=370)
+        fig_racas.update_xaxes(tickangle=-28)
+
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+        st.plotly_chart(fig_racas, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with g4:
+        render_graph_header("🏆 Vendas por vendedora (mês)", "Todas as vendas do mês, incluindo sem nome")
+
+        if vendedora_col and vendedora_col in df_f.columns:
+            vendas_vendedora = (
+                df_f[vendedora_col]
+                .fillna("Sem nome")
+                .astype(str)
+                .str.strip()
+                .replace("", "Sem nome")
+                .value_counts()
+                .reset_index()
+            )
+            vendas_vendedora.columns = ["Vendedora", "Qtd"]
+        else:
+            vendas_vendedora = pd.DataFrame({"Vendedora": ["Sem coluna de vendedora"], "Qtd": [0]})
+
+        fig_vendedora = px.bar(
+            vendas_vendedora,
+            x="Vendedora",
+            y="Qtd",
+            text="Qtd",
+            color="Vendedora",
+            color_discrete_sequence=CORES_GRAFICO
+        )
+
+        fig_vendedora = apply_bar_layout(fig_vendedora, height=370)
+        fig_vendedora.update_xaxes(tickangle=-28)
+
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+        st.plotly_chart(fig_vendedora, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# =========================
+# LOGIN FINANCEIRO
+# =========================
+def render_financeiro_login():
+    st.markdown("""
+    <div class="login-logo-wrap">
+        <div class="login-logo">Sua marca<br>aqui</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div style="text-align:center; color:#111827; font-size:16px; margin-bottom:16px;">
+        Área financeira • Acesso restrito
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="login-header-card">
+        <div class="login-title">Login do Financeiro</div>
+        <div class="login-subtitle">Digite o usuário e senha para acessar</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.form("login_financeiro"):
+        usuario = st.text_input("Usuário", placeholder="Digite seu usuário")
+        senha = st.text_input("Senha", placeholder="Digite sua senha", type="password")
+
+        c1, c2 = st.columns(2)
+
+        with c1:
+            entrar = st.form_submit_button("Entrar no Financeiro", use_container_width=True)
+
+        with c2:
+            voltar = st.form_submit_button("Voltar à Operação", use_container_width=True)
+
+        if voltar:
+            st.session_state.page = "operacao"
+            st.rerun()
+
+        if entrar:
+            if usuario == "oppimockup" and senha == "100316!*":
+                st.session_state.financeiro_logado = True
+                st.rerun()
+            else:
+                st.error("Usuário ou senha incorretos.")
+
+# =========================
+# FINANCEIRO
+# =========================
+def render_financeiro_dashboard():
+    top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
+
+    with top_col1:
+        with st.popover("☰"):
+            if st.button("⚙️ Operação", use_container_width=True):
+                st.session_state.page = "operacao"
+                st.rerun()
+
+            st.link_button(
+                "📄 Novo Contrato",
+                "https://n8n.oppitech.com.br/form/e1269af5-6cac-492c-8919-7d3345fd79fa",
+                use_container_width=True
+            )
+
+            if st.button("🚪 Sair do Financeiro", use_container_width=True):
+                st.session_state.financeiro_logado = False
+                st.session_state.page = "operacao"
+                st.rerun()
+
+    with top_col2:
+        st.markdown(f"""
+        <div>
+            <div class="header-title">💰 Financeiro</div>
+            <div class="header-subtitle">Oppi Vision • Área financeira</div>
+            <div class="header-total">Total de registros: {len(df)}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with top_col3:
+        if st.button("Sair", use_container_width=True):
+            st.session_state.financeiro_logado = False
+            st.session_state.page = "operacao"
+            st.rerun()
+
+    meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
+    unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
+
+    col1, col2, col3 = st.columns([4, 1, 4])
+
+    with col1:
+        mes = st.selectbox("Mês", meses, key="mes_financeiro") if meses else None
+
+    with col2:
+        st.markdown("""
+        <div class="logo-wrap">
+            <div class="logo">
+                <div class="a">OPPI</div>
+                <div class="b">VISION</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        unidade = st.selectbox("Unidade", ["Todas"] + unidades, key="unidade_financeiro") if unidades else "Todas"
+
+    st.divider()
+
+    df_fin = df.copy()
+
+    if valor_col and valor_col in df_fin.columns:
+        df_fin["_valor"] = df_fin[valor_col].apply(parse_money)
+    else:
+        df_fin["_valor"] = 0.0
+
+    if mes is not None and "Mês" in df_fin.columns:
+        df_fin_mes = df_fin[df_fin["Mês"] == mes].copy()
+    else:
+        df_fin_mes = df_fin.copy()
+
+    if unidade != "Todas" and "Unidade" in df_fin_mes.columns:
+        df_fin_mes = df_fin_mes[df_fin_mes["Unidade"] == unidade]
+
+    faturamento_total = df_fin_mes["_valor"].sum()
+    vendas_mes = len(df_fin_mes)
+    ticket_medio = faturamento_total / vendas_mes if vendas_mes else 0
+    racas_vendidas = df_fin_mes["Raça"].nunique() if "Raça" in df_fin_mes.columns else 0
+
+    k1, k2, k3, k4 = st.columns(4)
+
+    with k1:
+        render_mini_card("💰 Faturamento total", money_br(faturamento_total), str(mes) if mes else "-", AZUL_OPPI)
+
+    with k2:
+        render_mini_card("🛍️ Vendas no mês", vendas_mes, str(mes) if mes else "-", ROSA_DESTAQUE)
+
+    with k3:
+        render_mini_card("📊 Ticket médio", money_br(ticket_medio), "por venda", ROSA_DESTAQUE)
+
+    with k4:
+        render_mini_card("🐶 Raças vendidas", racas_vendidas, "no mês", AZUL_OPPI)
+
+    st.divider()
+
+    g1, g2 = st.columns(2)
+
+    with g1:
+        render_graph_header("🏙️ Faturamento por Unidade", "Faturamento somado por unidade no mês")
+
+        if "Unidade" in df_fin_mes.columns:
+            fat_unidade = (
+                df_fin_mes.groupby("Unidade", dropna=False)["_valor"]
+                .sum()
+                .reset_index()
+                .sort_values("_valor", ascending=False)
+            )
+            fat_unidade["Unidade"] = fat_unidade["Unidade"].fillna("Sem unidade").astype(str)
+        else:
+            fat_unidade = pd.DataFrame({"Unidade": [], "_valor": []})
+
+        fig = px.bar(
+            fat_unidade,
+            x="Unidade",
+            y="_valor",
+            text=fat_unidade["_valor"].apply(money_br) if not fat_unidade.empty else None,
+            color="Unidade",
+            color_discrete_sequence=CORES_GRAFICO
+        )
+
+        fig = apply_bar_layout(fig, height=390)
+        fig.update_yaxes(title="Valor")
+        fig.update_xaxes(tickangle=-18)
+
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+        st.plotly_chart(fig, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with g2:
+        render_graph_header("💵 Valor por raça", "Faturamento somado por raça no mês")
+
+        if "Raça" in df_fin_mes.columns:
+            fat_raca = (
+                df_fin_mes.groupby("Raça", dropna=False)["_valor"]
+                .sum()
+                .reset_index()
+                .sort_values("_valor", ascending=False)
+                .head(10)
+            )
+            fat_raca["Raça"] = fat_raca["Raça"].fillna("Sem raça").astype(str)
+        else:
+            fat_raca = pd.DataFrame({"Raça": [], "_valor": []})
+
+        fig2 = px.bar(
+            fat_raca,
+            x="Raça",
+            y="_valor",
+            text=fat_raca["_valor"].apply(money_br) if not fat_raca.empty else None,
+            color="Raça",
+            color_discrete_sequence=CORES_GRAFICO
+        )
+
+        fig2 = apply_bar_layout(fig2, height=390)
+        fig2.update_yaxes(title="Valor")
+        fig2.update_xaxes(tickangle=-28)
+
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+        st.plotly_chart(fig2, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    g3, g4 = st.columns(2)
+
+    with g3:
+        render_graph_header("🏆 Vendedoras que mais faturaram", "Ranking por faturamento no mês")
+
+        if vendedora_col and vendedora_col in df_fin_mes.columns:
+            fat_vendedora = (
+                df_fin_mes.groupby(vendedora_col, dropna=False)["_valor"]
+                .sum()
+                .reset_index()
+                .sort_values("_valor", ascending=False)
+                .head(10)
+            )
+            fat_vendedora[vendedora_col] = fat_vendedora[vendedora_col].fillna("Sem nome").astype(str)
+        else:
+            fat_vendedora = pd.DataFrame({"Vendedora": [], "_valor": []})
+            vendedora_col_local = "Vendedora"
+
+        nome_vendedora_col = vendedora_col if vendedora_col and vendedora_col in fat_vendedora.columns else "Vendedora"
+
+        fig3 = px.bar(
+            fat_vendedora,
+            x=nome_vendedora_col,
+            y="_valor",
+            text=fat_vendedora["_valor"].apply(money_br) if not fat_vendedora.empty else None,
+            color=nome_vendedora_col,
+            color_discrete_sequence=CORES_GRAFICO
+        )
+
+        fig3 = apply_bar_layout(fig3, height=390)
+        fig3.update_yaxes(title="Valor")
+        fig3.update_xaxes(tickangle=-28)
+
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+        st.plotly_chart(fig3, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with g4:
+        render_graph_header("🧾 Faturamento individual por vendedora", "Valores individuais no mês selecionado")
+
+        if not fat_vendedora.empty:
+            tabela_vend = fat_vendedora[[nome_vendedora_col, "_valor"]].copy()
+            tabela_vend.columns = ["Vendedora", "Faturamento"]
+            tabela_vend["Faturamento"] = tabela_vend["Faturamento"].apply(money_br)
+        else:
+            tabela_vend = pd.DataFrame(columns=["Vendedora", "Faturamento"])
+
+        st.dataframe(tabela_vend, use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    render_graph_header("📈 Faturamento total do ano", "Mensal conforme crescimento da planilha")
+
+    if "Mês" in df_fin.columns:
+        fat_ano = (
+            df_fin.groupby("Mês", dropna=False)["_valor"]
+            .sum()
+            .reset_index()
+        )
+        fat_ano["Mês"] = fat_ano["Mês"].astype(str)
+    else:
+        fat_ano = pd.DataFrame({"Mês": [], "_valor": []})
+
+    fig4 = px.bar(
+        fat_ano,
+        x="Mês",
+        y="_valor",
+        text=fat_ano["_valor"].apply(money_br) if not fat_ano.empty else None,
+        color_discrete_sequence=[AZUL_OPPI]
     )
 
-    fig_vendedora = apply_bar_layout(fig_vendedora, height=370)
-    fig_vendedora.update_xaxes(tickangle=-28)
+    fig4 = apply_bar_layout(fig4, height=430)
+    fig4.update_yaxes(title="Valor")
+    fig4.update_xaxes(title="Mês")
 
     st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.plotly_chart(fig_vendedora, use_container_width=True)
+    st.plotly_chart(fig4, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
+
+# =========================
+# ROTEAMENTO
+# =========================
+if st.session_state.page == "financeiro":
+    if st.session_state.financeiro_logado:
+        render_financeiro_dashboard()
+    else:
+        render_financeiro_login()
+else:
+    render_operacao()
