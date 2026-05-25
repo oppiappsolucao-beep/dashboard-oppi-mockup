@@ -202,7 +202,7 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
     letter-spacing: 2px;
 }
 
-/* LOGO LOGIN */
+/* LOGO LOGIN - ESTILO OPPI VISION */
 .login-logo-wrap {
     display: flex;
     justify-content: center;
@@ -211,22 +211,73 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
 }
 
 .login-logo {
-    width: 104px;
-    height: 104px;
+    width: 112px;
+    height: 112px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 2px solid rgba(6,182,212,0.35);
+    background: radial-gradient(circle at top left, #111827, #020617 72%);
+    border: 2px solid rgba(6,182,212,0.55);
     box-shadow:
-        0 0 0 3px rgba(124,58,237,0.10),
-        0 10px 28px rgba(15,23,42,0.18);
+        0 0 0 3px rgba(124,58,237,0.12),
+        0 0 20px rgba(6,182,212,0.28),
+        0 10px 30px rgba(15,23,42,0.30);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: #0F172A;
+    color: #06B6D4;
     font-size: 14px;
     font-weight: 900;
     line-height: 1.15;
+    letter-spacing: 0.3px;
+}
+
+.login-logo span {
+    color: #7C3AED;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+/* LOGIN TEXTO */
+.login-access-text {
+    text-align: center;
+    color: #111827;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+/* LOGIN HEADER */
+.login-header-card {
+    background: #0F172A;
+    border-radius: 18px;
+    padding: 18px 20px 16px 20px;
+    margin-top: 10px;
+    margin-bottom: 18px;
+    box-shadow:
+        0 8px 20px rgba(15,23,42,0.22),
+        0 0 22px rgba(6,182,212,0.10);
+    border: 1px solid rgba(6,182,212,0.18);
+    text-align: center;
+}
+
+.login-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #F8FAFC;
+}
+
+.login-subtitle {
+    font-size: 13px;
+    color: #A1A1AA;
+}
+
+/* FORM LOGIN */
+div[data-testid="stForm"] {
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(15,23,42,0.12);
+    border-radius: 18px;
+    padding: 18px !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,0.08);
 }
 
 /* CARDS */
@@ -330,46 +381,51 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
     margin-bottom: 16px;
 }
 
-/* LOGIN HEADER */
-.login-header-card {
-    background: #FFFFFF;
-    border-radius: 18px;
-    padding: 14px 20px 12px 20px;
-    margin-top: 10px;
-    margin-bottom: 18px;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.10);
-    border: 1px solid rgba(15,23,42,0.06);
-    text-align: center;
-}
-
-.login-title {
-    font-size: 22px;
-    font-weight: 900;
-    color: #111827;
-}
-
-.login-subtitle {
-    font-size: 13px;
-    color: #64748b;
-}
-
 /* SELECT / INPUT */
 .stSelectbox label,
 .stTextInput label {
     color: #111827 !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
 }
 
 .stSelectbox > div > div,
 .stTextInput > div > div > input {
     background-color: #FFFFFF !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
     color: #111827 !important;
-    border: 1px solid rgba(15,23,42,0.18) !important;
+    border: 1px solid rgba(15,23,42,0.16) !important;
+    min-height: 44px !important;
+}
+
+.stTextInput > div > div > input:focus {
+    border: 1px solid #06B6D4 !important;
+    box-shadow:
+        0 0 0 2px rgba(6,182,212,0.18),
+        0 0 18px rgba(124,58,237,0.12) !important;
+}
+
+/* BOTÕES DO LOGIN */
+div[data-testid="stFormSubmitButton"] button {
+    background: linear-gradient(135deg, #1D4ED8, #7C3AED) !important;
+    color: #F8FAFC !important;
+    border-radius: 14px !important;
+    min-height: 52px !important;
+    font-weight: 900 !important;
+    font-size: 15px !important;
+    border: 1px solid rgba(6,182,212,0.28) !important;
+    box-shadow:
+        0 0 0 2px rgba(29,78,216,0.12),
+        0 10px 22px rgba(15,23,42,0.20) !important;
+}
+
+div[data-testid="stFormSubmitButton"] button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 0 2px rgba(6,182,212,0.20),
+        0 14px 26px rgba(15,23,42,0.26) !important;
 }
 
 /* BOTÕES GERAIS */
-div[data-testid="stFormSubmitButton"] button,
 div[data-testid="stButton"] button {
     border-radius: 12px !important;
     font-weight: 900 !important;
@@ -878,12 +934,12 @@ def render_operacao():
 def render_financeiro_login():
     st.markdown("""
     <div class="login-logo-wrap">
-        <div class="login-logo">Sua marca<br>aqui</div>
+        <div class="login-logo">Sua marca<br><span>AQUI</span></div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("""
-    <div style="text-align:center; color:#111827; font-size:16px; margin-bottom:16px;">
+    <div class="login-access-text">
         Área financeira • Acesso restrito
     </div>
     """, unsafe_allow_html=True)
@@ -1096,7 +1152,6 @@ def render_financeiro_dashboard():
             fat_vendedora[vendedora_col] = fat_vendedora[vendedora_col].fillna("Sem nome").astype(str)
         else:
             fat_vendedora = pd.DataFrame({"Vendedora": [], "_valor": []})
-            vendedora_col_local = "Vendedora"
 
         nome_vendedora_col = vendedora_col if vendedora_col and vendedora_col in fat_vendedora.columns else "Vendedora"
 
