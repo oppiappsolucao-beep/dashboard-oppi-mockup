@@ -223,18 +223,20 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     text-align: center;
     color: #06B6D4;
     font-size: 14px;
     font-weight: 900;
     line-height: 1.15;
-    letter-spacing: 0.3px;
 }
 
 .login-logo span {
     color: #7C3AED;
-    font-size: 11px;
-    letter-spacing: 2px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-top: 2px;
+    text-transform: lowercase;
 }
 
 /* LOGIN TEXTO */
@@ -934,7 +936,10 @@ def render_operacao():
 def render_financeiro_login():
     st.markdown("""
     <div class="login-logo-wrap">
-        <div class="login-logo">Sua marca<br><span>AQUI</span></div>
+        <div class="login-logo">
+            <div>Sua marca</div>
+            <span>aqui</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
