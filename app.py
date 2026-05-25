@@ -127,50 +127,72 @@ div[data-testid="stPopover"] button svg {
     fill: #F8FAFC !important;
 }
 
-/* MENU INTERNO COM BOTÕES NATIVOS */
+/* MENU - ESTILO DA PRIMEIRA FOTO */
 div[data-testid="stPopoverBody"] {
-    min-width: 320px !important;
+    min-width: 255px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
 }
 
-div[data-testid="stPopoverBody"] h3 {
-    color: #0F172A !important;
-    font-weight: 900 !important;
+div[data-testid="stPopoverBody"] .stVerticalBlock {
+    gap: 10px !important;
 }
 
-div[data-testid="stPopoverBody"] p {
-    color: #64748b !important;
-}
-
-/* link_button do menu */
-div[data-testid="stLinkButton"] a {
-    background: linear-gradient(135deg, #1D2671, #0F172A) !important;
+/* BOTÃO LINK - NOVO CONTRATO */
+div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a {
+    background: linear-gradient(135deg, #1B2A6B, #081634) !important;
     color: #F8FAFC !important;
     border-radius: 12px !important;
-    padding: 16px 18px !important;
+    min-height: 54px !important;
+    padding: 14px 16px !important;
     font-weight: 900 !important;
     font-size: 15px !important;
-    border: 3px solid #fb7185 !important;
-    box-shadow: 0 12px 26px rgba(15,23,42,0.22) !important;
     text-decoration: none !important;
+    border: none !important;
+    box-shadow:
+        inset 5px 0 0 #06B6D4,
+        0 10px 20px rgba(15,23,42,0.22) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    transition: all 0.25s ease !important;
 }
 
-div[data-testid="stLinkButton"] a:hover {
-    background: linear-gradient(135deg, #1D4ED8, #7C3AED) !important;
+div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a:hover {
+    background: linear-gradient(135deg, #21378a, #0b1f4c) !important;
     color: #F8FAFC !important;
-    transform: translateY(-2px);
+    transform: translateY(-2px) !important;
+    box-shadow:
+        inset 5px 0 0 #06B6D4,
+        0 14px 24px rgba(15,23,42,0.28) !important;
 }
 
-/* botão financeiro desabilitado */
+/* BOTÃO NORMAL - FINANCEIRO */
 div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
-    background: linear-gradient(135deg, #1D2671, #0F172A) !important;
+    background: linear-gradient(135deg, #1B2A6B, #081634) !important;
     color: #F8FAFC !important;
     border-radius: 12px !important;
-    padding: 16px 18px !important;
+    min-height: 54px !important;
+    padding: 14px 16px !important;
     font-weight: 900 !important;
     font-size: 15px !important;
     border: none !important;
-    box-shadow: 0 12px 26px rgba(15,23,42,0.22) !important;
-    opacity: 0.95 !important;
+    box-shadow:
+        inset 5px 0 0 #06B6D4,
+        0 10px 20px rgba(15,23,42,0.22) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    transition: all 0.25s ease !important;
+    opacity: 1 !important;
+}
+
+/* GARANTE TEXTO CLARO MESMO DESABILITADO */
+div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p,
+div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
+    color: #F8FAFC !important;
+    -webkit-text-fill-color: #F8FAFC !important;
+    opacity: 1 !important;
 }
 
 /* LOGO */
@@ -534,10 +556,6 @@ top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
 
 with top_col1:
     with st.popover("☰"):
-        st.markdown("### Menu")
-        st.caption("Escolha uma área para acessar")
-        st.divider()
-
         st.link_button(
             "📄 Novo Contrato",
             "https://n8n.oppitech.com.br/form/e1269af5-6cac-492c-8919-7d3345fd79fa",
@@ -548,11 +566,6 @@ with top_col1:
             "💰 Financeiro",
             use_container_width=True,
             disabled=True
-        )
-
-        st.markdown(
-            "<div style='text-align:center; color:#94a3b8; font-size:11px; margin-top:24px;'>Painel interno • Oppi Vision</div>",
-            unsafe_allow_html=True
         )
 
 with top_col2:
