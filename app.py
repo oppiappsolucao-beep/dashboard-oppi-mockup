@@ -186,6 +186,23 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
     -webkit-text-fill-color: #F8FAFC !important;
 }
 
+/* ANIMAÇÃO DE ZOOM NOS BOTÕES DO MENU */
+div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a,
+div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
+    transition: all 0.25s ease !important;
+    transform: scale(1);
+}
+
+/* HOVER - ZOOM */
+div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a:hover,
+div[data-testid="stPopoverBody"] div[data-testid="stButton"] button:hover {
+    transform: scale(1.04) !important;
+    box-shadow:
+        inset 5px 0 0 #06B6D4,
+        0 14px 28px rgba(15,23,42,0.32),
+        0 0 18px rgba(6,182,212,0.35) !important;
+}
+
 /* LOGO PRINCIPAL */
 .logo-wrap {
     display: flex;
@@ -718,7 +735,7 @@ def render_operacao():
         st.markdown(f"""
         <div>
             <div class="header-title">⚙️ Operação Comercial</div>
-            <div class="header-subtitle">Oppi Tech • Dashboard Premium</div>
+            <div class="header-subtitle">Oppi Vision • Dashboard Premium</div>
             <div class="header-total">Total de registros: {len(df)}</div>
         </div>
         """, unsafe_allow_html=True)
@@ -1027,7 +1044,7 @@ def render_financeiro_dashboard():
         st.markdown(f"""
         <div>
             <div class="header-title">💰 Financeiro</div>
-            <div class="header-subtitle">Oppi Tech • Área financeira</div>
+            <div class="header-subtitle">Oppi Vision • Área financeira</div>
             <div class="header-total">Total de registros: {len(df)}</div>
         </div>
         """, unsafe_allow_html=True)
