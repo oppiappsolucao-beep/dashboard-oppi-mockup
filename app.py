@@ -16,12 +16,24 @@ st.set_page_config(
 # =========================
 # SESSION STATE
 # =========================
+if "app_logado" not in st.session_state:
+    st.session_state.app_logado = False
+
 if "page" not in st.session_state:
     st.session_state.page = "operacao"
 
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
 
+# LOGOUT GERAL
+if st.query_params.get("logout_app") == "1":
+    st.session_state.app_logado = False
+    st.session_state.financeiro_logado = False
+    st.session_state.page = "operacao"
+    st.query_params.clear()
+    st.rerun()
+
+# LOGOUT SOMENTE FINANCEIRO
 if st.query_params.get("logout_financeiro") == "1":
     st.session_state.financeiro_logado = False
     st.session_state.page = "operacao"
@@ -700,6 +712,47 @@ vendedora_col = find_col(df, ["Vendedora", "Vendedor", "Consultora", "Consultor"
 valor_col = find_col(df, ["Valor Filhote", "Valor", "Valor Total", "Total", "Preço", "Preco", "Faturamento"])
 
 # =========================
+# LOGIN PRINCIPAL
+# =========================
+def render_login_principal():
+    st.markdown("""
+    <div class="login-logo-wrap">
+        <div class="login-logo">
+            <div>Sua marca</div>
+            <span>aqui</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="login-access-text">
+        Dashboard principal • Acesso restrito
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="login-header-card">
+        <div class="login-title">Login do Dashboard</div>
+        <div class="login-subtitle">Digite o usuário e senha para acessar o painel principal</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.form("login_principal"):
+        usuario = st.text_input("Usuário", placeholder="Digite seu usuário")
+        senha = st.text_input("Senha", placeholder="Digite sua senha", type="password")
+
+        entrar = st.form_submit_button("Entrar no Dashboard", use_container_width=True)
+
+        if entrar:
+            if usuario == "oppitech" and senha == "100316**":
+                st.session_state.app_logado = True
+                st.session_state.page = "operacao"
+                st.session_state.financeiro_logado = False
+                st.rerun()
+            else:
+                st.error("Usuário ou senha incorretos.")
+
+# =========================
 # MENU
 # =========================
 def render_top_menu():
@@ -721,7 +774,7 @@ def render_top_menu():
                 st.session_state.page = "financeiro"
                 st.rerun()
 
-            st.markdown('<div class="menu-footer">Painel interno • Oppi Tech </div>', unsafe_allow_html=True)
+            st.markdown('<div class="menu-footer">Painel interno • Oppi Tech</div>', unsafe_allow_html=True)
 
     return top_col2, top_col3
 
@@ -735,13 +788,15 @@ def render_operacao():
         st.markdown(f"""
         <div>
             <div class="header-title">⚙️ Operação Comercial</div>
-            <div class="header-subtitle">Oppi Tech  • Dashboard Premium</div>
+            <div class="header-subtitle">Oppi Tech • Dashboard Premium</div>
             <div class="header-total">Total de registros: {len(df)}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with top_col3:
-        st.markdown("""<div class="logout-btn">Sair</div>""", unsafe_allow_html=True)
+        st.markdown("""
+        <a class="logout-btn" href="?logout_app=1" target="_self">Sair</a>
+        """, unsafe_allow_html=True)
 
     meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
     unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
@@ -1259,7 +1314,9 @@ def render_financeiro_dashboard():
 # =========================
 # ROTEAMENTO
 # =========================
-if st.session_state.page == "financeiro":
+if not st.session_state.app_logado:
+    render_login_principal()
+elif st.session_state.page == "financeiro":
     if st.session_state.financeiro_logado:
         render_financeiro_dashboard()
     else:
