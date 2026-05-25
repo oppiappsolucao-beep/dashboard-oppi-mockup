@@ -74,12 +74,17 @@ header {visibility:hidden;}
         0 0 0 2px rgba(29,78,216,0.25),
         0 0 18px rgba(124,58,237,0.45),
         0 0 28px rgba(6,182,212,0.25),
-        0 10px 25px rgba(0,0,0,0.20);
+        0 10px 25px rgba(0,0,0,0.35);
     transition: all 0.25s ease;
 }
 
 .logout-btn:hover {
     transform: translateY(-2px);
+    box-shadow:
+        0 0 0 2px rgba(6,182,212,0.30),
+        0 0 26px rgba(124,58,237,0.55),
+        0 0 34px rgba(6,182,212,0.35),
+        0 12px 28px rgba(0,0,0,0.45);
 }
 
 /* HAMBURGUER */
@@ -99,12 +104,17 @@ div[data-testid="stPopover"] button {
         0 0 0 2px rgba(29,78,216,0.25) !important,
         0 0 18px rgba(124,58,237,0.45) !important,
         0 0 28px rgba(6,182,212,0.25) !important,
-        0 10px 25px rgba(0,0,0,0.20) !important;
+        0 10px 25px rgba(0,0,0,0.35) !important;
     transition: all 0.25s ease !important;
 }
 
 div[data-testid="stPopover"] button:hover {
     transform: translateY(-2px) !important;
+    box-shadow:
+        0 0 0 2px rgba(6,182,212,0.30) !important,
+        0 0 26px rgba(124,58,237,0.55) !important,
+        0 0 34px rgba(6,182,212,0.35) !important,
+        0 12px 28px rgba(0,0,0,0.45) !important;
 }
 
 div[data-testid="stPopover"] button p {
@@ -128,7 +138,7 @@ div[data-testid="stPopover"] button svg {
     text-decoration: none !important;
     font-weight: 800;
     border-left: 4px solid #06B6D4;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.28);
 }
 
 .menu-link:hover {
@@ -144,48 +154,48 @@ div[data-testid="stPopover"] button svg {
 }
 
 .logo {
-    width:82px;
-    height:82px;
-    border-radius:50%;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
     background: #0F172A;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     box-shadow:
         0 0 0 2px rgba(6,182,212,0.20),
-        0 8px 25px rgba(124,58,237,0.25);
+        0 8px 25px rgba(124,58,237,0.35);
     border: 1px solid rgba(6,182,212,0.28);
 }
 
 .logo .a {
-    font-weight:900;
-    color:#06B6D4;
-    font-size:16px;
+    font-weight: 900;
+    color: #06B6D4;
+    font-size: 16px;
 }
 
 .logo .b {
-    font-size:9px;
-    font-weight:900;
-    color:#7C3AED;
-    letter-spacing:2px;
+    font-size: 9px;
+    font-weight: 900;
+    color: #7C3AED;
+    letter-spacing: 2px;
 }
 
-/* CARDS PEQUENOS */
+/* CARDS PEQUENOS - BRANCOS */
 .mini-card {
-    background: #d9d9d9;
+    background: #FFFFFF;
     border-radius: 18px;
     padding: 14px 16px 10px 16px;
     min-height: 118px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
     margin-bottom: 8px;
-    border: 1px solid rgba(15,23,42,0.10);
+    border: 1px solid rgba(15,23,42,0.06);
     transition: all 0.25s ease;
 }
 
 .mini-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.15);
 }
 
 .mini-title {
@@ -209,22 +219,22 @@ div[data-testid="stPopover"] button svg {
     margin-top: 8px;
 }
 
-/* CARDS GRANDES */
+/* CARDS GRANDES - BRANCOS */
 .wide-card {
-    background: #d9d9d9;
+    background: #FFFFFF;
     border-radius: 18px;
     padding: 16px 18px;
     min-height: 116px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
     margin-top: 8px;
     margin-bottom: 8px;
-    border: 1px solid rgba(15,23,42,0.10);
+    border: 1px solid rgba(15,23,42,0.06);
     transition: all 0.25s ease;
 }
 
 .wide-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.15);
 }
 
 .wide-title {
@@ -247,15 +257,15 @@ div[data-testid="stPopover"] button svg {
     margin-top: 8px;
 }
 
-/* CABEÇALHO DOS GRÁFICOS */
+/* CABEÇALHO DOS GRÁFICOS - BRANCO */
 .graph-title-card {
-    background: #d9d9d9;
+    background: #FFFFFF;
     border-radius: 18px;
     padding: 14px 20px 12px 20px;
     margin-top: 10px;
     margin-bottom: 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
-    border: 1px solid rgba(15,23,42,0.10);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    border: 1px solid rgba(15,23,42,0.06);
 }
 
 .graph-title {
@@ -270,13 +280,13 @@ div[data-testid="stPopover"] button svg {
     color: #64748b;
 }
 
-/* CARD DO GRÁFICO */
+/* CARD DO GRÁFICO - BRANCO */
 .chart-card {
-    background: #d9d9d9;
-    border-radius: 0px;
+    background: #FFFFFF;
+    border-radius: 14px;
     padding: 8px 10px 14px 10px;
-    border: 1px solid rgba(15,23,42,0.08);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    border: 1px solid rgba(15,23,42,0.06);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.10);
     margin-bottom: 16px;
 }
 
@@ -287,7 +297,7 @@ div[data-testid="stPopover"] button svg {
 }
 
 .stSelectbox > div > div {
-    background-color: #ffffff !important;
+    background-color: #FFFFFF !important;
     border-radius: 10px !important;
     color: #111827 !important;
     border: 1px solid rgba(15,23,42,0.18) !important;
@@ -403,8 +413,8 @@ def render_graph_header(title, subtitle):
 def apply_bar_layout(fig, height=360):
     fig.update_layout(
         height=height,
-        paper_bgcolor="#d9d9d9",
-        plot_bgcolor="#d9d9d9",
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
         font_color="#111827",
         margin=dict(l=10, r=10, t=10, b=20),
         showlegend=False,
@@ -413,18 +423,14 @@ def apply_bar_layout(fig, height=360):
             showgrid=False,
             zeroline=False,
             tickfont=dict(size=11, color="#64748b"),
-            title=dict(
-                font=dict(color="#64748b")
-            )
+            title=dict(font=dict(color="#64748b"))
         ),
         yaxis=dict(
             showgrid=True,
-            gridcolor="rgba(15,23,42,0.10)",
+            gridcolor="#E5E7EB",
             zeroline=False,
             tickfont=dict(size=11, color="#64748b"),
-            title=dict(
-                font=dict(color="#64748b")
-            )
+            title=dict(font=dict(color="#64748b"))
         )
     )
 
@@ -470,13 +476,11 @@ data_1_col = find_col(
     ["Data 1º contato", "1º contato", "Primeiro contato", "Data primeiro contato"],
     exclude_terms=["status"]
 )
-
 data_2_col = find_col(
     df,
     ["Data 2º contato", "2º contato", "Segundo contato", "Data segundo contato"],
     exclude_terms=["status"]
 )
-
 data_3_col = find_col(
     df,
     ["Data 3º contato", "3º contato", "Terceiro contato", "Data terceiro contato"],
@@ -647,6 +651,7 @@ st.divider()
 # =========================
 g1, g2 = st.columns(2)
 
+# CONTATOS POR MÊS
 with g1:
     render_graph_header(
         "📞 Contatos por mês",
@@ -673,6 +678,7 @@ with g1:
     st.plotly_chart(fig_contatos, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+# VENDAS POR UNIDADE
 with g2:
     render_graph_header(
         "🏙️ Vendas por unidade no mês",
@@ -711,6 +717,7 @@ with g2:
 
 g3, g4 = st.columns(2)
 
+# RAÇAS MAIS VENDIDAS
 with g3:
     render_graph_header(
         "🐶 Raças mais vendidas (mês)",
@@ -748,6 +755,7 @@ with g3:
     st.plotly_chart(fig_racas, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+# VENDAS POR VENDEDORA
 with g4:
     render_graph_header(
         "🏆 Vendas por vendedora (mês)",
