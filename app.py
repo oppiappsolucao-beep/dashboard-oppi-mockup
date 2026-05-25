@@ -718,7 +718,7 @@ def render_operacao():
         st.markdown(f"""
         <div>
             <div class="header-title">⚙️ Operação Comercial</div>
-            <div class="header-subtitle">Oppi Vision • Dashboard Premium</div>
+            <div class="header-subtitle">Oppi Tech • Dashboard Premium</div>
             <div class="header-total">Total de registros: {len(df)}</div>
         </div>
         """, unsafe_allow_html=True)
@@ -1027,7 +1027,7 @@ def render_financeiro_dashboard():
         st.markdown(f"""
         <div>
             <div class="header-title">💰 Financeiro</div>
-            <div class="header-subtitle">Oppi Vision • Área financeira</div>
+            <div class="header-subtitle">Oppi Tech • Área financeira</div>
             <div class="header-total">Total de registros: {len(df)}</div>
         </div>
         """, unsafe_allow_html=True)
