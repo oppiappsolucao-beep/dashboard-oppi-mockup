@@ -74,17 +74,12 @@ header {visibility:hidden;}
         0 0 0 2px rgba(29,78,216,0.25),
         0 0 18px rgba(124,58,237,0.45),
         0 0 28px rgba(6,182,212,0.25),
-        0 10px 25px rgba(0,0,0,0.35);
+        0 10px 25px rgba(0,0,0,0.20);
     transition: all 0.25s ease;
 }
 
 .logout-btn:hover {
     transform: translateY(-2px);
-    box-shadow:
-        0 0 0 2px rgba(6,182,212,0.30),
-        0 0 26px rgba(124,58,237,0.55),
-        0 0 34px rgba(6,182,212,0.35),
-        0 12px 28px rgba(0,0,0,0.45);
 }
 
 /* HAMBURGUER */
@@ -104,17 +99,12 @@ div[data-testid="stPopover"] button {
         0 0 0 2px rgba(29,78,216,0.25) !important,
         0 0 18px rgba(124,58,237,0.45) !important,
         0 0 28px rgba(6,182,212,0.25) !important,
-        0 10px 25px rgba(0,0,0,0.35) !important;
+        0 10px 25px rgba(0,0,0,0.20) !important;
     transition: all 0.25s ease !important;
 }
 
 div[data-testid="stPopover"] button:hover {
     transform: translateY(-2px) !important;
-    box-shadow:
-        0 0 0 2px rgba(6,182,212,0.30) !important,
-        0 0 26px rgba(124,58,237,0.55) !important,
-        0 0 34px rgba(6,182,212,0.35) !important,
-        0 12px 28px rgba(0,0,0,0.45) !important;
 }
 
 div[data-testid="stPopover"] button p {
@@ -138,7 +128,7 @@ div[data-testid="stPopover"] button svg {
     text-decoration: none !important;
     font-weight: 800;
     border-left: 4px solid #06B6D4;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
 }
 
 .menu-link:hover {
@@ -164,7 +154,7 @@ div[data-testid="stPopover"] button svg {
     flex-direction:column;
     box-shadow:
         0 0 0 2px rgba(6,182,212,0.20),
-        0 8px 25px rgba(124,58,237,0.35);
+        0 8px 25px rgba(124,58,237,0.25);
     border: 1px solid rgba(6,182,212,0.28);
 }
 
@@ -183,118 +173,110 @@ div[data-testid="stPopover"] button svg {
 
 /* CARDS PEQUENOS */
 .mini-card {
-    background: #0F172A;
+    background: #d9d9d9;
     border-radius: 18px;
     padding: 14px 16px 10px 16px;
     min-height: 118px;
-    box-shadow:
-        0 6px 18px rgba(0,0,0,0.32),
-        0 0 18px rgba(6,182,212,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
     margin-bottom: 8px;
-    border: 1px solid rgba(6,182,212,0.12);
+    border: 1px solid rgba(15,23,42,0.10);
     transition: all 0.25s ease;
 }
 
 .mini-card:hover {
     transform: translateY(-2px);
-    background: #1E293B;
-    box-shadow:
-        0 8px 22px rgba(0,0,0,0.42),
-        0 0 18px rgba(6,182,212,0.18),
-        0 0 28px rgba(124,58,237,0.15);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.14);
 }
 
 .mini-title {
     font-size: 12px;
     font-weight: 900;
-    color: #F8FAFC;
+    color: #111827;
     line-height: 1.35;
 }
 
 .mini-value {
     font-size: 28px;
     font-weight: 900;
-    color: #F8FAFC;
+    color: #111827;
     line-height: 1;
     margin-top: 10px;
 }
 
 .mini-sub {
     font-size: 11px;
-    color: #A1A1AA;
+    color: #64748b;
     margin-top: 8px;
 }
 
 /* CARDS GRANDES */
 .wide-card {
-    background: #0F172A;
+    background: #d9d9d9;
     border-radius: 18px;
     padding: 16px 18px;
     min-height: 116px;
-    box-shadow:
-        0 6px 18px rgba(0,0,0,0.32),
-        0 0 18px rgba(6,182,212,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
     margin-top: 8px;
     margin-bottom: 8px;
-    border: 1px solid rgba(6,182,212,0.12);
+    border: 1px solid rgba(15,23,42,0.10);
     transition: all 0.25s ease;
 }
 
 .wide-card:hover {
     transform: translateY(-2px);
-    background: #1E293B;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.14);
 }
 
 .wide-title {
     font-size: 18px;
     font-weight: 900;
-    color: #F8FAFC;
+    color: #111827;
 }
 
 .wide-value {
     font-size: 50px;
     font-weight: 900;
-    color: #F8FAFC;
+    color: #111827;
     line-height: 1;
     margin-top: 8px;
 }
 
 .wide-sub {
     font-size: 12px;
-    color: #A1A1AA;
+    color: #64748b;
     margin-top: 8px;
 }
 
 /* CABEÇALHO DOS GRÁFICOS */
 .graph-title-card {
-    background: #0F172A;
+    background: #d9d9d9;
     border-radius: 18px;
     padding: 14px 20px 12px 20px;
     margin-top: 10px;
     margin-bottom: 10px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.32);
-    border: 1px solid rgba(6,182,212,0.12);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    border: 1px solid rgba(15,23,42,0.10);
 }
 
 .graph-title {
     font-size: 19px;
     font-weight: 900;
-    color: #F8FAFC;
+    color: #111827;
     margin-bottom: 4px;
 }
 
 .graph-subtitle {
     font-size: 13px;
-    color: #A1A1AA;
+    color: #64748b;
 }
 
 /* CARD DO GRÁFICO */
 .chart-card {
-    background: #0F172A;
+    background: #d9d9d9;
     border-radius: 0px;
     padding: 8px 10px 14px 10px;
-    border: 1px solid rgba(6,182,212,0.08);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.24);
+    border: 1px solid rgba(15,23,42,0.08);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     margin-bottom: 16px;
 }
 
@@ -421,34 +403,34 @@ def render_graph_header(title, subtitle):
 def apply_bar_layout(fig, height=360):
     fig.update_layout(
         height=height,
-        paper_bgcolor="#0F172A",
-        plot_bgcolor="#0F172A",
-        font_color="#F8FAFC",
+        paper_bgcolor="#d9d9d9",
+        plot_bgcolor="#d9d9d9",
+        font_color="#111827",
         margin=dict(l=10, r=10, t=10, b=20),
         showlegend=False,
         coloraxis_showscale=False,
         xaxis=dict(
             showgrid=False,
             zeroline=False,
-            tickfont=dict(size=11, color="#A1A1AA"),
+            tickfont=dict(size=11, color="#64748b"),
             title=dict(
-                font=dict(color="#A1A1AA")
+                font=dict(color="#64748b")
             )
         ),
         yaxis=dict(
             showgrid=True,
-            gridcolor="#1E293B",
+            gridcolor="rgba(15,23,42,0.10)",
             zeroline=False,
-            tickfont=dict(size=11, color="#A1A1AA"),
+            tickfont=dict(size=11, color="#64748b"),
             title=dict(
-                font=dict(color="#A1A1AA")
+                font=dict(color="#64748b")
             )
         )
     )
 
     fig.update_traces(
         textposition="outside",
-        textfont=dict(size=11, color="#F8FAFC"),
+        textfont=dict(size=11, color="#111827"),
         marker_line_width=0
     )
 
@@ -665,9 +647,6 @@ st.divider()
 # =========================
 g1, g2 = st.columns(2)
 
-# =========================
-# CONTATOS POR MÊS
-# =========================
 with g1:
     render_graph_header(
         "📞 Contatos por mês",
@@ -694,9 +673,6 @@ with g1:
     st.plotly_chart(fig_contatos, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# =========================
-# VENDAS POR UNIDADE
-# =========================
 with g2:
     render_graph_header(
         "🏙️ Vendas por unidade no mês",
@@ -735,9 +711,6 @@ with g2:
 
 g3, g4 = st.columns(2)
 
-# =========================
-# RAÇAS MAIS VENDIDAS
-# =========================
 with g3:
     render_graph_header(
         "🐶 Raças mais vendidas (mês)",
@@ -775,9 +748,6 @@ with g3:
     st.plotly_chart(fig_racas, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# =========================
-# VENDAS POR VENDEDORA
-# =========================
 with g4:
     render_graph_header(
         "🏆 Vendas por vendedora (mês)",
