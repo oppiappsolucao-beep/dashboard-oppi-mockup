@@ -14,14 +14,14 @@ st.set_page_config(
 )
 
 # =========================
-# CSS PREMIUM
+# CSS PREMIUM DARK OPPI
 # =========================
 st.markdown("""
 <style>
 
 .stApp {
-    background: #d9d9d9;
-    color: #111827;
+    background: #050816;
+    color: #F8FAFC;
 }
 
 #MainMenu {visibility:hidden;}
@@ -33,6 +33,7 @@ header {visibility:hidden;}
     max-width: 1280px;
 }
 
+/* TOPO */
 .header-left {
     display: flex;
     align-items: flex-start;
@@ -42,50 +43,55 @@ header {visibility:hidden;}
 .header-title {
     font-size: 30px;
     font-weight: 900;
-    color: #111827;
+    color: #F8FAFC;
     line-height: 1.1;
     margin-bottom: 8px;
 }
 
 .header-subtitle {
     font-size: 13px;
-    color: #6b7280;
+    color: #A1A1AA;
     font-weight: 600;
 }
 
 .header-total {
     font-size: 12px;
-    color: #6b7280;
+    color: #A1A1AA;
     margin-top: 14px;
 }
 
 /* BOTÃO SAIR */
 .logout-btn {
-    background: linear-gradient(135deg, #f23b9b, #a000d4);
-    color: white;
+    background: linear-gradient(135deg, #1D4ED8, #7C3AED);
+    color: #F8FAFC;
     border-radius: 12px;
     padding: 13px 42px;
     font-weight: 800;
     font-size: 13px;
     text-align: center;
-    border: 1px solid rgba(255,255,255,0.25);
+    border: 1px solid rgba(6,182,212,0.35);
     box-shadow:
-        0 0 0 2px rgba(242,59,155,0.22),
-        0 0 18px rgba(242,59,155,0.45),
-        0 0 26px rgba(160,0,212,0.35),
-        0 10px 25px rgba(160,0,212,0.25);
+        0 0 0 2px rgba(29,78,216,0.25),
+        0 0 18px rgba(124,58,237,0.45),
+        0 0 28px rgba(6,182,212,0.25),
+        0 10px 25px rgba(0,0,0,0.35);
     transition: all 0.25s ease;
 }
 
 .logout-btn:hover {
     transform: translateY(-2px);
+    box-shadow:
+        0 0 0 2px rgba(6,182,212,0.30),
+        0 0 26px rgba(124,58,237,0.55),
+        0 0 34px rgba(6,182,212,0.35),
+        0 12px 28px rgba(0,0,0,0.45);
 }
 
 /* HAMBURGUER */
 div[data-testid="stPopover"] button {
-    background: linear-gradient(135deg, #f23b9b, #a000d4) !important;
-    color: white !important;
-    border: 1px solid rgba(255,255,255,0.25) !important;
+    background: linear-gradient(135deg, #1D4ED8, #7C3AED) !important;
+    color: #F8FAFC !important;
+    border: 1px solid rgba(6,182,212,0.35) !important;
     border-radius: 12px !important;
     min-height: 42px !important;
     min-width: 58px !important;
@@ -95,38 +101,48 @@ div[data-testid="stPopover"] button {
     align-items: center !important;
     justify-content: center !important;
     box-shadow:
-        0 0 0 2px rgba(242,59,155,0.22) !important,
-        0 0 18px rgba(242,59,155,0.45) !important,
-        0 0 26px rgba(160,0,212,0.35) !important,
-        0 10px 25px rgba(160,0,212,0.25) !important;
+        0 0 0 2px rgba(29,78,216,0.25) !important,
+        0 0 18px rgba(124,58,237,0.45) !important,
+        0 0 28px rgba(6,182,212,0.25) !important,
+        0 10px 25px rgba(0,0,0,0.35) !important;
     transition: all 0.25s ease !important;
 }
 
+div[data-testid="stPopover"] button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow:
+        0 0 0 2px rgba(6,182,212,0.30) !important,
+        0 0 26px rgba(124,58,237,0.55) !important,
+        0 0 34px rgba(6,182,212,0.35) !important,
+        0 12px 28px rgba(0,0,0,0.45) !important;
+}
+
 div[data-testid="stPopover"] button p {
-    color: white !important;
+    color: #F8FAFC !important;
     font-weight: 800 !important;
 }
 
 div[data-testid="stPopover"] button svg {
-    color: white !important;
-    fill: white !important;
+    color: #F8FAFC !important;
+    fill: #F8FAFC !important;
 }
 
+/* LINKS DO MENU */
 .menu-link {
     display: block;
-    background: #ffffff;
+    background: #0F172A;
     border-radius: 10px;
     padding: 12px 14px;
     margin-bottom: 8px;
-    color: #111827 !important;
+    color: #F8FAFC !important;
     text-decoration: none !important;
     font-weight: 800;
-    border-left: 4px solid #f23b9b;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    border-left: 4px solid #06B6D4;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.28);
 }
 
 .menu-link:hover {
-    background: #fff0fa;
+    background: #1E293B;
 }
 
 /* LOGO */
@@ -141,167 +157,167 @@ div[data-testid="stPopover"] button svg {
     width:82px;
     height:82px;
     border-radius:50%;
-    background: white;
+    background: #0F172A;
     display:flex;
     align-items:center;
     justify-content:center;
     flex-direction:column;
     box-shadow:
-        0 0 0 2px rgba(242,59,155,0.10),
-        0 8px 25px rgba(160,0,212,0.18);
-    border: 1px solid #e5e7eb;
+        0 0 0 2px rgba(6,182,212,0.20),
+        0 8px 25px rgba(124,58,237,0.35);
+    border: 1px solid rgba(6,182,212,0.28);
 }
 
 .logo .a {
     font-weight:900;
-    color:#a000d4;
+    color:#06B6D4;
     font-size:16px;
 }
 
 .logo .b {
     font-size:9px;
     font-weight:900;
-    color:#f23b9b;
+    color:#7C3AED;
     letter-spacing:2px;
 }
 
 /* CARDS PEQUENOS */
 .mini-card {
-    background: #ffffff;
+    background: #0F172A;
     border-radius: 18px;
     padding: 14px 16px 10px 16px;
     min-height: 118px;
     box-shadow:
-        0 6px 18px rgba(0,0,0,0.08),
-        0 0 18px rgba(242,59,155,0.08);
+        0 6px 18px rgba(0,0,0,0.32),
+        0 0 18px rgba(6,182,212,0.08);
     margin-bottom: 8px;
-    border: 1px solid rgba(242,59,155,0.10);
+    border: 1px solid rgba(6,182,212,0.12);
     transition: all 0.25s ease;
 }
 
 .mini-card:hover {
     transform: translateY(-2px);
+    background: #1E293B;
     box-shadow:
-        0 8px 22px rgba(0,0,0,0.10),
-        0 0 18px rgba(242,59,155,0.18),
-        0 0 28px rgba(160,0,212,0.12);
+        0 8px 22px rgba(0,0,0,0.42),
+        0 0 18px rgba(6,182,212,0.18),
+        0 0 28px rgba(124,58,237,0.15);
 }
 
 .mini-title {
     font-size: 12px;
     font-weight: 900;
-    color: #102247;
+    color: #F8FAFC;
     line-height: 1.35;
 }
 
 .mini-value {
     font-size: 28px;
     font-weight: 900;
-    color: #031b4e;
+    color: #F8FAFC;
     line-height: 1;
     margin-top: 10px;
 }
 
 .mini-sub {
     font-size: 11px;
-    color: #64748b;
+    color: #A1A1AA;
     margin-top: 8px;
 }
 
 /* CARDS GRANDES */
 .wide-card {
-    background: #ffffff;
+    background: #0F172A;
     border-radius: 18px;
     padding: 16px 18px;
     min-height: 116px;
     box-shadow:
-        0 6px 18px rgba(0,0,0,0.08),
-        0 0 18px rgba(242,59,155,0.08);
+        0 6px 18px rgba(0,0,0,0.32),
+        0 0 18px rgba(6,182,212,0.08);
     margin-top: 8px;
     margin-bottom: 8px;
-    border: 1px solid rgba(242,59,155,0.10);
+    border: 1px solid rgba(6,182,212,0.12);
     transition: all 0.25s ease;
 }
 
 .wide-card:hover {
     transform: translateY(-2px);
+    background: #1E293B;
 }
 
 .wide-title {
     font-size: 18px;
     font-weight: 900;
-    color: #111827;
+    color: #F8FAFC;
 }
 
 .wide-value {
     font-size: 50px;
     font-weight: 900;
-    color: #031b4e;
+    color: #F8FAFC;
     line-height: 1;
     margin-top: 8px;
 }
 
 .wide-sub {
     font-size: 12px;
-    color: #64748b;
+    color: #A1A1AA;
     margin-top: 8px;
 }
 
 /* CABEÇALHO DOS GRÁFICOS */
 .graph-title-card {
-    background: #ffffff;
+    background: #0F172A;
     border-radius: 18px;
     padding: 14px 20px 12px 20px;
     margin-top: 10px;
     margin-bottom: 10px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    border: 1px solid rgba(242,59,155,0.10);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.32);
+    border: 1px solid rgba(6,182,212,0.12);
 }
 
 .graph-title {
     font-size: 19px;
     font-weight: 900;
-    color: #031b4e;
+    color: #F8FAFC;
     margin-bottom: 4px;
 }
 
 .graph-subtitle {
     font-size: 13px;
-    color: #64748b;
+    color: #A1A1AA;
 }
 
 /* CARD DO GRÁFICO */
 .chart-card {
-    background: #ffffff;
+    background: #0F172A;
     border-radius: 0px;
     padding: 8px 10px 14px 10px;
-    border: 1px solid rgba(242,59,155,0.08);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    border: 1px solid rgba(6,182,212,0.08);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.24);
     margin-bottom: 16px;
 }
 
 /* SELECT */
 .stSelectbox label {
-    color: #374151 !important;
+    color: #F8FAFC !important;
     font-weight: 700 !important;
 }
 
 .stSelectbox > div > div {
-    background-color: #ffffff !important;
+    background-color: #0F172A !important;
     border-radius: 10px !important;
-    color: #111827 !important;
-    border: 1px solid #e5e7eb !important;
+    color: #F8FAFC !important;
+    border: 1px solid rgba(6,182,212,0.25) !important;
 }
 
-/* TABELA */
-[data-testid="stDataFrame"] {
-    background: white;
-    border-radius: 14px;
+.stSelectbox div {
+    color: #F8FAFC !important;
 }
 
 /* DIVISOR */
 hr {
-    border: 1px solid rgba(17,24,39,0.12);
+    border: 1px solid rgba(161,161,170,0.18);
     margin-top: 28px;
     margin-bottom: 28px;
 }
@@ -405,28 +421,30 @@ def render_graph_header(title, subtitle):
 def apply_bar_layout(fig, height=360):
     fig.update_layout(
         height=height,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        font_color="#2f175c",
+        paper_bgcolor="#0F172A",
+        plot_bgcolor="#0F172A",
+        font_color="#F8FAFC",
         margin=dict(l=10, r=10, t=10, b=20),
         showlegend=False,
         coloraxis_showscale=False,
         xaxis=dict(
             showgrid=False,
             zeroline=False,
-            tickfont=dict(size=11, color="#6b218c")
+            tickfont=dict(size=11, color="#A1A1AA"),
+            titlefont=dict(color="#A1A1AA")
         ),
         yaxis=dict(
             showgrid=True,
-            gridcolor="#eef2f7",
+            gridcolor="#1E293B",
             zeroline=False,
-            tickfont=dict(size=11, color="#7a4b9a")
+            tickfont=dict(size=11, color="#A1A1AA"),
+            titlefont=dict(color="#A1A1AA")
         )
     )
 
     fig.update_traces(
         textposition="outside",
-        textfont=dict(size=11, color="#2f175c"),
+        textfont=dict(size=11, color="#F8FAFC"),
         marker_line_width=0
     )
 
@@ -435,21 +453,23 @@ def apply_bar_layout(fig, height=360):
 # =========================
 # CORES OPPI
 # =========================
-ROXO_OPPI = "#b012d9"
-ROSA_OPPI = "#f23b9b"
-ROSA_FORTE = "#ff4d7a"
+AZUL_OPPI = "#1D4ED8"
+ROXO_TEC = "#7C3AED"
+CIANO_DETALHE = "#06B6D4"
+VERDE_SUCESSO = "#22C55E"
+LARANJA_ATENCAO = "#F97316"
 
 CORES_GRAFICO = [
-    "#a000d4",
-    "#f23b9b",
-    "#a000d4",
-    "#f23b9b",
-    "#a000d4",
-    "#f23b9b",
-    "#a000d4",
-    "#f23b9b",
-    "#a000d4",
-    "#f23b9b"
+    "#1D4ED8",
+    "#7C3AED",
+    "#06B6D4",
+    "#22C55E",
+    "#F97316",
+    "#1D4ED8",
+    "#7C3AED",
+    "#06B6D4",
+    "#22C55E",
+    "#F97316"
 ]
 
 # =========================
@@ -464,11 +484,13 @@ data_1_col = find_col(
     ["Data 1º contato", "1º contato", "Primeiro contato", "Data primeiro contato"],
     exclude_terms=["status"]
 )
+
 data_2_col = find_col(
     df,
     ["Data 2º contato", "2º contato", "Segundo contato", "Data segundo contato"],
     exclude_terms=["status"]
 )
+
 data_3_col = find_col(
     df,
     ["Data 3º contato", "3º contato", "Terceiro contato", "Data terceiro contato"],
@@ -597,22 +619,22 @@ vendas_mes = len(df_f)
 row1 = st.columns(6)
 
 with row1[0]:
-    render_mini_card("💬 1º contato<br>hoje", contato1_hoje, "registros de hoje", ROXO_OPPI)
+    render_mini_card("💬 1º contato<br>hoje", contato1_hoje, "registros de hoje", AZUL_OPPI)
 
 with row1[1]:
-    render_mini_card("💬 2º contato<br>hoje", contato2_hoje, "registros de hoje", ROXO_OPPI)
+    render_mini_card("💬 2º contato<br>hoje", contato2_hoje, "registros de hoje", ROXO_TEC)
 
 with row1[2]:
-    render_mini_card("💬 3º contato<br>hoje", contato3_hoje, "registros de hoje", ROSA_OPPI)
+    render_mini_card("💬 3º contato<br>hoje", contato3_hoje, "registros de hoje", CIANO_DETALHE)
 
 with row1[3]:
-    render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes) if mes else "-", ROXO_OPPI)
+    render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes) if mes else "-", AZUL_OPPI)
 
 with row1[4]:
-    render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes) if mes else "-", ROSA_OPPI)
+    render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes) if mes else "-", ROXO_TEC)
 
 with row1[5]:
-    render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes) if mes else "-", ROSA_OPPI)
+    render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes) if mes else "-", CIANO_DETALHE)
 
 row2 = st.columns(2)
 
@@ -621,7 +643,7 @@ with row2[0]:
         "Status com erro",
         status_com_erro,
         f"Mês selecionado: {mes}" if mes else "Mês selecionado: -",
-        ROSA_FORTE
+        LARANJA_ATENCAO
     )
 
 with row2[1]:
@@ -629,7 +651,7 @@ with row2[1]:
         "Vendas registradas no mês",
         vendas_mes,
         f"Mês Venda: {mes}" if mes else "Mês Venda: -",
-        ROSA_OPPI
+        VERDE_SUCESSO
     )
 
 st.divider()
@@ -790,9 +812,3 @@ with g4:
     st.markdown('<div class="chart-card">', unsafe_allow_html=True)
     st.plotly_chart(fig_vendedora, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
-
-# =========================
-# TABELA
-# =========================
-st.markdown("### Dados da planilha")
-st.dataframe(df_f, use_container_width=True)
