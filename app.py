@@ -127,24 +127,44 @@ div[data-testid="stPopover"] button svg {
     fill: #F8FAFC !important;
 }
 
-/* MENU - ESTILO DA PRIMEIRA FOTO */
+/* MENU - ESTILO MAIOR */
 div[data-testid="stPopoverBody"] {
-    min-width: 255px !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
+    min-width: 330px !important;
+    padding: 16px !important;
 }
 
 div[data-testid="stPopoverBody"] .stVerticalBlock {
-    gap: 10px !important;
+    gap: 12px !important;
+}
+
+/* TÍTULO / SUBTÍTULO DO MENU */
+.menu-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #111827;
+    margin-bottom: 6px;
+}
+
+.menu-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.menu-footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 8px;
 }
 
 /* BOTÃO LINK - NOVO CONTRATO */
 div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a {
     background: linear-gradient(135deg, #1B2A6B, #081634) !important;
     color: #F8FAFC !important;
-    border-radius: 12px !important;
-    min-height: 54px !important;
-    padding: 14px 16px !important;
+    border-radius: 14px !important;
+    min-height: 58px !important;
+    padding: 16px 18px !important;
     font-weight: 900 !important;
     font-size: 15px !important;
     text-decoration: none !important;
@@ -171,9 +191,9 @@ div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a:hover {
 div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
     background: linear-gradient(135deg, #1B2A6B, #081634) !important;
     color: #F8FAFC !important;
-    border-radius: 12px !important;
-    min-height: 54px !important;
-    padding: 14px 16px !important;
+    border-radius: 14px !important;
+    min-height: 58px !important;
+    padding: 16px 18px !important;
     font-weight: 900 !important;
     font-size: 15px !important;
     border: none !important;
@@ -187,7 +207,7 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
     opacity: 1 !important;
 }
 
-/* GARANTE TEXTO CLARO MESMO DESABILITADO */
+/* GARANTE TEXTO BRANCO MESMO DESABILITADO */
 div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p,
 div[data-testid="stPopoverBody"] div[data-testid="stButton"] button span {
     color: #F8FAFC !important;
@@ -377,6 +397,10 @@ hr {
         width: 70px;
         height: 70px;
     }
+
+    div[data-testid="stPopoverBody"] {
+        min-width: 300px !important;
+    }
 }
 
 </style>
@@ -556,6 +580,10 @@ top_col1, top_col2, top_col3 = st.columns([1.2, 8, 2])
 
 with top_col1:
     with st.popover("☰"):
+        st.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
+        st.markdown('<div class="menu-subtitle">Escolha uma área para acessar</div>', unsafe_allow_html=True)
+        st.divider()
+
         st.link_button(
             "📄 Novo Contrato",
             "https://n8n.oppitech.com.br/form/e1269af5-6cac-492c-8919-7d3345fd79fa",
@@ -567,6 +595,8 @@ with top_col1:
             use_container_width=True,
             disabled=True
         )
+
+        st.markdown('<div class="menu-footer">Painel interno • Oppi Vision</div>', unsafe_allow_html=True)
 
 with top_col2:
     st.markdown(f"""
@@ -709,7 +739,6 @@ st.divider()
 # =========================
 g1, g2 = st.columns(2)
 
-# CONTATOS POR MÊS
 with g1:
     render_graph_header(
         "📞 Contatos por mês",
@@ -736,7 +765,6 @@ with g1:
     st.plotly_chart(fig_contatos, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# VENDAS POR UNIDADE
 with g2:
     render_graph_header(
         "🏙️ Vendas por unidade no mês",
@@ -775,7 +803,6 @@ with g2:
 
 g3, g4 = st.columns(2)
 
-# RAÇAS MAIS VENDIDAS
 with g3:
     render_graph_header(
         "🐶 Raças mais vendidas (mês)",
@@ -813,7 +840,6 @@ with g3:
     st.plotly_chart(fig_racas, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# VENDAS POR VENDEDORA
 with g4:
     render_graph_header(
         "🏆 Vendas por vendedora (mês)",
