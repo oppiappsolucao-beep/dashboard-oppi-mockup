@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import unicodedata
 import time
+import streamlit.components.v1 as components
 
 # =========================
 # CONFIG
@@ -25,6 +26,36 @@ if "page" not in st.session_state:
 
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
+
+# =========================
+# RESTAURA LOGIN PELOS PARÂMETROS DA URL
+# =========================
+# Isso permite atualizar a página automaticamente sem voltar para o login inicial.
+if st.query_params.get("auth") == "1":
+    st.session_state.app_logado = True
+
+if st.query_params.get("page") == "financeiro":
+    st.session_state.page = "financeiro"
+
+if st.query_params.get("fin") == "1":
+    st.session_state.financeiro_logado = True
+
+# =========================
+# AUTO REFRESH SEM BIBLIOTECA EXTERNA
+# =========================
+# Recarrega a página a cada 20 segundos apenas após login.
+# Como o login fica marcado na URL com auth=1, o dashboard não volta para o login.
+if st.session_state.app_logado:
+    components.html(
+        """
+        <script>
+            setTimeout(function() {
+                window.parent.location.reload();
+            }, 20000);
+        </script>
+        """,
+        height=0
+    )
 
 # LOGOUT GERAL
 if st.query_params.get("logout_app") == "1":
@@ -536,14 +567,16 @@ hr {
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
 
-@st.cache_data(ttl=10, show_spinner=False)
+@st.cache_data(ttl=5, show_spinner=False)
 def load_data(cache_buster):
+    # O cache_buster muda a URL e evita que o Google/Streamlit entregue CSV antigo.
     url_atualizada = f"{URL}&cache_buster={cache_buster}"
     df = pd.read_csv(url_atualizada)
     df.columns = df.columns.str.strip()
     return df
 
-cache_buster = int(time.time() // 10)
+# Muda a cada 5 segundos. Quando o auto refresh rodar, a planilha é lida novamente.
+cache_buster = int(time.time() // 5)
 df = load_data(cache_buster).dropna(how="all")
 
 # =========================
@@ -764,6 +797,8 @@ def render_login_principal():
                 st.session_state.app_logado = True
                 st.session_state.page = "operacao"
                 st.session_state.financeiro_logado = False
+                st.query_params["auth"] = "1"
+                st.query_params["page"] = "operacao"
                 st.rerun()
             else:
                 st.error("Usuário ou senha incorretos.")
@@ -792,6 +827,8 @@ def render_top_menu():
 
             if st.button("💰 Financeiro", use_container_width=True):
                 st.session_state.page = "financeiro"
+                st.query_params["auth"] = "1"
+                st.query_params["page"] = "financeiro"
                 st.rerun()
 
             st.markdown('<div class="menu-footer">Painel interno • Oppi Tech</div>', unsafe_allow_html=True)
@@ -1087,11 +1124,17 @@ def render_financeiro_login():
 
         if voltar:
             st.session_state.page = "operacao"
+            st.query_params["auth"] = "1"
+            st.query_params["page"] = "operacao"
             st.rerun()
 
         if entrar:
             if usuario == "oppimockup" and senha == "100316!*":
                 st.session_state.financeiro_logado = True
+                st.session_state.page = "financeiro"
+                st.query_params["auth"] = "1"
+                st.query_params["page"] = "financeiro"
+                st.query_params["fin"] = "1"
                 st.rerun()
             else:
                 st.error("Usuário ou senha incorretos.")
@@ -1106,6 +1149,8 @@ def render_financeiro_dashboard():
         with st.popover("☰"):
             if st.button("⚙️ Operação", use_container_width=True):
                 st.session_state.page = "operacao"
+                st.query_params["auth"] = "1"
+                st.query_params["page"] = "operacao"
                 st.rerun()
 
             st.link_button(
@@ -1117,6 +1162,10 @@ def render_financeiro_dashboard():
             if st.button("🚪 Sair do Financeiro", use_container_width=True):
                 st.session_state.financeiro_logado = False
                 st.session_state.page = "operacao"
+                st.query_params["auth"] = "1"
+                st.query_params["page"] = "operacao"
+                if "fin" in st.query_params:
+                    del st.query_params["fin"]
                 st.rerun()
 
     with top_col2:
