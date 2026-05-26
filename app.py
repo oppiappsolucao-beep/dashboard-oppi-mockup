@@ -27,35 +27,12 @@ if "page" not in st.session_state:
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
 
-# =========================
-# RESTAURA LOGIN PELOS PARÂMETROS DA URL
-# =========================
-# Isso permite atualizar a página automaticamente sem voltar para o login inicial.
+# Mantém login mesmo se a página atualizar
 if st.query_params.get("auth") == "1":
     st.session_state.app_logado = True
 
-if st.query_params.get("page") == "financeiro":
-    st.session_state.page = "financeiro"
-
-if st.query_params.get("fin") == "1":
+if st.query_params.get("fin_auth") == "1":
     st.session_state.financeiro_logado = True
-
-# =========================
-# AUTO REFRESH SEM BIBLIOTECA EXTERNA
-# =========================
-# Recarrega a página a cada 20 segundos apenas após login.
-# Como o login fica marcado na URL com auth=1, o dashboard não volta para o login.
-if st.session_state.app_logado:
-    components.html(
-        """
-        <script>
-            setTimeout(function() {
-                window.parent.location.reload();
-            }, 20000);
-        </script>
-        """,
-        height=0
-    )
 
 # LOGOUT GERAL
 if st.query_params.get("logout_app") == "1":
@@ -69,7 +46,8 @@ if st.query_params.get("logout_app") == "1":
 if st.query_params.get("logout_financeiro") == "1":
     st.session_state.financeiro_logado = False
     st.session_state.page = "operacao"
-    st.query_params.clear()
+    if "fin_auth" in st.query_params:
+        del st.query_params["fin_auth"]
     st.rerun()
 
 # =========================
@@ -113,7 +91,7 @@ header {visibility:hidden;}
     margin-top: 14px;
 }
 
-/* BOTÃO SAIR VISUAL */
+/* BOTÃO SAIR */
 .logout-btn {
     display: block;
     background: linear-gradient(135deg, #1D4ED8, #7C3AED);
@@ -237,7 +215,6 @@ div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
     transform: scale(1);
 }
 
-/* HOVER - ZOOM */
 div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a:hover,
 div[data-testid="stPopoverBody"] div[data-testid="stButton"] button:hover {
     transform: scale(1.04) !important;
@@ -518,14 +495,12 @@ div[data-testid="stButton"] button {
     font-weight: 900 !important;
 }
 
-/* DIVISOR */
 hr {
     border: 1px solid rgba(15,23,42,0.18);
     margin-top: 28px;
     margin-bottom: 28px;
 }
 
-/* TABELA */
 [data-testid="stDataFrame"] {
     background: white;
     border-radius: 14px;
@@ -569,15 +544,32 @@ URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gi
 
 @st.cache_data(ttl=5, show_spinner=False)
 def load_data(cache_buster):
-    # O cache_buster muda a URL e evita que o Google/Streamlit entregue CSV antigo.
     url_atualizada = f"{URL}&cache_buster={cache_buster}"
     df = pd.read_csv(url_atualizada)
     df.columns = df.columns.str.strip()
     return df
 
-# Muda a cada 5 segundos. Quando o auto refresh rodar, a planilha é lida novamente.
 cache_buster = int(time.time() // 5)
 df = load_data(cache_buster).dropna(how="all")
+
+# =========================
+# AUTO REFRESH SEM REQUIREMENTS
+# =========================
+if st.session_state.app_logado:
+    components.html(
+        """
+        <script>
+            setTimeout(function() {
+                const url = new URL(window.parent.location.href);
+                if (!url.searchParams.has("auth")) {
+                    url.searchParams.set("auth", "1");
+                }
+                window.parent.location.href = url.toString();
+            }, 20000);
+        </script>
+        """,
+        height=0
+    )
 
 # =========================
 # HELPERS
@@ -586,6 +578,39 @@ def normalize_text(text):
     text = str(text).strip().lower()
     text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("utf-8")
     return " ".join(text.split())
+
+def normalize_mes_value(value):
+    if pd.isna(value):
+        return ""
+
+    s = str(value).strip().replace("\u00a0", "").replace("\u200b", "")
+
+    if s == "" or s.lower() in ["nan", "none"]:
+        return ""
+
+    dt = pd.to_datetime(s, errors="coerce", dayfirst=True)
+    if pd.notna(dt):
+        return dt.strftime("%m/%Y")
+
+    if "/" in s:
+        partes = s.split("/")
+        if len(partes) >= 2:
+            mes = partes[0].strip().zfill(2)
+            ano = partes[1].strip()
+            if len(ano) == 2:
+                ano = "20" + ano
+            return f"{mes}/{ano}"
+
+    return s
+
+def get_mes_atual():
+    return pd.Timestamp.now(tz="America/Sao_Paulo").strftime("%m/%Y")
+
+def get_default_month_index(options):
+    mes_atual = get_mes_atual()
+    if mes_atual in options:
+        return options.index(mes_atual)
+    return 0
 
 def find_col(dataframe, aliases, exclude_terms=None):
     exclude_terms = exclude_terms or []
@@ -710,21 +735,8 @@ def apply_bar_layout(fig, height=360):
 
     return fig
 
-def get_mes_options_and_default(meses):
-    meses = [str(m).strip() for m in meses if str(m).strip()]
-    opcoes = ["Todos"] + meses
-
-    mes_atual = pd.Timestamp.now(tz="America/Sao_Paulo").strftime("%m/%Y")
-
-    if mes_atual in opcoes:
-        default_index = opcoes.index(mes_atual)
-    else:
-        default_index = 0
-
-    return opcoes, default_index
-
 # =========================
-# CORES OPPI
+# CORES
 # =========================
 AZUL_OPPI = "#1D4ED8"
 ROXO_TEC = "#7C3AED"
@@ -745,6 +757,14 @@ CORES_GRAFICO = [
     "#22C55E",
     "#F97316"
 ]
+
+# =========================
+# NORMALIZA MÊS DA PLANILHA
+# =========================
+if "Mês" in df.columns:
+    df["_mes_norm"] = df["Mês"].apply(normalize_mes_value)
+else:
+    df["_mes_norm"] = ""
 
 # =========================
 # COLUNAS
@@ -798,7 +818,6 @@ def render_login_principal():
                 st.session_state.page = "operacao"
                 st.session_state.financeiro_logado = False
                 st.query_params["auth"] = "1"
-                st.query_params["page"] = "operacao"
                 st.rerun()
             else:
                 st.error("Usuário ou senha incorretos.")
@@ -821,14 +840,13 @@ def render_top_menu():
                 use_container_width=True
             )
 
-            if st.button("🔄 Atualizar dados", use_container_width=True):
-                st.cache_data.clear()
-                st.rerun()
-
             if st.button("💰 Financeiro", use_container_width=True):
                 st.session_state.page = "financeiro"
-                st.query_params["auth"] = "1"
                 st.query_params["page"] = "financeiro"
+                st.rerun()
+
+            if st.button("🔄 Atualizar dados", use_container_width=True):
+                st.cache_data.clear()
                 st.rerun()
 
             st.markdown('<div class="menu-footer">Painel interno • Oppi Tech</div>', unsafe_allow_html=True)
@@ -855,17 +873,16 @@ def render_operacao():
         <a class="logout-btn" href="?logout_app=1" target="_self">Sair</a>
         """, unsafe_allow_html=True)
 
-    meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
+    meses = sorted([m for m in df["_mes_norm"].dropna().unique() if str(m).strip() != ""])
     unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
+
+    opcoes_mes = ["Todos"] + meses
+    index_mes = get_default_month_index(opcoes_mes)
 
     col1, col2, col3 = st.columns([4, 1, 4])
 
     with col1:
-        if meses:
-            mes_opcoes, mes_default_index = get_mes_options_and_default(meses)
-            mes = st.selectbox("Mês", mes_opcoes, index=mes_default_index, key="mes_operacao")
-        else:
-            mes = "Todos"
+        mes = st.selectbox("Mês", opcoes_mes, index=index_mes, key="mes_operacao")
 
     with col2:
         st.markdown("""
@@ -884,8 +901,8 @@ def render_operacao():
 
     df_f = df.copy()
 
-    if mes != "Todos" and "Mês" in df_f.columns:
-        df_f = df_f[df_f["Mês"] == mes]
+    if mes != "Todos":
+        df_f = df_f[df_f["_mes_norm"] == mes]
 
     if unidade != "Todas" and "Unidade" in df_f.columns:
         df_f = df_f[df_f["Unidade"] == unidade]
@@ -939,21 +956,21 @@ def render_operacao():
         render_mini_card("💬 3º contato<br>hoje", contato3_hoje, "registros de hoje", CIANO_DETALHE)
 
     with row1[3]:
-        render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes) if mes else "-", AZUL_OPPI)
+        render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes), AZUL_OPPI)
 
     with row1[4]:
-        render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes) if mes else "-", ROXO_TEC)
+        render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes), ROXO_TEC)
 
     with row1[5]:
-        render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes) if mes else "-", CIANO_DETALHE)
+        render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes), CIANO_DETALHE)
 
     row2 = st.columns(2)
 
     with row2[0]:
-        render_wide_card("Status com erro", status_com_erro, f"Mês selecionado: {mes}" if mes else "-", LARANJA_ATENCAO)
+        render_wide_card("Status com erro", status_com_erro, f"Mês selecionado: {mes}", LARANJA_ATENCAO)
 
     with row2[1]:
-        render_wide_card("Vendas registradas no mês", vendas_mes, f"Mês Venda: {mes}" if mes else "-", VERDE_SUCESSO)
+        render_wide_card("Vendas registradas no mês", vendas_mes, f"Mês Venda: {mes}", VERDE_SUCESSO)
 
     st.divider()
 
@@ -983,7 +1000,7 @@ def render_operacao():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with g2:
-        render_graph_header("🏙️ Vendas por unidade no mês", "Quantidade de vendas registradas por unidade no mês selecionado")
+        render_graph_header("🏙️ Vendas por unidade no mês", "Quantidade de vendas registradas por unidade no período selecionado")
 
         if "Unidade" in df_f.columns:
             vendas_unidade = (
@@ -1018,7 +1035,7 @@ def render_operacao():
     g3, g4 = st.columns(2)
 
     with g3:
-        render_graph_header("🐶 Raças mais vendidas (mês)", "Top 10 raças do mês filtrado")
+        render_graph_header("🐶 Raças mais vendidas", "Top 10 raças do período filtrado")
 
         if "Raça" in df_f.columns:
             racas = (
@@ -1052,7 +1069,7 @@ def render_operacao():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with g4:
-        render_graph_header("🏆 Vendas por vendedora (mês)", "Todas as vendas do mês, incluindo sem nome")
+        render_graph_header("🏆 Vendas por vendedora", "Todas as vendas do período, incluindo sem nome")
 
         if vendedora_col and vendedora_col in df_f.columns:
             vendas_vendedora = (
@@ -1124,17 +1141,14 @@ def render_financeiro_login():
 
         if voltar:
             st.session_state.page = "operacao"
-            st.query_params["auth"] = "1"
             st.query_params["page"] = "operacao"
             st.rerun()
 
         if entrar:
             if usuario == "oppimockup" and senha == "100316!*":
                 st.session_state.financeiro_logado = True
-                st.session_state.page = "financeiro"
-                st.query_params["auth"] = "1"
+                st.query_params["fin_auth"] = "1"
                 st.query_params["page"] = "financeiro"
-                st.query_params["fin"] = "1"
                 st.rerun()
             else:
                 st.error("Usuário ou senha incorretos.")
@@ -1149,7 +1163,6 @@ def render_financeiro_dashboard():
         with st.popover("☰"):
             if st.button("⚙️ Operação", use_container_width=True):
                 st.session_state.page = "operacao"
-                st.query_params["auth"] = "1"
                 st.query_params["page"] = "operacao"
                 st.rerun()
 
@@ -1162,10 +1175,13 @@ def render_financeiro_dashboard():
             if st.button("🚪 Sair do Financeiro", use_container_width=True):
                 st.session_state.financeiro_logado = False
                 st.session_state.page = "operacao"
-                st.query_params["auth"] = "1"
+                if "fin_auth" in st.query_params:
+                    del st.query_params["fin_auth"]
                 st.query_params["page"] = "operacao"
-                if "fin" in st.query_params:
-                    del st.query_params["fin"]
+                st.rerun()
+
+            if st.button("🔄 Atualizar dados", use_container_width=True):
+                st.cache_data.clear()
                 st.rerun()
 
     with top_col2:
@@ -1179,20 +1195,19 @@ def render_financeiro_dashboard():
 
     with top_col3:
         st.markdown("""
-        <a class="logout-btn" href="?logout_financeiro=1" target="_self">Sair</a>
+        <a class="logout-btn" href="?auth=1&logout_financeiro=1" target="_self">Sair</a>
         """, unsafe_allow_html=True)
 
-    meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
+    meses = sorted([m for m in df["_mes_norm"].dropna().unique() if str(m).strip() != ""])
     unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
+
+    opcoes_mes = ["Todos"] + meses
+    index_mes = get_default_month_index(opcoes_mes)
 
     col1, col2, col3 = st.columns([4, 1, 4])
 
     with col1:
-        if meses:
-            mes_opcoes, mes_default_index = get_mes_options_and_default(meses)
-            mes = st.selectbox("Mês", mes_opcoes, index=mes_default_index, key="mes_financeiro")
-        else:
-            mes = "Todos"
+        mes = st.selectbox("Mês", opcoes_mes, index=index_mes, key="mes_financeiro")
 
     with col2:
         st.markdown("""
@@ -1216,8 +1231,8 @@ def render_financeiro_dashboard():
     else:
         df_fin["_valor"] = 0.0
 
-    if mes != "Todos" and "Mês" in df_fin.columns:
-        df_fin_mes = df_fin[df_fin["Mês"] == mes].copy()
+    if mes != "Todos":
+        df_fin_mes = df_fin[df_fin["_mes_norm"] == mes].copy()
     else:
         df_fin_mes = df_fin.copy()
 
@@ -1232,23 +1247,23 @@ def render_financeiro_dashboard():
     k1, k2, k3, k4 = st.columns(4)
 
     with k1:
-        render_mini_card("💰 Faturamento total", money_br(faturamento_total), str(mes) if mes else "-", AZUL_OPPI)
+        render_mini_card("💰 Faturamento total", money_br(faturamento_total), str(mes), AZUL_OPPI)
 
     with k2:
-        render_mini_card("🛍️ Vendas no mês", vendas_mes, str(mes) if mes else "-", ROXO_TEC)
+        render_mini_card("🛍️ Vendas no mês", vendas_mes, str(mes), ROXO_TEC)
 
     with k3:
         render_mini_card("📊 Ticket médio", money_br(ticket_medio), "por venda", CIANO_DETALHE)
 
     with k4:
-        render_mini_card("🐶 Raças vendidas", racas_vendidas, "no mês", AZUL_OPPI)
+        render_mini_card("🐶 Raças vendidas", racas_vendidas, "no período", AZUL_OPPI)
 
     st.divider()
 
     g1, g2 = st.columns(2)
 
     with g1:
-        render_graph_header("🏙️ Faturamento por Unidade", "Faturamento somado por unidade no mês")
+        render_graph_header("🏙️ Faturamento por Unidade", "Faturamento somado por unidade no período")
 
         if "Unidade" in df_fin_mes.columns:
             fat_unidade = (
@@ -1279,7 +1294,7 @@ def render_financeiro_dashboard():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with g2:
-        render_graph_header("💵 Valor por raça", "Faturamento somado por raça no mês")
+        render_graph_header("💵 Valor por raça", "Faturamento somado por raça no período")
 
         if "Raça" in df_fin_mes.columns:
             fat_raca = (
@@ -1313,7 +1328,7 @@ def render_financeiro_dashboard():
     g3, g4 = st.columns(2)
 
     with g3:
-        render_graph_header("🏆 Vendedoras que mais faturaram", "Ranking por faturamento no mês")
+        render_graph_header("🏆 Vendedoras que mais faturaram", "Ranking por faturamento no período")
 
         if vendedora_col and vendedora_col in df_fin_mes.columns:
             fat_vendedora = (
@@ -1347,7 +1362,7 @@ def render_financeiro_dashboard():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with g4:
-        render_graph_header("🧾 Faturamento individual por vendedora", "Valores individuais no mês selecionado")
+        render_graph_header("🧾 Faturamento individual por vendedora", "Valores individuais no período selecionado")
 
         if not fat_vendedora.empty:
             tabela_vend = fat_vendedora[[nome_vendedora_col, "_valor"]].copy()
@@ -1362,21 +1377,22 @@ def render_financeiro_dashboard():
 
     render_graph_header("📈 Faturamento total do ano", "Mensal conforme crescimento da planilha")
 
-    if "Mês" in df_fin.columns:
+    if "_mes_norm" in df_fin.columns:
         fat_ano = (
-            df_fin.groupby("Mês", dropna=False)["_valor"]
+            df_fin.groupby("_mes_norm", dropna=False)["_valor"]
             .sum()
             .reset_index()
         )
-        fat_ano["Mês"] = fat_ano["Mês"].astype(str)
+        fat_ano.columns = ["Mês", "Valor"]
+        fat_ano = fat_ano[fat_ano["Mês"].astype(str).str.strip() != ""]
     else:
-        fat_ano = pd.DataFrame({"Mês": [], "_valor": []})
+        fat_ano = pd.DataFrame({"Mês": [], "Valor": []})
 
     fig4 = px.bar(
         fat_ano,
         x="Mês",
-        y="_valor",
-        text=fat_ano["_valor"].apply(money_br) if not fat_ano.empty else None,
+        y="Valor",
+        text=fat_ano["Valor"].apply(money_br) if not fat_ano.empty else None,
         color_discrete_sequence=[AZUL_OPPI]
     )
 
@@ -1391,6 +1407,9 @@ def render_financeiro_dashboard():
 # =========================
 # ROTEAMENTO
 # =========================
+if st.query_params.get("page") == "financeiro":
+    st.session_state.page = "financeiro"
+
 if not st.session_state.app_logado:
     render_login_principal()
 elif st.session_state.page == "financeiro":
