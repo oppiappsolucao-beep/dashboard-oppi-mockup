@@ -674,6 +674,19 @@ def apply_bar_layout(fig, height=360):
 
     return fig
 
+def get_mes_options_and_default(meses):
+    meses = [str(m).strip() for m in meses if str(m).strip()]
+    opcoes = ["Todos"] + meses
+
+    mes_atual = pd.Timestamp.now(tz="America/Sao_Paulo").strftime("%m/%Y")
+
+    if mes_atual in opcoes:
+        default_index = opcoes.index(mes_atual)
+    else:
+        default_index = 0
+
+    return opcoes, default_index
+
 # =========================
 # CORES OPPI
 # =========================
@@ -804,7 +817,11 @@ def render_operacao():
     col1, col2, col3 = st.columns([4, 1, 4])
 
     with col1:
-        mes = st.selectbox("Mês", ["Todos"] + meses, key="mes_operacao") if meses else "Todos"
+        if meses:
+            mes_opcoes, mes_default_index = get_mes_options_and_default(meses)
+            mes = st.selectbox("Mês", mes_opcoes, index=mes_default_index, key="mes_operacao")
+        else:
+            mes = "Todos"
 
     with col2:
         st.markdown("""
@@ -1115,7 +1132,11 @@ def render_financeiro_dashboard():
     col1, col2, col3 = st.columns([4, 1, 4])
 
     with col1:
-        mes = st.selectbox("Mês", ["Todos"] + meses, key="mes_financeiro") if meses else "Todos"
+        if meses:
+            mes_opcoes, mes_default_index = get_mes_options_and_default(meses)
+            mes = st.selectbox("Mês", mes_opcoes, index=mes_default_index, key="mes_financeiro")
+        else:
+            mes = "Todos"
 
     with col2:
         st.markdown("""
