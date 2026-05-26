@@ -804,7 +804,7 @@ def render_operacao():
     col1, col2, col3 = st.columns([4, 1, 4])
 
     with col1:
-        mes = st.selectbox("Mês", meses, key="mes_operacao") if meses else None
+        mes = st.selectbox("Mês", ["Todos"] + meses, key="mes_operacao") if meses else "Todos"
 
     with col2:
         st.markdown("""
@@ -823,7 +823,7 @@ def render_operacao():
 
     df_f = df.copy()
 
-    if mes is not None and "Mês" in df_f.columns:
+    if mes != "Todos" and "Mês" in df_f.columns:
         df_f = df_f[df_f["Mês"] == mes]
 
     if unidade != "Todas" and "Unidade" in df_f.columns:
@@ -1115,7 +1115,7 @@ def render_financeiro_dashboard():
     col1, col2, col3 = st.columns([4, 1, 4])
 
     with col1:
-        mes = st.selectbox("Mês", meses, key="mes_financeiro") if meses else None
+        mes = st.selectbox("Mês", ["Todos"] + meses, key="mes_financeiro") if meses else "Todos"
 
     with col2:
         st.markdown("""
@@ -1139,7 +1139,7 @@ def render_financeiro_dashboard():
     else:
         df_fin["_valor"] = 0.0
 
-    if mes is not None and "Mês" in df_fin.columns:
+    if mes != "Todos" and "Mês" in df_fin.columns:
         df_fin_mes = df_fin[df_fin["Mês"] == mes].copy()
     else:
         df_fin_mes = df_fin.copy()
