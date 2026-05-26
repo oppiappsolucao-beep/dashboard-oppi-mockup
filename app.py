@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import unicodedata
-from streamlit_autorefresh import st_autorefresh
 
 # =========================
 # CONFIG
@@ -25,14 +24,6 @@ if "page" not in st.session_state:
 
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
-
-# =========================
-# AUTO REFRESH
-# =========================
-if st.session_state.app_logado and (
-    st.session_state.page == "operacao" or st.session_state.financeiro_logado
-):
-    st_autorefresh(interval=20000, key="auto_refresh_dashboard")
 
 # LOGOUT GERAL
 if st.query_params.get("logout_app") == "1":
@@ -544,7 +535,7 @@ hr {
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
 
-@st.cache_data(ttl=20)
+@st.cache_data(ttl=60)
 def load_data():
     df = pd.read_csv(URL)
     df.columns = df.columns.str.strip()
@@ -684,7 +675,7 @@ def apply_bar_layout(fig, height=360):
     return fig
 
 # =========================
-# CORES
+# CORES OPPI
 # =========================
 AZUL_OPPI = "#1D4ED8"
 ROXO_TEC = "#7C3AED"
@@ -813,7 +804,7 @@ def render_operacao():
     col1, col2, col3 = st.columns([4, 1, 4])
 
     with col1:
-        mes = st.selectbox("Mês", ["Todos"] + meses, key="mes_operacao") if meses else "Todos"
+        mes = st.selectbox("Mês", meses, key="mes_operacao") if meses else None
 
     with col2:
         st.markdown("""
@@ -832,7 +823,7 @@ def render_operacao():
 
     df_f = df.copy()
 
-    if mes != "Todos" and "Mês" in df_f.columns:
+    if mes is not None and "Mês" in df_f.columns:
         df_f = df_f[df_f["Mês"] == mes]
 
     if unidade != "Todas" and "Unidade" in df_f.columns:
@@ -887,21 +878,21 @@ def render_operacao():
         render_mini_card("💬 3º contato<br>hoje", contato3_hoje, "registros de hoje", CIANO_DETALHE)
 
     with row1[3]:
-        render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes), AZUL_OPPI)
+        render_mini_card("📄 Primeiro<br>Contato Mês", primeiro_mes, str(mes) if mes else "-", AZUL_OPPI)
 
     with row1[4]:
-        render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes), ROXO_TEC)
+        render_mini_card("📄 Segundo<br>Contato Mês", segundo_mes, str(mes) if mes else "-", ROXO_TEC)
 
     with row1[5]:
-        render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes), CIANO_DETALHE)
+        render_mini_card("📄 Terceiro<br>Contato Mês", terceiro_mes, str(mes) if mes else "-", CIANO_DETALHE)
 
     row2 = st.columns(2)
 
     with row2[0]:
-        render_wide_card("Status com erro", status_com_erro, f"Mês selecionado: {mes}", LARANJA_ATENCAO)
+        render_wide_card("Status com erro", status_com_erro, f"Mês selecionado: {mes}" if mes else "-", LARANJA_ATENCAO)
 
     with row2[1]:
-        render_wide_card("Vendas registradas no mês", vendas_mes, f"Mês Venda: {mes}", VERDE_SUCESSO)
+        render_wide_card("Vendas registradas no mês", vendas_mes, f"Mês Venda: {mes}" if mes else "-", VERDE_SUCESSO)
 
     st.divider()
 
@@ -931,7 +922,7 @@ def render_operacao():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with g2:
-        render_graph_header("🏙️ Vendas por unidade no mês", "Quantidade de vendas registradas por unidade no período selecionado")
+        render_graph_header("🏙️ Vendas por unidade no mês", "Quantidade de vendas registradas por unidade no mês selecionado")
 
         if "Unidade" in df_f.columns:
             vendas_unidade = (
@@ -966,7 +957,7 @@ def render_operacao():
     g3, g4 = st.columns(2)
 
     with g3:
-        render_graph_header("🐶 Raças mais vendidas", "Top 10 raças do período filtrado")
+        render_graph_header("🐶 Raças mais vendidas (mês)", "Top 10 raças do mês filtrado")
 
         if "Raça" in df_f.columns:
             racas = (
@@ -1000,7 +991,7 @@ def render_operacao():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with g4:
-        render_graph_header("🏆 Vendas por vendedora", "Todas as vendas do período, incluindo sem nome")
+        render_graph_header("🏆 Vendas por vendedora (mês)", "Todas as vendas do mês, incluindo sem nome")
 
         if vendedora_col and vendedora_col in df_f.columns:
             vendas_vendedora = (
@@ -1124,7 +1115,7 @@ def render_financeiro_dashboard():
     col1, col2, col3 = st.columns([4, 1, 4])
 
     with col1:
-        mes = st.selectbox("Mês", ["Todos"] + meses, key="mes_financeiro") if meses else "Todos"
+        mes = st.selectbox("Mês", meses, key="mes_financeiro") if meses else None
 
     with col2:
         st.markdown("""
@@ -1148,7 +1139,7 @@ def render_financeiro_dashboard():
     else:
         df_fin["_valor"] = 0.0
 
-    if mes != "Todos" and "Mês" in df_fin.columns:
+    if mes is not None and "Mês" in df_fin.columns:
         df_fin_mes = df_fin[df_fin["Mês"] == mes].copy()
     else:
         df_fin_mes = df_fin.copy()
@@ -1164,23 +1155,23 @@ def render_financeiro_dashboard():
     k1, k2, k3, k4 = st.columns(4)
 
     with k1:
-        render_mini_card("💰 Faturamento total", money_br(faturamento_total), str(mes), AZUL_OPPI)
+        render_mini_card("💰 Faturamento total", money_br(faturamento_total), str(mes) if mes else "-", AZUL_OPPI)
 
     with k2:
-        render_mini_card("🛍️ Vendas no mês", vendas_mes, str(mes), ROXO_TEC)
+        render_mini_card("🛍️ Vendas no mês", vendas_mes, str(mes) if mes else "-", ROXO_TEC)
 
     with k3:
         render_mini_card("📊 Ticket médio", money_br(ticket_medio), "por venda", CIANO_DETALHE)
 
     with k4:
-        render_mini_card("🐶 Raças vendidas", racas_vendidas, "no período", AZUL_OPPI)
+        render_mini_card("🐶 Raças vendidas", racas_vendidas, "no mês", AZUL_OPPI)
 
     st.divider()
 
     g1, g2 = st.columns(2)
 
     with g1:
-        render_graph_header("🏙️ Faturamento por Unidade", "Faturamento somado por unidade no período")
+        render_graph_header("🏙️ Faturamento por Unidade", "Faturamento somado por unidade no mês")
 
         if "Unidade" in df_fin_mes.columns:
             fat_unidade = (
@@ -1211,7 +1202,7 @@ def render_financeiro_dashboard():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with g2:
-        render_graph_header("💵 Valor por raça", "Faturamento somado por raça no período")
+        render_graph_header("💵 Valor por raça", "Faturamento somado por raça no mês")
 
         if "Raça" in df_fin_mes.columns:
             fat_raca = (
@@ -1245,7 +1236,7 @@ def render_financeiro_dashboard():
     g3, g4 = st.columns(2)
 
     with g3:
-        render_graph_header("🏆 Vendedoras que mais faturaram", "Ranking por faturamento no período")
+        render_graph_header("🏆 Vendedoras que mais faturaram", "Ranking por faturamento no mês")
 
         if vendedora_col and vendedora_col in df_fin_mes.columns:
             fat_vendedora = (
@@ -1279,7 +1270,7 @@ def render_financeiro_dashboard():
         st.markdown('</div>', unsafe_allow_html=True)
 
     with g4:
-        render_graph_header("🧾 Faturamento individual por vendedora", "Valores individuais no período selecionado")
+        render_graph_header("🧾 Faturamento individual por vendedora", "Valores individuais no mês selecionado")
 
         if not fat_vendedora.empty:
             tabela_vend = fat_vendedora[[nome_vendedora_col, "_valor"]].copy()
