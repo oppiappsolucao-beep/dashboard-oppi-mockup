@@ -710,9 +710,58 @@ def apply_bar_layout(fig, height=360):
 
     return fig
 
+def normalizar_mes(valor):
+    """Normaliza qualquer formato de mês para MM/YYYY.
+    Isso evita perder linhas quando o Google Sheets exporta uma célula como data
+    completa, texto com espaço, ou texto com caractere invisível.
+    """
+    if pd.isna(valor):
+        return ""
+
+    texto = str(valor).strip().replace("\u200b", "").replace("\ufeff", "")
+
+    if texto == "" or texto.lower() in ["nan", "none", "nat"]:
+        return ""
+
+    # Caso já venha como MM/YYYY ou M/YYYY
+    if "/" in texto:
+        partes = texto.split("/")
+
+        # Ex.: 05/2026
+        if len(partes) == 2:
+            mes_txt = partes[0].strip().zfill(2)
+            ano_txt = partes[1].strip()
+            if mes_txt.isdigit() and ano_txt.isdigit() and len(ano_txt) == 4:
+                return f"{mes_txt}/{ano_txt}"
+
+        # Ex.: 01/05/2026 -> 05/2026
+        if len(partes) == 3:
+            mes_txt = partes[1].strip().zfill(2)
+            ano_txt = partes[2].strip()
+            if mes_txt.isdigit() and ano_txt.isdigit() and len(ano_txt) == 4:
+                return f"{mes_txt}/{ano_txt}"
+
+    # Tenta converter datas reais exportadas pelo Google Sheets
+    data = pd.to_datetime(texto, errors="coerce", dayfirst=True)
+    if not pd.isna(data):
+        return data.strftime("%m/%Y")
+
+    return texto
+
 def get_mes_options_and_default(meses):
-    meses = [str(m).strip() for m in meses if str(m).strip()]
-    opcoes = ["Todos"] + meses
+    meses_normalizados = []
+
+    for mes in meses:
+        mes_norm = normalizar_mes(mes)
+        if mes_norm and mes_norm not in meses_normalizados:
+            meses_normalizados.append(mes_norm)
+
+    def ordem_mes(m):
+        data = pd.to_datetime("01/" + str(m), errors="coerce", dayfirst=True)
+        return data if not pd.isna(data) else pd.Timestamp.max
+
+    meses_normalizados = sorted(meses_normalizados, key=ordem_mes)
+    opcoes = ["Todos"] + meses_normalizados
 
     mes_atual = pd.Timestamp.now(tz="America/Sao_Paulo").strftime("%m/%Y")
 
@@ -855,7 +904,7 @@ def render_operacao():
         <a class="logout-btn" href="?logout_app=1" target="_self">Sair</a>
         """, unsafe_allow_html=True)
 
-    meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
+    meses = sorted(df["Mês"].apply(normalizar_mes).dropna().unique()) if "Mês" in df.columns else []
     unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
 
     col1, col2, col3 = st.columns([4, 1, 4])
@@ -885,7 +934,7 @@ def render_operacao():
     df_f = df.copy()
 
     if mes != "Todos" and "Mês" in df_f.columns:
-        df_f = df_f[df_f["Mês"] == mes]
+        df_f = df_f[df_f["Mês"].apply(normalizar_mes) == mes]
 
     if unidade != "Todas" and "Unidade" in df_f.columns:
         df_f = df_f[df_f["Unidade"] == unidade]
@@ -1182,7 +1231,7 @@ def render_financeiro_dashboard():
         <a class="logout-btn" href="?logout_financeiro=1" target="_self">Sair</a>
         """, unsafe_allow_html=True)
 
-    meses = sorted(df["Mês"].dropna().unique()) if "Mês" in df.columns else []
+    meses = sorted(df["Mês"].apply(normalizar_mes).dropna().unique()) if "Mês" in df.columns else []
     unidades = sorted(df["Unidade"].dropna().unique()) if "Unidade" in df.columns else []
 
     col1, col2, col3 = st.columns([4, 1, 4])
@@ -1217,7 +1266,7 @@ def render_financeiro_dashboard():
         df_fin["_valor"] = 0.0
 
     if mes != "Todos" and "Mês" in df_fin.columns:
-        df_fin_mes = df_fin[df_fin["Mês"] == mes].copy()
+        df_fin_mes = df_fin[df_fin["Mês"].apply(normalizar_mes) == mes].copy()
     else:
         df_fin_mes = df_fin.copy()
 
