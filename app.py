@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import unicodedata
+import time
 
 # =========================
 # CONFIG
@@ -535,13 +536,15 @@ hr {
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
 
-@st.cache_data(ttl=60)
-def load_data():
-    df = pd.read_csv(URL)
+@st.cache_data(ttl=10, show_spinner=False)
+def load_data(cache_buster):
+    url_atualizada = f"{URL}&cache_buster={cache_buster}"
+    df = pd.read_csv(url_atualizada)
     df.columns = df.columns.str.strip()
     return df
 
-df = load_data().dropna(how="all")
+cache_buster = int(time.time() // 10)
+df = load_data(cache_buster).dropna(how="all")
 
 # =========================
 # HELPERS
@@ -782,6 +785,10 @@ def render_top_menu():
                 "https://n8n.oppitech.com.br/form/e1269af5-6cac-492c-8919-7d3345fd79fa",
                 use_container_width=True
             )
+
+            if st.button("🔄 Atualizar dados", use_container_width=True):
+                st.cache_data.clear()
+                st.rerun()
 
             if st.button("💰 Financeiro", use_container_width=True):
                 st.session_state.page = "financeiro"
