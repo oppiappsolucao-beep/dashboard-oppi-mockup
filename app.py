@@ -31,8 +31,6 @@ if "financeiro_logado" not in st.session_state:
 if st.query_params.get("auth") == "1":
     st.session_state.app_logado = True
 
-# NÃO usa mais fin_auth pela URL para não pular o login do financeiro
-
 if st.query_params.get("page") == "financeiro":
     st.session_state.page = "financeiro"
 
@@ -392,7 +390,7 @@ div[data-testid="stForm"] {
     margin-top: 8px;
 }
 
-/* GRÁFICOS */
+/* TÍTULO DOS GRÁFICOS */
 .graph-title-card {
     background: #FFFFFF;
     border-radius: 18px;
@@ -415,13 +413,33 @@ div[data-testid="stForm"] {
     color: #64748b;
 }
 
+/* CARD DOS GRÁFICOS - BORDA ARREDONDADA */
 .chart-card {
     background: #FFFFFF;
-    border-radius: 14px;
-    padding: 8px 10px 14px 10px;
+    border-radius: 18px;
+    padding: 10px 12px 14px 12px;
     border: 1px solid rgba(15,23,42,0.06);
     box-shadow: 0 8px 18px rgba(0,0,0,0.10);
     margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* FORÇA O PLOTLY A RESPEITAR O ARREDONDADO */
+.chart-card div[data-testid="stPlotlyChart"] {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+}
+
+.chart-card iframe {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+}
+
+.js-plotly-plot,
+.plot-container,
+.svg-container {
+    border-radius: 16px !important;
+    overflow: hidden !important;
 }
 
 /* INPUTS */
