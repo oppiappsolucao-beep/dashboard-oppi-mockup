@@ -542,18 +542,18 @@ hr {
 SHEET_ID = "1CewEBIZrU2lcSfeFjAzBJ3mWpXox23vjznbTxJGQ6Xk"
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&gid=0"
 
-@st.cache_data(ttl=5, show_spinner=False)
+@st.cache_data(ttl=1, show_spinner=False)
 def load_data(cache_buster):
     url_atualizada = f"{URL}&cache_buster={cache_buster}"
     df = pd.read_csv(url_atualizada)
     df.columns = df.columns.str.strip()
     return df
 
-cache_buster = int(time.time() // 5)
+cache_buster = int(time.time())
 df = load_data(cache_buster).dropna(how="all")
 
 # =========================
-# AUTO REFRESH DE 10 SEGUNDOS SEM REQUIREMENTS
+# AUTO REFRESH DE 5 SEGUNDOS SEM REQUIREMENTS
 # =========================
 if st.session_state.app_logado:
     components.html(
@@ -569,7 +569,7 @@ if st.session_state.app_logado:
                 url.searchParams.set("_refresh", Date.now());
 
                 window.parent.location.href = url.toString();
-            }, 10000);
+            }, 5000);
         </script>
         """,
         height=0
