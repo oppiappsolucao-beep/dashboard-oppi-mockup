@@ -27,18 +27,15 @@ if "page" not in st.session_state:
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
 
-# mantém apenas o login principal no refresh
 if st.query_params.get("auth") == "1":
     st.session_state.app_logado = True
 
 if st.query_params.get("page") == "financeiro":
     st.session_state.page = "financeiro"
 
-# AUTO REFRESH REAL
 if st.session_state.app_logado:
     st_autorefresh(interval=5000, key="auto_refresh_dashboard")
 
-# LOGOUT GERAL
 if st.query_params.get("logout_app") == "1":
     st.session_state.app_logado = False
     st.session_state.financeiro_logado = False
@@ -46,7 +43,6 @@ if st.query_params.get("logout_app") == "1":
     st.query_params.clear()
     st.rerun()
 
-# LOGOUT FINANCEIRO
 if st.query_params.get("logout_financeiro") == "1":
     st.session_state.financeiro_logado = False
     st.session_state.page = "operacao"
@@ -413,24 +409,19 @@ div[data-testid="stForm"] {
     color: #64748b;
 }
 
-/* CARD DOS GRÁFICOS - BORDA ARREDONDADA */
-.chart-card {
+/* GRÁFICOS SEM A LINHA DO MEIO */
+div[data-testid="stPlotlyChart"] {
     background: #FFFFFF;
-    border-radius: 18px;
+    border-radius: 18px !important;
     padding: 10px 12px 14px 12px;
     border: 1px solid rgba(15,23,42,0.06);
     box-shadow: 0 8px 18px rgba(0,0,0,0.10);
-    margin-bottom: 16px;
-    overflow: hidden;
-}
-
-/* FORÇA O PLOTLY A RESPEITAR O ARREDONDADO */
-.chart-card div[data-testid="stPlotlyChart"] {
-    border-radius: 16px !important;
+    margin-top: 0 !important;
+    margin-bottom: 16px !important;
     overflow: hidden !important;
 }
 
-.chart-card iframe {
+div[data-testid="stPlotlyChart"] > div {
     border-radius: 16px !important;
     overflow: hidden !important;
 }
@@ -925,10 +916,7 @@ def render_operacao():
         )
 
         fig_contatos = apply_bar_layout(fig_contatos, height=370)
-
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig_contatos, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with g2:
         render_graph_header("🏙️ Vendas por unidade no mês", "Quantidade de vendas registradas por unidade no período selecionado")
@@ -958,10 +946,7 @@ def render_operacao():
 
         fig_unidade = apply_bar_layout(fig_unidade, height=370)
         fig_unidade.update_xaxes(tickangle=-18)
-
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig_unidade, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     g3, g4 = st.columns(2)
 
@@ -994,10 +979,7 @@ def render_operacao():
 
         fig_servicos = apply_bar_layout(fig_servicos, height=370)
         fig_servicos.update_xaxes(tickangle=-28)
-
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig_servicos, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with g4:
         render_graph_header("🏆 Vendas por vendedora", "Todas as vendas do período, incluindo sem nome")
@@ -1027,10 +1009,7 @@ def render_operacao():
 
         fig_vendedora = apply_bar_layout(fig_vendedora, height=370)
         fig_vendedora.update_xaxes(tickangle=-28)
-
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig_vendedora, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
 # LOGIN FINANCEIRO
@@ -1227,10 +1206,7 @@ def render_financeiro_dashboard():
         fig = apply_bar_layout(fig, height=390)
         fig.update_yaxes(title="Valor")
         fig.update_xaxes(tickangle=-18)
-
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with g2:
         render_graph_header("💵 Valor por serviço", "Faturamento somado por serviço no período")
@@ -1260,10 +1236,7 @@ def render_financeiro_dashboard():
         fig2 = apply_bar_layout(fig2, height=390)
         fig2.update_yaxes(title="Valor")
         fig2.update_xaxes(title="Serviço", tickangle=-28)
-
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig2, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     g3, g4 = st.columns(2)
 
@@ -1296,10 +1269,7 @@ def render_financeiro_dashboard():
         fig3 = apply_bar_layout(fig3, height=390)
         fig3.update_yaxes(title="Valor")
         fig3.update_xaxes(tickangle=-28)
-
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig3, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with g4:
         render_graph_header("🧾 Faturamento individual por vendedora", "Valores individuais no período selecionado")
@@ -1339,10 +1309,7 @@ def render_financeiro_dashboard():
     fig4 = apply_bar_layout(fig4, height=430)
     fig4.update_yaxes(title="Valor")
     fig4.update_xaxes(title="Mês")
-
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
     st.plotly_chart(fig4, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================
 # ROTEAMENTO
