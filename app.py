@@ -553,7 +553,7 @@ cache_buster = int(time.time() // 5)
 df = load_data(cache_buster).dropna(how="all")
 
 # =========================
-# AUTO REFRESH SEM REQUIREMENTS
+# AUTO REFRESH DE 10 SEGUNDOS SEM REQUIREMENTS
 # =========================
 if st.session_state.app_logado:
     components.html(
@@ -561,11 +561,15 @@ if st.session_state.app_logado:
         <script>
             setTimeout(function() {
                 const url = new URL(window.parent.location.href);
+
                 if (!url.searchParams.has("auth")) {
                     url.searchParams.set("auth", "1");
                 }
+
+                url.searchParams.set("_refresh", Date.now());
+
                 window.parent.location.href = url.toString();
-            }, 20000);
+            }, 10000);
         </script>
         """,
         height=0
@@ -843,10 +847,6 @@ def render_top_menu():
             if st.button("💰 Financeiro", use_container_width=True):
                 st.session_state.page = "financeiro"
                 st.query_params["page"] = "financeiro"
-                st.rerun()
-
-            if st.button("🔄 Atualizar dados", use_container_width=True):
-                st.cache_data.clear()
                 st.rerun()
 
             st.markdown('<div class="menu-footer">Painel interno • Oppi Tech</div>', unsafe_allow_html=True)
@@ -1180,9 +1180,7 @@ def render_financeiro_dashboard():
                 st.query_params["page"] = "operacao"
                 st.rerun()
 
-            if st.button("🔄 Atualizar dados", use_container_width=True):
-                st.cache_data.clear()
-                st.rerun()
+            st.markdown('<div class="menu-footer">Painel interno • Oppi Tech</div>', unsafe_allow_html=True)
 
     with top_col2:
         st.markdown(f"""
