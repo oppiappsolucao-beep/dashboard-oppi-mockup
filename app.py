@@ -27,7 +27,6 @@ if "page" not in st.session_state:
 if "financeiro_logado" not in st.session_state:
     st.session_state.financeiro_logado = False
 
-# Mantém login mesmo no refresh
 if st.query_params.get("auth") == "1":
     st.session_state.app_logado = True
 
@@ -37,11 +36,9 @@ if st.query_params.get("fin_auth") == "1":
 if st.query_params.get("page") == "financeiro":
     st.session_state.page = "financeiro"
 
-# AUTO REFRESH REAL
 if st.session_state.app_logado:
     st_autorefresh(interval=5000, key="auto_refresh_dashboard")
 
-# LOGOUT GERAL
 if st.query_params.get("logout_app") == "1":
     st.session_state.app_logado = False
     st.session_state.financeiro_logado = False
@@ -49,7 +46,6 @@ if st.query_params.get("logout_app") == "1":
     st.query_params.clear()
     st.rerun()
 
-# LOGOUT FINANCEIRO
 if st.query_params.get("logout_financeiro") == "1":
     st.session_state.financeiro_logado = False
     st.session_state.page = "operacao"
@@ -62,413 +58,54 @@ if st.query_params.get("logout_financeiro") == "1":
 # =========================
 st.markdown("""
 <style>
-
-.stApp {
-    background: #d9d9d9;
-    color: #111827;
-}
-
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
-
-.block-container {
-    padding-top: 28px;
-    max-width: 1280px;
-}
-
-/* TOPO */
-.header-title {
-    font-size: 30px;
-    font-weight: 900;
-    color: #111827;
-    line-height: 1.1;
-    margin-bottom: 8px;
-}
-
-.header-subtitle {
-    font-size: 13px;
-    color: #64748b;
-    font-weight: 600;
-}
-
-.header-total {
-    font-size: 12px;
-    color: #64748b;
-    margin-top: 14px;
-}
-
-/* BOTÃO SAIR */
-.logout-btn {
-    display: block;
-    background: linear-gradient(135deg, #1D4ED8, #7C3AED);
-    color: #F8FAFC !important;
-    border-radius: 12px;
-    padding: 13px 42px;
-    font-weight: 800;
-    font-size: 13px;
-    text-align: center;
-    border: 1px solid rgba(6,182,212,0.35);
-    text-decoration: none !important;
-    box-shadow:
-        0 0 0 2px rgba(29,78,216,0.25),
-        0 0 18px rgba(124,58,237,0.45),
-        0 0 28px rgba(6,182,212,0.25),
-        0 10px 25px rgba(0,0,0,0.35);
-    transition: all 0.25s ease;
-}
-
-.logout-btn:hover {
-    transform: translateY(-2px);
-    color: #F8FAFC !important;
-    text-decoration: none !important;
-}
-
-/* HAMBURGUER */
-div[data-testid="stPopover"] button {
-    background: linear-gradient(135deg, #1D4ED8, #7C3AED) !important;
-    color: #F8FAFC !important;
-    border: 1px solid rgba(6,182,212,0.35) !important;
-    border-radius: 12px !important;
-    min-height: 42px !important;
-    min-width: 58px !important;
-    padding: 0 14px !important;
-    font-weight: 800 !important;
-    box-shadow:
-        0 0 0 2px rgba(29,78,216,0.25) !important,
-        0 0 18px rgba(124,58,237,0.45) !important,
-        0 0 28px rgba(6,182,212,0.25) !important,
-        0 10px 25px rgba(0,0,0,0.35) !important;
-}
-
-div[data-testid="stPopover"] button p,
-div[data-testid="stPopover"] button svg {
-    color: #F8FAFC !important;
-    fill: #F8FAFC !important;
-    font-weight: 800 !important;
-}
-
-/* MENU */
-div[data-testid="stPopoverBody"] {
-    min-width: 330px !important;
-    padding: 16px !important;
-}
-
-.menu-title {
-    font-size: 24px;
-    font-weight: 900;
-    color: #111827;
-    margin-bottom: 6px;
-}
-
-.menu-subtitle {
-    font-size: 14px;
-    color: #64748b;
-    margin-bottom: 8px;
-}
-
-.menu-footer {
-    text-align: center;
-    color: #94a3b8;
-    font-size: 12px;
-    margin-top: 8px;
-}
-
-div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a,
-div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
-    background: linear-gradient(135deg, #1B2A6B, #081634) !important;
-    color: #F8FAFC !important;
-    border-radius: 14px !important;
-    min-height: 58px !important;
-    padding: 16px 18px !important;
-    font-weight: 900 !important;
-    font-size: 15px !important;
-    border: none !important;
-    text-decoration: none !important;
-    transition: all 0.25s ease !important;
-    transform: scale(1);
-    box-shadow:
-        inset 5px 0 0 #06B6D4,
-        0 10px 20px rgba(15,23,42,0.22) !important;
-}
-
-div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a:hover,
-div[data-testid="stPopoverBody"] div[data-testid="stButton"] button:hover {
-    transform: scale(1.04) !important;
-    box-shadow:
-        inset 5px 0 0 #06B6D4,
-        0 14px 28px rgba(15,23,42,0.32),
-        0 0 18px rgba(6,182,212,0.35) !important;
-}
-
-div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p {
-    color: #F8FAFC !important;
-    -webkit-text-fill-color: #F8FAFC !important;
-}
-
-/* LOGO */
-.logo-wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: -8px;
-}
-
-.logo {
-    width: 86px;
-    height: 86px;
-    border-radius: 50%;
-    background: #0F172A;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    box-shadow:
-        0 0 0 2px rgba(6,182,212,0.20),
-        0 8px 25px rgba(124,58,237,0.35);
-    border: 1px solid rgba(6,182,212,0.28);
-    text-align: center;
-    line-height: 1.1;
-}
-
-.logo .a {
-    font-weight: 900;
-    color: #06B6D4;
-    font-size: 12px;
-}
-
-.logo .b {
-    font-size: 11px;
-    font-weight: 900;
-    color: #7C3AED;
-    letter-spacing: 1px;
-    margin-top: 3px;
-    text-transform: lowercase;
-}
-
-/* LOGIN */
-.login-logo-wrap {
-    display: flex;
-    justify-content: center;
-    margin-top: 12px;
-    margin-bottom: 14px;
-}
-
-.login-logo {
-    width: 112px;
-    height: 112px;
-    border-radius: 50%;
-    background: radial-gradient(circle at top left, #111827, #020617 72%);
-    border: 2px solid rgba(6,182,212,0.55);
-    box-shadow:
-        0 0 0 3px rgba(124,58,237,0.12),
-        0 0 20px rgba(6,182,212,0.28),
-        0 10px 30px rgba(15,23,42,0.30);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    color: #06B6D4;
-    font-size: 14px;
-    font-weight: 900;
-    line-height: 1.15;
-}
-
-.login-logo span {
-    color: #7C3AED;
-    font-size: 12px;
-    letter-spacing: 1px;
-    margin-top: 2px;
-    text-transform: lowercase;
-}
-
-.login-access-text {
-    text-align: center;
-    color: #111827;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 16px;
-}
-
-.login-header-card {
-    background: #0F172A;
-    border-radius: 18px;
-    padding: 18px 20px 16px 20px;
-    margin-top: 10px;
-    margin-bottom: 18px;
-    box-shadow:
-        0 8px 20px rgba(15,23,42,0.22),
-        0 0 22px rgba(6,182,212,0.10);
-    border: 1px solid rgba(6,182,212,0.18);
-    text-align: center;
-}
-
-.login-title {
-    font-size: 24px;
-    font-weight: 900;
-    color: #F8FAFC;
-}
-
-.login-subtitle {
-    font-size: 13px;
-    color: #A1A1AA;
-}
-
-div[data-testid="stForm"] {
-    background: rgba(255,255,255,0.35);
-    border: 1px solid rgba(15,23,42,0.12);
-    border-radius: 18px;
-    padding: 18px !important;
-    box-shadow: 0 10px 24px rgba(15,23,42,0.08);
-}
-
-/* CARDS */
-.mini-card {
-    background: #FFFFFF;
-    border-radius: 18px;
-    padding: 14px 16px 10px 16px;
-    min-height: 118px;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-    margin-bottom: 8px;
-    border: 1px solid rgba(15,23,42,0.06);
-    transition: all 0.25s ease;
-}
-
-.mini-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(0,0,0,0.15);
-}
-
-.mini-title {
-    font-size: 12px;
-    font-weight: 900;
-    color: #111827;
-    line-height: 1.35;
-}
-
-.mini-value {
-    font-size: 28px;
-    font-weight: 900;
-    color: #111827;
-    line-height: 1;
-    margin-top: 10px;
-}
-
-.mini-sub {
-    font-size: 11px;
-    color: #64748b;
-    margin-top: 8px;
-}
-
-.wide-card {
-    background: #FFFFFF;
-    border-radius: 18px;
-    padding: 16px 18px;
-    min-height: 116px;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-    margin-top: 8px;
-    margin-bottom: 8px;
-    border: 1px solid rgba(15,23,42,0.06);
-}
-
-.wide-title {
-    font-size: 18px;
-    font-weight: 900;
-    color: #111827;
-}
-
-.wide-value {
-    font-size: 50px;
-    font-weight: 900;
-    color: #111827;
-    line-height: 1;
-    margin-top: 8px;
-}
-
-.wide-sub {
-    font-size: 12px;
-    color: #64748b;
-    margin-top: 8px;
-}
-
-/* GRÁFICOS */
-.graph-title-card {
-    background: #FFFFFF;
-    border-radius: 18px;
-    padding: 14px 20px 12px 20px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.10);
-    border: 1px solid rgba(15,23,42,0.06);
-}
-
-.graph-title {
-    font-size: 19px;
-    font-weight: 900;
-    color: #111827;
-    margin-bottom: 4px;
-}
-
-.graph-subtitle {
-    font-size: 13px;
-    color: #64748b;
-}
-
-.chart-card {
-    background: #FFFFFF;
-    border-radius: 14px;
-    padding: 8px 10px 14px 10px;
-    border: 1px solid rgba(15,23,42,0.06);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.10);
-    margin-bottom: 16px;
-}
-
-/* INPUTS */
-.stSelectbox label,
-.stTextInput label {
-    color: #111827 !important;
-    font-weight: 800 !important;
-}
-
-.stSelectbox > div > div,
-.stTextInput > div > div > input {
-    background-color: #FFFFFF !important;
-    border-radius: 12px !important;
-    color: #111827 !important;
-    border: 1px solid rgba(15,23,42,0.16) !important;
-    min-height: 44px !important;
-}
-
-div[data-testid="stFormSubmitButton"] button {
-    background: linear-gradient(135deg, #1D4ED8, #7C3AED) !important;
-    color: #F8FAFC !important;
-    border-radius: 14px !important;
-    min-height: 52px !important;
-    font-weight: 900 !important;
-    font-size: 15px !important;
-    border: 1px solid rgba(6,182,212,0.28) !important;
-    box-shadow:
-        0 0 0 2px rgba(29,78,216,0.12),
-        0 10px 22px rgba(15,23,42,0.20) !important;
-}
-
-div[data-testid="stButton"] button {
-    border-radius: 12px !important;
-    font-weight: 900 !important;
-}
-
-hr {
-    border: 1px solid rgba(15,23,42,0.18);
-    margin-top: 28px;
-    margin-bottom: 28px;
-}
-
-[data-testid="stDataFrame"] {
-    background: white;
-    border-radius: 14px;
-}
-
+.stApp { background:#d9d9d9; color:#111827; }
+#MainMenu, footer, header {visibility:hidden;}
+.block-container { padding-top:28px; max-width:1280px; }
+.header-title { font-size:30px; font-weight:900; color:#111827; line-height:1.1; margin-bottom:8px; }
+.header-subtitle { font-size:13px; color:#64748b; font-weight:600; }
+.header-total { font-size:12px; color:#64748b; margin-top:14px; }
+.logout-btn { display:block; background:linear-gradient(135deg,#1D4ED8,#7C3AED); color:#F8FAFC!important; border-radius:12px; padding:13px 42px; font-weight:800; font-size:13px; text-align:center; border:1px solid rgba(6,182,212,.35); text-decoration:none!important; box-shadow:0 0 0 2px rgba(29,78,216,.25),0 0 18px rgba(124,58,237,.45),0 0 28px rgba(6,182,212,.25),0 10px 25px rgba(0,0,0,.35); transition:.25s; }
+.logout-btn:hover { transform:translateY(-2px); color:#F8FAFC!important; text-decoration:none!important; }
+div[data-testid="stPopover"] button { background:linear-gradient(135deg,#1D4ED8,#7C3AED)!important; color:#F8FAFC!important; border:1px solid rgba(6,182,212,.35)!important; border-radius:12px!important; min-height:42px!important; min-width:58px!important; padding:0 14px!important; font-weight:800!important; box-shadow:0 0 0 2px rgba(29,78,216,.25)!important,0 0 18px rgba(124,58,237,.45)!important,0 0 28px rgba(6,182,212,.25)!important,0 10px 25px rgba(0,0,0,.35)!important; }
+div[data-testid="stPopover"] button p, div[data-testid="stPopover"] button svg { color:#F8FAFC!important; fill:#F8FAFC!important; font-weight:800!important; }
+div[data-testid="stPopoverBody"] { min-width:330px!important; padding:16px!important; }
+.menu-title { font-size:24px; font-weight:900; color:#111827; margin-bottom:6px; }
+.menu-subtitle { font-size:14px; color:#64748b; margin-bottom:8px; }
+.menu-footer { text-align:center; color:#94a3b8; font-size:12px; margin-top:8px; }
+div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a, div[data-testid="stPopoverBody"] div[data-testid="stButton"] button { background:linear-gradient(135deg,#1B2A6B,#081634)!important; color:#F8FAFC!important; border-radius:14px!important; min-height:58px!important; padding:16px 18px!important; font-weight:900!important; font-size:15px!important; border:none!important; text-decoration:none!important; transition:.25s!important; transform:scale(1); box-shadow:inset 5px 0 0 #06B6D4,0 10px 20px rgba(15,23,42,.22)!important; }
+div[data-testid="stPopoverBody"] div[data-testid="stLinkButton"] a:hover, div[data-testid="stPopoverBody"] div[data-testid="stButton"] button:hover { transform:scale(1.04)!important; box-shadow:inset 5px 0 0 #06B6D4,0 14px 28px rgba(15,23,42,.32),0 0 18px rgba(6,182,212,.35)!important; }
+div[data-testid="stPopoverBody"] div[data-testid="stButton"] button p { color:#F8FAFC!important; -webkit-text-fill-color:#F8FAFC!important; }
+.logo-wrap { display:flex; justify-content:center; align-items:center; margin-top:-8px; }
+.logo { width:86px; height:86px; border-radius:50%; background:#0F172A; display:flex; align-items:center; justify-content:center; flex-direction:column; box-shadow:0 0 0 2px rgba(6,182,212,.20),0 8px 25px rgba(124,58,237,.35); border:1px solid rgba(6,182,212,.28); text-align:center; line-height:1.1; }
+.logo .a { font-weight:900; color:#06B6D4; font-size:12px; }
+.logo .b { font-size:11px; font-weight:900; color:#7C3AED; letter-spacing:1px; margin-top:3px; text-transform:lowercase; }
+.login-logo-wrap { display:flex; justify-content:center; margin-top:12px; margin-bottom:14px; }
+.login-logo { width:112px; height:112px; border-radius:50%; background:radial-gradient(circle at top left,#111827,#020617 72%); border:2px solid rgba(6,182,212,.55); box-shadow:0 0 0 3px rgba(124,58,237,.12),0 0 20px rgba(6,182,212,.28),0 10px 30px rgba(15,23,42,.30); display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; color:#06B6D4; font-size:14px; font-weight:900; line-height:1.15; }
+.login-logo span { color:#7C3AED; font-size:12px; letter-spacing:1px; margin-top:2px; text-transform:lowercase; }
+.login-access-text { text-align:center; color:#111827; font-size:16px; font-weight:700; margin-bottom:16px; }
+.login-header-card { background:#0F172A; border-radius:18px; padding:18px 20px 16px; margin-top:10px; margin-bottom:18px; box-shadow:0 8px 20px rgba(15,23,42,.22),0 0 22px rgba(6,182,212,.10); border:1px solid rgba(6,182,212,.18); text-align:center; }
+.login-title { font-size:24px; font-weight:900; color:#F8FAFC; }
+.login-subtitle { font-size:13px; color:#A1A1AA; }
+div[data-testid="stForm"] { background:rgba(255,255,255,.35); border:1px solid rgba(15,23,42,.12); border-radius:18px; padding:18px!important; box-shadow:0 10px 24px rgba(15,23,42,.08); }
+.mini-card { background:#fff; border-radius:18px; padding:14px 16px 10px; min-height:118px; box-shadow:0 10px 24px rgba(0,0,0,.12); margin-bottom:8px; border:1px solid rgba(15,23,42,.06); transition:.25s; }
+.mini-card:hover { transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.15); }
+.mini-title { font-size:12px; font-weight:900; color:#111827; line-height:1.35; }
+.mini-value { font-size:28px; font-weight:900; color:#111827; line-height:1; margin-top:10px; }
+.mini-sub { font-size:11px; color:#64748b; margin-top:8px; }
+.wide-card { background:#fff; border-radius:18px; padding:16px 18px; min-height:116px; box-shadow:0 10px 24px rgba(0,0,0,.12); margin:8px 0; border:1px solid rgba(15,23,42,.06); }
+.wide-title { font-size:18px; font-weight:900; color:#111827; }
+.wide-value { font-size:50px; font-weight:900; color:#111827; line-height:1; margin-top:8px; }
+.wide-sub { font-size:12px; color:#64748b; margin-top:8px; }
+.graph-title-card { background:#fff; border-radius:18px; padding:14px 20px 12px; margin:10px 0; box-shadow:0 8px 18px rgba(0,0,0,.10); border:1px solid rgba(15,23,42,.06); }
+.graph-title { font-size:19px; font-weight:900; color:#111827; margin-bottom:4px; }
+.graph-subtitle { font-size:13px; color:#64748b; }
+.chart-card { background:#fff; border-radius:14px; padding:8px 10px 14px; border:1px solid rgba(15,23,42,.06); box-shadow:0 8px 18px rgba(0,0,0,.10); margin-bottom:16px; }
+.stSelectbox label, .stTextInput label { color:#111827!important; font-weight:800!important; }
+.stSelectbox > div > div, .stTextInput > div > div > input { background-color:#fff!important; border-radius:12px!important; color:#111827!important; border:1px solid rgba(15,23,42,.16)!important; min-height:44px!important; }
+div[data-testid="stFormSubmitButton"] button { background:linear-gradient(135deg,#1D4ED8,#7C3AED)!important; color:#F8FAFC!important; border-radius:14px!important; min-height:52px!important; font-weight:900!important; font-size:15px!important; border:1px solid rgba(6,182,212,.28)!important; box-shadow:0 0 0 2px rgba(29,78,216,.12),0 10px 22px rgba(15,23,42,.20)!important; }
+div[data-testid="stButton"] button { border-radius:12px!important; font-weight:900!important; }
+hr { border:1px solid rgba(15,23,42,.18); margin-top:28px; margin-bottom:28px; }
+[data-testid="stDataFrame"] { background:white; border-radius:14px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -499,16 +136,12 @@ def normalize_text(text):
 def normalize_mes_value(value):
     if pd.isna(value):
         return ""
-
     s = str(value).strip().replace("\u00a0", "").replace("\u200b", "")
-
     if s == "" or s.lower() in ["nan", "none"]:
         return ""
-
     dt = pd.to_datetime(s, errors="coerce", dayfirst=True)
     if pd.notna(dt):
         return dt.strftime("%m/%Y")
-
     if "/" in s:
         partes = s.split("/")
         if len(partes) >= 2:
@@ -517,7 +150,6 @@ def normalize_mes_value(value):
             if len(ano) == 2:
                 ano = "20" + ano
             return f"{mes}/{ano}"
-
     return s
 
 def get_mes_atual():
@@ -533,7 +165,6 @@ def find_col(dataframe, aliases, exclude_terms=None):
     exclude_terms = exclude_terms or []
     cols = list(dataframe.columns)
     norm_map = {c: normalize_text(c) for c in cols}
-
     for alias in aliases:
         alias_n = normalize_text(alias)
         for c, c_n in norm_map.items():
@@ -541,7 +172,6 @@ def find_col(dataframe, aliases, exclude_terms=None):
                 continue
             if c_n == alias_n:
                 return c
-
     for alias in aliases:
         alias_n = normalize_text(alias)
         for c, c_n in norm_map.items():
@@ -549,7 +179,6 @@ def find_col(dataframe, aliases, exclude_terms=None):
                 continue
             if alias_n in c_n:
                 return c
-
     return None
 
 def parse_date_series(series):
@@ -558,30 +187,24 @@ def parse_date_series(series):
 def parse_money(value):
     if pd.isna(value):
         return 0.0
-
     s = str(value).strip()
-
     if s == "":
         return 0.0
-
     s = s.replace("R$", "").replace(" ", "").replace("\u00a0", "")
-
     if "," in s:
         s = s.replace(".", "").replace(",", ".")
     else:
         s = s.replace(",", "")
-
     try:
         return float(s)
-    except:
+    except Exception:
         return 0.0
 
 def money_br(value):
     try:
         value = float(value)
-    except:
+    except Exception:
         value = 0.0
-
     txt = f"R$ {value:,.2f}"
     txt = txt.replace(",", "X").replace(".", ",").replace("X", ".")
     return txt
@@ -639,13 +262,11 @@ def apply_bar_layout(fig, height=360):
             title=dict(font=dict(color="#64748b"))
         )
     )
-
     fig.update_traces(
         textposition="outside",
         textfont=dict(size=11, color="#111827"),
         marker_line_width=0
     )
-
     return fig
 
 # =========================
@@ -658,16 +279,8 @@ VERDE_SUCESSO = "#22C55E"
 LARANJA_ATENCAO = "#F97316"
 
 CORES_GRAFICO = [
-    "#1D4ED8",
-    "#7C3AED",
-    "#06B6D4",
-    "#22C55E",
-    "#F97316",
-    "#1D4ED8",
-    "#7C3AED",
-    "#06B6D4",
-    "#22C55E",
-    "#F97316"
+    "#1D4ED8", "#7C3AED", "#06B6D4", "#22C55E", "#F97316",
+    "#1D4ED8", "#7C3AED", "#06B6D4", "#22C55E", "#F97316"
 ]
 
 # =========================
@@ -691,6 +304,7 @@ data_3_col = find_col(df, ["Data 3º contato", "3º contato", "Terceiro contato"
 
 vendedora_col = find_col(df, ["Vendedora", "Vendedor", "Consultora", "Consultor", "Responsável", "Responsavel", "Atendente"])
 valor_col = find_col(df, ["Valor Filhote", "Valor", "Valor Total", "Total", "Preço", "Preco", "Faturamento"])
+servico_col = find_col(df, ["Serviço", "Servico", "Produto", "Tipo de serviço", "Tipo de servico", "Raça", "Raca"])
 
 # =========================
 # LOGIN PRINCIPAL
@@ -721,7 +335,6 @@ def render_login_principal():
     with st.form("login_principal"):
         usuario = st.text_input("Usuário", placeholder="Digite seu usuário")
         senha = st.text_input("Senha", placeholder="Digite sua senha", type="password")
-
         entrar = st.form_submit_button("Entrar no Dashboard", use_container_width=True)
 
         if entrar:
@@ -1156,7 +769,7 @@ def render_financeiro_dashboard():
     faturamento_total = df_fin_mes["_valor"].sum()
     vendas_financeiro = len(df_fin_mes)
     ticket_medio = faturamento_total / vendas_financeiro if vendas_financeiro else 0
-    racas_vendidas = df_fin_mes["Raça"].nunique() if "Raça" in df_fin_mes.columns else 0
+    servicos_vendidos = df_fin_mes[servico_col].nunique() if servico_col and servico_col in df_fin_mes.columns else 0
 
     k1, k2, k3, k4 = st.columns(4)
 
@@ -1170,7 +783,7 @@ def render_financeiro_dashboard():
         render_mini_card("📊 Ticket médio", money_br(ticket_medio), "por venda", CIANO_DETALHE)
 
     with k4:
-        render_mini_card("🐶 Raças vendidas", racas_vendidas, "no período", AZUL_OPPI)
+        render_mini_card("🧩 Serviços vendidos", servicos_vendidos, "no período", AZUL_OPPI)
 
     st.divider()
 
@@ -1207,34 +820,34 @@ def render_financeiro_dashboard():
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-with g2:
-    render_graph_header("💵 Valor por serviço", "Faturamento somado por serviço no período")
+    with g2:
+        render_graph_header("💵 Valor por serviço", "Faturamento somado por serviço no período")
 
-    if "Raça" in df_fin_mes.columns:
-        fat_servico = (
-            df_fin_mes.groupby("Raça", dropna=False)["_valor"]
-            .sum()
-            .reset_index()
-            .sort_values("_valor", ascending=False)
-            .head(10)
+        if servico_col and servico_col in df_fin_mes.columns:
+            fat_servico = (
+                df_fin_mes.groupby(servico_col, dropna=False)["_valor"]
+                .sum()
+                .reset_index()
+                .sort_values("_valor", ascending=False)
+                .head(10)
+            )
+            fat_servico[servico_col] = fat_servico[servico_col].fillna("Sem serviço").astype(str)
+            fat_servico = fat_servico.rename(columns={servico_col: "Serviço"})
+        else:
+            fat_servico = pd.DataFrame({"Serviço": [], "_valor": []})
+
+        fig2 = px.bar(
+            fat_servico,
+            x="Serviço",
+            y="_valor",
+            text=fat_servico["_valor"].apply(money_br) if not fat_servico.empty else None,
+            color="Serviço",
+            color_discrete_sequence=CORES_GRAFICO
         )
-        fat_servico["Raça"] = fat_servico["Raça"].fillna("Sem serviço").astype(str)
-        fat_servico = fat_servico.rename(columns={"Raça": "Serviço"})
-    else:
-        fat_servico = pd.DataFrame({"Serviço": [], "_valor": []})
 
-    fig2 = px.bar(
-        fat_servico,
-        x="Serviço",
-        y="_valor",
-        text=fat_servico["_valor"].apply(money_br) if not fat_servico.empty else None,
-        color="Serviço",
-        color_discrete_sequence=CORES_GRAFICO
-    )
-
-    fig2 = apply_bar_layout(fig2, height=390)
-    fig2.update_yaxes(title="Valor")
-    fig2.update_xaxes(title="Serviço", tickangle=-28)
+        fig2 = apply_bar_layout(fig2, height=390)
+        fig2.update_yaxes(title="Valor")
+        fig2.update_xaxes(title="Serviço", tickangle=-28)
 
         st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig2, use_container_width=True)
