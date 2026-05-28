@@ -763,6 +763,12 @@ def render_top_menu():
                 use_container_width=True
             )
 
+            st.link_button(
+                "📑 Nova proposta",
+                "https://n8n.oppitech.com.br/form/979122f9-e23b-4905-aece-23b18b4d36c9",
+                use_container_width=True
+            )
+
             if st.button("💰 Financeiro", use_container_width=True):
                 st.session_state.page = "financeiro"
                 st.session_state.financeiro_logado = False
@@ -1089,6 +1095,12 @@ def render_financeiro_dashboard():
             st.link_button(
                 "📄 Novo Contrato",
                 "https://n8n.oppitech.com.br/form/e1269af5-6cac-492c-8919-7d3345fd79fa",
+                use_container_width=True
+            )
+
+            st.link_button(
+                "📑 Nova proposta",
+                "https://n8n.oppitech.com.br/form/979122f9-e23b-4905-aece-23b18b4d36c9",
                 use_container_width=True
             )
 
