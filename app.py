@@ -1207,33 +1207,34 @@ def render_financeiro_dashboard():
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-    with g2:
-        render_graph_header("💵 Valor por raça", "Faturamento somado por raça no período")
+with g2:
+    render_graph_header("💵 Valor por serviço", "Faturamento somado por serviço no período")
 
-        if "Raça" in df_fin_mes.columns:
-            fat_raca = (
-                df_fin_mes.groupby("Raça", dropna=False)["_valor"]
-                .sum()
-                .reset_index()
-                .sort_values("_valor", ascending=False)
-                .head(10)
-            )
-            fat_raca["Raça"] = fat_raca["Raça"].fillna("Sem raça").astype(str)
-        else:
-            fat_raca = pd.DataFrame({"Raça": [], "_valor": []})
-
-        fig2 = px.bar(
-            fat_raca,
-            x="Raça",
-            y="_valor",
-            text=fat_raca["_valor"].apply(money_br) if not fat_raca.empty else None,
-            color="Raça",
-            color_discrete_sequence=CORES_GRAFICO
+    if "Raça" in df_fin_mes.columns:
+        fat_servico = (
+            df_fin_mes.groupby("Raça", dropna=False)["_valor"]
+            .sum()
+            .reset_index()
+            .sort_values("_valor", ascending=False)
+            .head(10)
         )
+        fat_servico["Raça"] = fat_servico["Raça"].fillna("Sem serviço").astype(str)
+        fat_servico = fat_servico.rename(columns={"Raça": "Serviço"})
+    else:
+        fat_servico = pd.DataFrame({"Serviço": [], "_valor": []})
 
-        fig2 = apply_bar_layout(fig2, height=390)
-        fig2.update_yaxes(title="Valor")
-        fig2.update_xaxes(tickangle=-28)
+    fig2 = px.bar(
+        fat_servico,
+        x="Serviço",
+        y="_valor",
+        text=fat_servico["_valor"].apply(money_br) if not fat_servico.empty else None,
+        color="Serviço",
+        color_discrete_sequence=CORES_GRAFICO
+    )
+
+    fig2 = apply_bar_layout(fig2, height=390)
+    fig2.update_yaxes(title="Valor")
+    fig2.update_xaxes(title="Serviço", tickangle=-28)
 
         st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         st.plotly_chart(fig2, use_container_width=True)
